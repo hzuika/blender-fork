@@ -79,6 +79,12 @@ if(WITH_EXPERIMENTAL_FEATURES)
   add_definitions(-DWITH_NEW_CURVES_TYPE)
 endif()
 
+if(WIN32 OR APPLE)
+  if(WITH_INPUT_IME)
+    add_definitions(-DWITH_INPUT_IME)
+  endif()
+endif()
+
 blender_add_lib(bf_editor_object "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")
 
 add_dependencies(bf_editor_object bf_dna)

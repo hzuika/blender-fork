@@ -101,6 +101,11 @@
 
 #include "object_intern.h" /* own include */
 
+#ifdef WITH_INPUT_IME
+  #include "wm_window.h"
+  #include "BLT_lang.h"
+#endif
+
 static CLG_LogRef LOG = {"ed.object.edit"};
 
 /* prototypes */
@@ -858,6 +863,14 @@ static int editmode_toggle_exec(bContext *C, wmOperator *op)
       }
       FOREACH_SELECTED_OBJECT_END;
     }
+
+#ifdef WITH_INPUT_IME
+    if (obact->type == OB_FONT && BLT_lang_is_ime_supported()) {
+      wmWindow *win = CTX_wm_window(C);
+      wm_window_IME_begin(win, 0, 0, 0, 0, true);
+    }
+#endif
+
   }
   else {
     ED_object_editmode_exit_ex(bmain, scene, obact, EM_FREEDATA);
@@ -870,6 +883,16 @@ static int editmode_toggle_exec(bContext *C, wmOperator *op)
       }
       FOREACH_OBJECT_END;
     }
+
+#ifdef WITH_INPUT_IME
+    if (obact->type == OB_FONT) {
+      wmWindow *win = CTX_wm_window(C);
+      if (win->ime_data) {
+        wm_window_IME_end(win);
+      }
+    }
+#endif
+
   }
 
   WM_msg_publish_rna_prop(mbus, &obact->id, obact, Object, mode);
