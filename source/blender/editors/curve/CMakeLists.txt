@@ -38,6 +38,15 @@ set(LIB
   extern_curve_fit_nd
 )
 
+if(WITH_INTERNATIONAL)
+  add_definitions(-DWITH_INTERNATIONAL)
+endif()
+
+if(WIN32 OR APPLE)
+  if(WITH_INPUT_IME)
+    add_definitions(-DWITH_INPUT_IME)
+  endif()
+endif()
 
 blender_add_lib(bf_editor_curve "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")
 

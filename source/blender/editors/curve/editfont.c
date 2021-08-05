@@ -1646,6 +1646,14 @@ static int insert_text_invoke(bContext *C, wmOperator *op, const wmEvent *event)
   int event_type = event->type, event_val = event->val;
   char32_t inserted_text[2] = {0};
 
+#ifdef WITH_INPUT_IME
+  wmWindow *win = CTX_wm_window(C);
+  wmIMEData *ime_data = win->ime_data;
+  if (event->type == WM_IME_COMPOSITE_EVENT && ime_data->result_len > 0) {
+    RNA_string_set(op->ptr, "text", ime_data->str_result);
+  }
+#endif
+
   if (RNA_struct_property_is_set(op->ptr, "text")) {
     return insert_text_exec(C, op);
   }
