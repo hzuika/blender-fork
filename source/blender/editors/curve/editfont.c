@@ -440,9 +440,15 @@ static int kill_selection(Object *obedit, int ins) /* ins == new character len *
       selend += ins;
     }
     getfrom = selend + 1;
+<<<<<<< HEAD
     size = ef->len - selend; /* This is equivalent to: `(ef->len - getfrom) + 1(null)`. */
     memmove(ef->textbuf + selstart, ef->textbuf + getfrom, sizeof(*ef->textbuf) * size);
     memmove(ef->textbufinfo + selstart, ef->textbufinfo + getfrom, sizeof(CharInfo) * size);
+=======
+    size = ((ef->len - selend) + 1);
+    memmove(ef->textbuf + selstart, ef->textbuf + getfrom, size * sizeof(*ef->textbuf));
+    memmove(ef->textbufinfo + selstart, ef->textbufinfo + getfrom, size * sizeof(CharInfo));
+>>>>>>> c4ccb752256 (IME: support composite event)
     ef->len -= ((selend - selstart) + 1);
     ef->selstart = ef->selend = 0;
   }
@@ -1649,8 +1655,18 @@ static int insert_text_invoke(bContext *C, wmOperator *op, const wmEvent *event)
 #ifdef WITH_INPUT_IME
   wmWindow *win = CTX_wm_window(C);
   wmIMEData *ime_data = win->ime_data;
-  if (event->type == WM_IME_COMPOSITE_EVENT && ime_data->result_len > 0) {
-    RNA_string_set(op->ptr, "text", ime_data->str_result);
+  if (event->type == WM_IME_COMPOSITE_EVENT) {
+    if (ime_data->composite_len > 0) {
+      RNA_string_set(op->ptr, "text", ime_data->str_composite);
+      int result = insert_text_exec(C, op);
+      int len = BLI_strlen_utf8(ime_data->str_composite);
+      ef->selstart = ef->pos - len + 1;
+      ef->selend = ef->pos;
+      return result;
+    }
+    if (ime_data->result_len > 0) {
+      RNA_string_set(op->ptr, "text", ime_data->str_result);
+    }
   }
 #endif
 
