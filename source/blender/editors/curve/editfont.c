@@ -422,16 +422,23 @@ static void text_update_edited(bContext *C, Object *obedit, int mode)
   WM_event_add_notifier(C, NC_GEOM | ND_DATA, obedit->data);
 }
 
+static void kill_text_range(EditFont *ef, int start, int end)
+{
+  int getfrom = end + 1;
+  int size = ef->len - end; /* This is equivalent to: `(ef->len - getfrom) + 1(null)`. */
+  memmove(ef->textbuf + start, ef->textbuf + getfrom, sizeof(*ef->textbuf) * size);
+  memmove(ef->textbufinfo + start, ef->textbufinfo + getfrom, sizeof(CharInfo) * size);
+  ef->len -= ((end - start) + 1);
+}
+
 static int kill_selection(Object *obedit, int ins) /* ins == new character len */
 {
   Curve *cu = obedit->data;
   EditFont *ef = cu->editfont;
   int selend, selstart, direction;
-  int getfrom;
 
   direction = BKE_vfont_select_get(obedit, &selstart, &selend);
   if (direction) {
-    int size;
     if (ef->pos >= selstart) {
       ef->pos = selstart + ins;
     }
@@ -439,11 +446,7 @@ static int kill_selection(Object *obedit, int ins) /* ins == new character len *
       selstart += ins;
       selend += ins;
     }
-    getfrom = selend + 1;
-    size = ef->len - selend; /* This is equivalent to: `(ef->len - getfrom) + 1(null)`. */
-    memmove(ef->textbuf + selstart, ef->textbuf + getfrom, sizeof(*ef->textbuf) * size);
-    memmove(ef->textbufinfo + selstart, ef->textbufinfo + getfrom, sizeof(CharInfo) * size);
-    ef->len -= ((selend - selstart) + 1);
+    kill_text_range(ef, selstart, selend);
     ef->selstart = ef->selend = 0;
   }
 
