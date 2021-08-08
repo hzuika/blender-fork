@@ -440,15 +440,9 @@ static int kill_selection(Object *obedit, int ins) /* ins == new character len *
       selend += ins;
     }
     getfrom = selend + 1;
-<<<<<<< HEAD
     size = ef->len - selend; /* This is equivalent to: `(ef->len - getfrom) + 1(null)`. */
     memmove(ef->textbuf + selstart, ef->textbuf + getfrom, sizeof(*ef->textbuf) * size);
     memmove(ef->textbufinfo + selstart, ef->textbufinfo + getfrom, sizeof(CharInfo) * size);
-=======
-    size = ((ef->len - selend) + 1);
-    memmove(ef->textbuf + selstart, ef->textbuf + getfrom, size * sizeof(*ef->textbuf));
-    memmove(ef->textbufinfo + selstart, ef->textbufinfo + getfrom, size * sizeof(CharInfo));
->>>>>>> c4ccb752256 (IME: support composite event)
     ef->len -= ((selend - selstart) + 1);
     ef->selstart = ef->selend = 0;
   }
