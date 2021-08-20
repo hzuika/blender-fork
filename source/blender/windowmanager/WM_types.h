@@ -1022,6 +1022,11 @@ typedef struct wmIMEData {
   int sel_end;
 
   bool is_ime_composing;
+
+  /** Beginning of the IME composition. */
+  int comp_start;
+  /** End of the IME composition. */
+  int comp_end;
 } wmIMEData;
 #endif
 

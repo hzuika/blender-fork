@@ -51,6 +51,10 @@
 
 #include "curve_intern.h"
 
+#ifdef WITH_INPUT_IME
+#  include "wm_window.h"
+#endif
+
 #define MAXTEXT 32766
 
 static int kill_selection(Object *obedit, int ins);
@@ -452,6 +456,23 @@ static int kill_selection(Object *obedit, int ins) /* ins == new character len *
 
   return direction;
 }
+
+#ifdef WITH_INPUT_IME
+static void kill_ime_composition(EditFont *ef, wmIMEData *ime_data)
+{
+  int imeend, imestart;
+  if (ime_data->comp_start == 0) {
+    return;
+  }
+  imestart = ime_data->comp_start - 1;
+  imeend = ime_data->comp_end - 1;
+  if (ef->pos >= imestart) {
+    ef->pos = imestart;
+  }
+  kill_text_range(ef, imestart, imeend);
+  ime_data->comp_start = ime_data->comp_end = 0;
+}
+#endif
 
 /** \} */
 
@@ -1643,6 +1664,54 @@ static int insert_text_exec(bContext *C, wmOperator *op)
   return OPERATOR_FINISHED;
 }
 
+#ifdef WITH_INPUT_IME
+static int insert_text_ime_invoke(bContext *C, wmOperator *op, const int ime_event_type)
+{
+  wmWindow *win = CTX_wm_window(C);
+  Object *obedit = CTX_data_edit_object(C);
+  Curve *cu = obedit->data;
+  EditFont *ef = cu->editfont;
+  wmIMEData *ime_data = win->ime_data;
+  int len;
+
+  switch (ime_event_type) {
+    case WM_IME_COMPOSITE_START:
+      ime_data->comp_start = ime_data->comp_end = 0;
+      kill_selection(obedit, 0);
+      return OPERATOR_FINISHED;
+    case WM_IME_COMPOSITE_EVENT:
+      kill_ime_composition(ef, ime_data);
+      if (ime_data->composite_len > 0) {
+        ime_data->comp_start = ef->pos + 1; /* next cursor pos */
+        len = insert_multiple_text(obedit, ime_data->str_composite);
+        ime_data->comp_end = ime_data->comp_start + len - 1;
+
+        ef->pos = ime_data->comp_start - 1 +
+                  BLI_strnlen_utf8(ime_data->str_composite, ime_data->cursor_pos);
+
+        text_update_edited(C, obedit, FO_EDIT);
+        cu->curinfo.flag &= (~CU_CHINFO_IME_COMPOSITE);
+
+        RNA_string_set(op->ptr, "text", ime_data->str_composite);
+
+        return OPERATOR_FINISHED;
+      }
+      if (ime_data->result_len > 0) {
+        insert_multiple_text(obedit, ime_data->str_result);
+        text_update_edited(C, obedit, FO_EDIT);
+        RNA_string_set(op->ptr, "text", ime_data->str_result);
+        return OPERATOR_FINISHED;
+      }
+      text_update_edited(C, obedit, FO_EDIT);
+      return OPERATOR_FINISHED;
+    case WM_IME_COMPOSITE_END:
+      return OPERATOR_FINISHED;
+    default:
+      return OPERATOR_FINISHED;
+  }
+}
+#endif
+
 static int insert_text_invoke(bContext *C, wmOperator *op, const wmEvent *event)
 {
   Object *obedit = CTX_data_edit_object(C);
@@ -1657,20 +1726,9 @@ static int insert_text_invoke(bContext *C, wmOperator *op, const wmEvent *event)
   char32_t inserted_text[2] = {0};
 
 #ifdef WITH_INPUT_IME
-  wmWindow *win = CTX_wm_window(C);
-  wmIMEData *ime_data = win->ime_data;
-  if (event->type == WM_IME_COMPOSITE_EVENT) {
-    if (ime_data->composite_len > 0) {
-      RNA_string_set(op->ptr, "text", ime_data->str_composite);
-      int result = insert_text_exec(C, op);
-      int len = BLI_strlen_utf8(ime_data->str_composite);
-      ef->selstart = ef->pos - len + 1;
-      ef->selend = ef->pos;
-      return result;
-    }
-    if (ime_data->result_len > 0) {
-      RNA_string_set(op->ptr, "text", ime_data->str_result);
-    }
+  if ((event_type == WM_IME_COMPOSITE_EVENT) || (event_type == WM_IME_COMPOSITE_START) ||
+      (event_type == WM_IME_COMPOSITE_END)) {
+    return insert_text_ime_invoke(C, op, event_type);
   }
 #endif
 
