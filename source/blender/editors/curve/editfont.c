@@ -1705,6 +1705,10 @@ static int insert_text_ime_invoke(bContext *C, wmOperator *op, const int ime_eve
         len = insert_multiple_text(obedit, ime_data->str_composite);
         ime_data->comp_end = ime_data->comp_start + len - 1;
 
+        for (int i = ime_data->comp_start; i <= ime_data->comp_end; i++) {
+          ef->textbufinfo[i - 1].flag |= CU_CHINFO_IME_COMPOSITE;
+        }
+
         ef->pos = ime_data->comp_start - 1 +
                   BLI_strnlen_utf8(ime_data->str_composite, ime_data->cursor_pos);
 

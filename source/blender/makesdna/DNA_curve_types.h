@@ -586,6 +586,10 @@ enum {
   CU_CHINFO_SMALLCAPS_CHECK = 1 << 5,
   /** Set at runtime, indicates char that doesn't fit in text boxes. */
   CU_CHINFO_OVERFLOW = 1 << 6,
+  /** Set at runtime, IME composition string. */
+  CU_CHINFO_IME_COMPOSITE = 1 << 7,
+  /** Set at runtime, IME selected composition string. */
+  CU_CHINFO_IME_SELECTION = 1 << 7,
 };
 
 /* mixed with KEY_LINEAR but define here since only curve supports */

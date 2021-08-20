@@ -1528,12 +1528,16 @@ static bool vfont_to_curve(Object *ob,
         BKE_vfont_build_char(cu, r_nubase, cha, info, ct->xof, ct->yof, ct->rot, i, font_size);
       }
 
-      if ((info->flag & CU_CHINFO_UNDERLINE) && (cha != '\n')) {
+      if ((info->flag &
+           (CU_CHINFO_UNDERLINE | CU_CHINFO_IME_COMPOSITE | CU_CHINFO_IME_SELECTION)) &&
+          (cha != '\n')) {
         float ulwidth, uloverlap = 0.0f;
         rctf rect;
 
         if ((i < (slen - 1)) && (mem[i + 1] != '\n') &&
-            ((mem[i + 1] != ' ') || (custrinfo[i + 1].flag & CU_CHINFO_UNDERLINE)) &&
+            ((mem[i + 1] != ' ') ||
+             (custrinfo[i + 1].flag &
+              (CU_CHINFO_UNDERLINE | CU_CHINFO_IME_COMPOSITE | CU_CHINFO_IME_SELECTION))) &&
             ((custrinfo[i + 1].flag & CU_CHINFO_WRAP) == 0)) {
           uloverlap = xtrax + 0.1f;
         }
@@ -1549,6 +1553,9 @@ static bool vfont_to_curve(Object *ob,
 
         rect.ymin = ct->yof;
         rect.ymax = rect.ymin - cu->ulheight;
+        if (info->flag & CU_CHINFO_IME_SELECTION) {
+          rect.ymax -= cu->ulheight;
+        }
 
         build_underline(
             cu, r_nubase, &rect, cu->ulpos - 0.05f, ct->rot, i, info->mat_nr, font_size);
