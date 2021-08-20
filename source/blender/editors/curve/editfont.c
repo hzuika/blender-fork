@@ -1701,7 +1701,7 @@ static int insert_text_ime_invoke(bContext *C, wmOperator *op, const int ime_eve
     case WM_IME_COMPOSITE_EVENT:
       kill_ime_composition(ef, ime_data);
       if (ime_data->composite_len > 0) {
-        ime_data->comp_start = ef->pos + 1; /* next cursor pos */
+        ime_data->comp_start = ef->pos + 1; /* Next cursor position. */
         len = insert_multiple_text(obedit, ime_data->str_composite);
         ime_data->comp_end = ime_data->comp_start + len - 1;
 
