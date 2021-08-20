@@ -1606,28 +1606,35 @@ void FONT_OT_delete(wmOperatorType *ot)
 /** \name Insert Text Operator
  * \{ */
 
+static int insert_multiple_text(Object *obedit, const char *inserted_utf8)
+{
+  int len = BLI_strlen_utf8(inserted_utf8);
+
+  char32_t *inserted_text = MEM_callocN(sizeof(char32_t) * (len + 1), "FONT_insert_text");
+  len = BLI_str_utf8_as_utf32(inserted_text, inserted_utf8, MAXTEXT);
+
+  for (int a = 0; a < len; a++) {
+    insert_into_textbuf(obedit, inserted_text[a]);
+  }
+
+  MEM_freeN(inserted_text);
+
+  return len;
+}
+
 static int insert_text_exec(bContext *C, wmOperator *op)
 {
   Object *obedit = CTX_data_edit_object(C);
   char *inserted_utf8;
-  char32_t *inserted_text;
-  int a, len;
+  int len;
 
   if (!RNA_struct_property_is_set(op->ptr, "text")) {
     return OPERATOR_CANCELLED;
   }
 
-  inserted_utf8 = RNA_string_get_alloc(op->ptr, "text", NULL, 0, NULL);
-  len = BLI_strlen_utf8(inserted_utf8);
+  inserted_utf8 = RNA_string_get_alloc(op->ptr, "text", NULL, 0);
+  len = insert_multiple_text(obedit, inserted_utf8);
 
-  inserted_text = MEM_callocN(sizeof(char32_t) * (len + 1), "FONT_insert_text");
-  len = BLI_str_utf8_as_utf32(inserted_text, inserted_utf8, MAXTEXT);
-
-  for (a = 0; a < len; a++) {
-    insert_into_textbuf(obedit, inserted_text[a]);
-  }
-
-  MEM_freeN(inserted_text);
   MEM_freeN(inserted_utf8);
 
   kill_selection(obedit, len);
