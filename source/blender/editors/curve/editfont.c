@@ -1665,7 +1665,10 @@ static int insert_text_exec(bContext *C, wmOperator *op)
 }
 
 #ifdef WITH_INPUT_IME
-static void font_ime_reposition(wmWindow *win, ARegion *region, Object *obedit, const float textcurs[2])
+static void font_ime_reposition(wmWindow *win,
+                                ARegion *region,
+                                Object *obedit,
+                                const float textcurs[2])
 {
   float projmat[4][4];
   float co[3];
@@ -1676,12 +1679,8 @@ static void font_ime_reposition(wmWindow *win, ARegion *region, Object *obedit, 
   ED_view3d_ob_project_mat_get(region->regiondata, obedit, projmat);
   ED_view3d_project_float_v2_m4(region, co, r_co, projmat);
 
-  wm_window_IME_begin(win,
-                      (int)r_co[0] + region->winrct.xmin,
-                      (int)r_co[1] + region->winrct.ymin,
-                      0,
-                      0,
-                      false);
+  wm_window_IME_begin(
+      win, (int)r_co[0] + region->winrct.xmin, (int)r_co[1] + region->winrct.ymin, 0, 0, false);
 }
 
 static int insert_text_ime_invoke(bContext *C, wmOperator *op, const int ime_event_type)
