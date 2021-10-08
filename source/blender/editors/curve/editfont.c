@@ -1653,7 +1653,7 @@ static int insert_text_exec(bContext *C, wmOperator *op)
     return OPERATOR_CANCELLED;
   }
 
-  inserted_utf8 = RNA_string_get_alloc(op->ptr, "text", NULL, 0);
+  inserted_utf8 = RNA_string_get_alloc(op->ptr, "text", NULL, 0, NULL);
   len = insert_multiple_text(obedit, inserted_utf8);
 
   MEM_freeN(inserted_utf8);
