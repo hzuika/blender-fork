@@ -164,22 +164,11 @@ class AppView {
   {
     _ModelRootNode->DetachChildren();
     _ModelRootNode->clearBBox();
-
-#if 0
-    // 2D Scene
-    _p2DNode.DetachChildren();
-    _pFENode->DetachChildren();
-    _pVisibleSilhouetteNode->DetachChildren();
-#endif
   }
 
   inline void DetachSilhouette()
   {
     _SilhouetteRootNode->DetachChildren();
-#if 0
-    _pFENode->DetachChildren();
-    _pVisibleSilhouetteNode->DetachChildren();
-#endif
     _p2DSelectionNode->destroy();
   }
 

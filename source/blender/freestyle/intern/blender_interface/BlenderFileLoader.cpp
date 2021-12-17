@@ -35,9 +35,6 @@ BlenderFileLoader::BlenderFileLoader(Render *re, ViewLayer *view_layer, Depsgrap
   _depsgraph = depsgraph;
   _Scene = nullptr;
   _numFacesRead = 0;
-#if 0
-  _minEdgeSize = DBL_MAX;
-#endif
   _smooth = (view_layer->freestyle_config.flags & FREESTYLE_FACE_SMOOTHNESS_FLAG) != 0;
   _pRenderMonitor = nullptr;
 }
@@ -131,13 +128,6 @@ int BlenderFileLoader::countClippedFaces(float v1[3], float v2[3], float v3[3], 
     else {
       clip[i] = NOT_CLIPPED;
     }
-#if 0
-    if (G.debug & G_DEBUG_FREESTYLE) {
-      printf("%d %s\n",
-             i,
-             (clip[i] == NOT_CLIPPED) ? "not" : (clip[i] == CLIPPED_BY_NEAR) ? "near" : "far");
-    }
-#endif
     sum += clip[i];
   }
   switch (numClipped) {
@@ -275,9 +265,6 @@ void BlenderFileLoader::addTriangle(struct LoaderState *ls,
                                     bool em3)
 {
   float *fv[3], *fn[3];
-#if 0
-  float len;
-#endif
   unsigned int i, j;
   IndexedFaceSet::FaceEdgeMark marks = 0;
 
@@ -308,13 +295,6 @@ void BlenderFileLoader::addTriangle(struct LoaderState *ls,
         ls->maxBBox[j] = ls->pv[j];
       }
     }
-
-#if 0
-    len = len_v3v3(fv[i], fv[(i + 1) % 3]);
-    if (_minEdgeSize > len) {
-      _minEdgeSize = len;
-    }
-#endif
 
     *ls->pvi = ls->currentIndex;
     *ls->pni = ls->currentIndex;
@@ -353,34 +333,14 @@ int BlenderFileLoader::testDegenerateTriangle(float v1[3], float v2[3], float v3
   const float eps = 1.0e-6;
   const float eps_sq = eps * eps;
 
-#if 0
-  float area = area_tri_v3(v1, v2, v3);
-  bool verbose = (area < 1.0e-6);
-#endif
-
   if (equals_v3v3(v1, v2) || equals_v3v3(v2, v3) || equals_v3v3(v1, v3)) {
-#if 0
-    if (verbose && G.debug & G_DEBUG_FREESTYLE) {
-      printf("BlenderFileLoader::testDegenerateTriangle = 1\n");
-    }
-#endif
     return 1;
   }
   if (dist_squared_to_line_segment_v3(v1, v2, v3) < eps_sq ||
       dist_squared_to_line_segment_v3(v2, v1, v3) < eps_sq ||
       dist_squared_to_line_segment_v3(v3, v1, v2) < eps_sq) {
-#if 0
-    if (verbose && G.debug & G_DEBUG_FREESTYLE) {
-      printf("BlenderFileLoader::testDegenerateTriangle = 2\n");
-    }
-#endif
     return 2;
   }
-#if 0
-  if (verbose && G.debug & G_DEBUG_FREESTYLE) {
-    printf("BlenderFileLoader::testDegenerateTriangle = 0\n");
-  }
-#endif
   return 0;
 }
 
@@ -457,11 +417,6 @@ void BlenderFileLoader::insertShapeNode(Object *ob, Mesh *me, int id)
 
     numFaces += countClippedFaces(v1, v2, v3, clip);
   }
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "numFaces " << numFaces << endl;
-  }
-#endif
   if (numFaces == 0) {
     MEM_freeN(mlooptri);
     return;

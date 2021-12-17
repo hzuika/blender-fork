@@ -227,12 +227,7 @@ template<class T, class Point> class SweepLine {
 
   inline void process(Point &p,
                       vector<Segment<T, Point> *> &segments,
-#if 0
-                      binary_rule<Segment<T, Point>, Segment<T, Point>> &binrule =
-                          binary_rule<Segment<T, Point>, Segment<T, Point>>(),
-#else
                       binary_rule<Segment<T, Point>, Segment<T, Point>> &binrule,
-#endif
                       real epsilon = M_EPSILON)
   {
     // first we remove the segments that need to be removed and then we add the segments to add
@@ -252,12 +247,7 @@ template<class T, class Point> class SweepLine {
   }
 
   inline void add(Segment<T, Point> *S,
-#if 0
-                  binary_rule<Segment<T, Point>, Segment<T, Point>> &binrule =
-                      binary_rule<Segment<T, Point>, Segment<T, Point>>(),
-#else
                   binary_rule<Segment<T, Point>, Segment<T, Point>> &binrule,
-#endif
                   real epsilon)
   {
     real t, u;

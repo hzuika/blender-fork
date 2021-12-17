@@ -99,13 +99,6 @@ class WingedEdgeBuilder : public SceneVisitor {
     _current_frs_material = mat;
   }
 
-#if 0
-  inline void setCurrentMatrix(Matrix44r *matrix)
-  {
-    _current_matrix = matrix;
-  }
-#endif
-
   inline void setRenderMonitor(RenderMonitor *iRenderMonitor)
   {
     _pRenderMonitor = iRenderMonitor;

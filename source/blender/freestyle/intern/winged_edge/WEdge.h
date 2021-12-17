@@ -368,12 +368,6 @@ class WEdge;
 
 class WOEdge {
  protected:
-#if 0
-  WOEdge *_paCWEdge;   // edge reached when traveling clockwise on aFace from the edge
-  WOEdge *_pbCWEdge;   // edge reached when traveling clockwise on bFace from the edge
-  WOEdge *_paCCWEdge;  // edge reached when traveling counterclockwise on aFace from the edge
-  WOEdge *_pbCCWEdge;  // edge reached when traveling counterclockwise on bFace from the edge
-#endif
   WVertex *_paVertex;  // starting vertex
   WVertex *_pbVertex;  // ending vertex
   WFace *_paFace;      // when following the edge, face on the right
@@ -388,12 +382,6 @@ class WOEdge {
 
   inline WOEdge()
   {
-#if 0
-    _paCWEdge = NULL;
-    _pbCWEdge = NULL;
-    _paCCWEdge = NULL;
-    _pbCCWEdge = NULL;
-#endif
     _paVertex = NULL;
     _pbVertex = NULL;
     _paFace = NULL;
@@ -409,28 +397,6 @@ class WOEdge {
   virtual WOEdge *duplicate();
 
   /** accessors */
-#if 0
-  inline WOEdge *GetaCWEdge()
-  {
-    return _paCWEdge;
-  }
-
-  inline WOEdge *GetbCWEdge()
-  {
-    return _pbCWEdge;
-  }
-
-  inline WOEdge *GetaCCWEdge()
-  {
-    return _paCCWEdge;
-  }
-
-  inline WOEdge *GetbCCWEdge()
-  {
-    return _pbCCWEdge;
-  }
-#endif
-
   inline WVertex *GetaVertex()
   {
     return _paVertex;
@@ -467,28 +433,6 @@ class WOEdge {
   }
 
   /** modifiers */
-#if 0
-  inline void SetaCWEdge(WOEdge *pe)
-  {
-    _paCWEdge = pe;
-  }
-
-  inline void SetbCWEdge(WOEdge *pe)
-  {
-    _pbCWEdge = pe;
-  }
-
-  inline void SetaCCWEdge(WOEdge *pe)
-  {
-    _paCCWEdge = pe;
-  }
-
-  inline void SetbCCCWEdge(WOEdge *pe)
-  {
-    _pbCCWEdge = pe;
-  }
-#endif
-
   inline void setVecAndAngle();
 
   inline void setaVertex(WVertex *pv)
@@ -797,11 +741,6 @@ class WFace {
   /** The vertex of index i corresponds to the a vertex of the edge of index i */
   inline WVertex *GetVertex(unsigned int index)
   {
-#if 0
-    if (index >= _OEdgeList.size()) {
-      return NULL;
-    }
-#endif
     return _OEdgeList[index]->GetaVertex();
   }
 
@@ -845,11 +784,6 @@ class WFace {
 
   inline WFace *GetBordingFace(int index)
   {
-#if 0
-    if (index >= _OEdgeList.size()) {
-      return NULL;
-    }
-#endif
     return _OEdgeList[index]->GetaFace();
   }
 
@@ -1038,21 +972,11 @@ class WShape {
   string _Name;
   string _LibraryPath;
   static unsigned _SceneCurrentId;
-#if 0
-  Vec3f _min;
-  Vec3f _max;
-#endif
   vector<FrsMaterial> _FrsMaterials;
-#if 0
-  float _meanEdgeSize;
-#endif
 
  public:
   inline WShape()
   {
-#if 0
-    _meanEdgeSize = 0;
-#endif
     _Id = _SceneCurrentId;
     _SceneCurrentId++;
   }
@@ -1109,14 +1033,6 @@ class WShape {
     return _Id;
   }
 
-#if 0
-  inline void bbox(Vec3f &min, Vec3f &max)
-  {
-    min = _min;
-    max = _max;
-  }
-#endif
-
   inline const FrsMaterial &frs_material(unsigned i) const
   {
     return _FrsMaterials[i];
@@ -1126,13 +1042,6 @@ class WShape {
   {
     return _FrsMaterials;
   }
-
-#if 0
-  inline const float getMeanEdgeSize() const
-  {
-    return _meanEdgeSize;
-  }
-#endif
 
   inline const string &getName() const
   {
@@ -1169,14 +1078,6 @@ class WShape {
   {
     _Id = id;
   }
-
-#if 0
-  inline void setBBox(const Vec3f &min, const Vec3f &max)
-  {
-    _min = min;
-    _max = max;
-  }
-#endif
 
   inline void setFrsMaterial(const FrsMaterial &frs_material, unsigned i)
   {
@@ -1275,38 +1176,7 @@ class WShape {
     }
   }
 
-#if 0
-  inline void ComputeBBox()
-  {
-    _min = _VertexList[0]->GetVertex();
-    _max = _VertexList[0]->GetVertex();
-
-    Vec3f v;
-    for (vector<WVertex *>::iterator wv = _VertexList.begin(), wvend = _VertexList.end();
-         wv != wvend;
-         wv++) {
-      for (unsigned int i = 0; i < 3; i++) {
-        v = (*wv)->GetVertex();
-        if (v[i] < _min[i]) {
-          _min[i] = v[i];
-        }
-        if (v[i] > _max[i]) {
-          _max[i] = v[i];
-        }
-      }
-    }
-  }
-#endif
-
-#if 0
-  inline float ComputeMeanEdgeSize()
-  {
-    _meanEdgeSize = _meanEdgeSize / _EdgeList.size();
-    return _meanEdgeSize;
-  }
-#else
   real ComputeMeanEdgeSize() const;
-#endif
 
  protected:
   /**

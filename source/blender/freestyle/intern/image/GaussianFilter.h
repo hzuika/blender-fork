@@ -93,13 +93,6 @@ class GaussianFilter {
 
   /** modifiers */
   void setSigma(float sigma);
-#if 0
-  void SetMaskSize(int size)
-  {
-    _maskSize = size;
-    _storedMaskSize = (_maskSize + 1) >> 1;
-  }
-#endif
 
  protected:
   void computeMask();

@@ -103,12 +103,6 @@ WFace *WVertex::face_iterator::operator*()
   return (woedge)->GetbFace();
 }
 
-#if 0
-bool WVertex::isBoundary() const
-{
-  return _Border;
-}
-#endif
 bool WVertex::isBoundary()
 {
   if (_Border == 1) {
@@ -125,11 +119,6 @@ bool WVertex::isBoundary()
       return true;
     }
   }
-#if 0
-  if (!(*it)->GetaOEdge()->GetaFace()) {
-    return true;
-  }
-#endif
   _Border = 0;
   return false;
 }
@@ -165,19 +154,6 @@ WVertex::incoming_edge_iterator WVertex::incoming_edges_end()
   }
   return incoming_edge_iterator(this, begin, nullptr);
 }
-#if 0
-WOEdge **WVertex::incoming_edge_iterator::operator->()
-{
-  WOEdge **ppaOEdge = (*_iter)->GetaOEdge();
-  if (aOEdge->GetbVertex() == _vertex) {
-    return ppaOEdge;
-  }
-  else {
-    WOEdge *bOEdge = (*_iter)->GetbOEdge();
-    return &bOEdge;
-  }
-}
-#endif
 
 /**********************************
  *                                *
@@ -479,10 +455,6 @@ WShape::WShape(WShape &iBrother)
   _Name = iBrother._Name;
   _LibraryPath = iBrother._LibraryPath;
   _FrsMaterials = iBrother._FrsMaterials;
-#if 0
-  _meanEdgeSize = iBrother._meanEdgeSize;
-  iBrother.bbox(_min, _max);
-#endif
   vector<WVertex *> &vertexList = iBrother.getVertexList();
   vector<WVertex *>::iterator v = vertexList.begin(), vend = vertexList.end();
   for (; v != vend; ++v) {
@@ -703,10 +675,6 @@ WFace *WShape::MakeFace(vector<WVertex *> &iVertexList,
       // means that we just created a new edge and that we must add it to the shape's edges list
       edge->setId(_EdgeList.size());
       AddEdge(edge);
-#if 0
-      // compute the mean edge value:
-      _meanEdgeSize += edge->GetaOEdge()->GetVec().norm();
-#endif
     }
 
     edge->setMark(*mit);

@@ -276,17 +276,6 @@ ViewVertex *ViewMap::InsertViewVertex(SVertex *iVertex, vector<ViewEdge *> &newV
   return vva;
 }
 
-#if 0
-FEdge *ViewMap::Connect(FEdge *ioEdge, SVertex *ioVertex, vector<ViewEdge *> &oNewVEdges)
-{
-  SShape *sshape = ioEdge->shape();
-  FEdge *newFEdge = sshape->SplitEdgeIn2(ioEdge, ioVertex);
-  AddFEdge(newFEdge);
-  InsertViewVertex(ioVertex, oNewVEdges);
-  return newFEdge;
-}
-#endif
-
 /**********************************/
 /*                                */
 /*                                */
@@ -469,23 +458,6 @@ ViewVertex::edge_iterator TVertex::edges_iterator(ViewEdge *iEdge)
     }
   }
   return edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.begin());
-
-#if 0
-  directedViewEdge dEdge;
-  if (_FrontEdgeA.first == iEdge) {
-    dEdge = _FrontEdgeA;
-  }
-  else if (_FrontEdgeB.first == iEdge) {
-    dEdge = _FrontEdgeB;
-  }
-  else if (_BackEdgeA.first == iEdge) {
-    dEdge = _BackEdgeA;
-  }
-  else if (_BackEdgeB.first == iEdge) {
-    dEdge = _BackEdgeB;
-  }
-  return edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB, dEdge);
-#endif
 }
 
 ViewVertex::const_edge_iterator TVertex::edges_iterator(ViewEdge *iEdge) const
@@ -499,23 +471,6 @@ ViewVertex::const_edge_iterator TVertex::edges_iterator(ViewEdge *iEdge) const
     }
   }
   return const_edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.begin());
-
-#if 0
-  directedViewEdge dEdge;
-  if (_FrontEdgeA.first == iEdge) {
-    dEdge = _FrontEdgeA;
-  }
-  else if (_FrontEdgeB.first == iEdge) {
-    dEdge = _FrontEdgeB;
-  }
-  else if (_BackEdgeA.first == iEdge) {
-    dEdge = _BackEdgeA;
-  }
-  else if (_BackEdgeB.first == iEdge) {
-    dEdge = _BackEdgeB;
-  }
-  return const_edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB, dEdge);
-#endif
 }
 
 ViewVertexInternal::orientedViewEdgeIterator TVertex::edgesBegin()

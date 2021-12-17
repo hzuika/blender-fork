@@ -1062,12 +1062,6 @@ class ViewEdge : public Interface1D {
   /** Destructor. */
   virtual ~ViewEdge()
   {
-#if 0
-    if (_aFace) {
-      delete _aFace;
-      _aFace = NULL;
-    }
-#endif
     // only the last splitted deletes this id
     if (_splittingId) {
       if (*_splittingId == _Id) {
@@ -1274,24 +1268,8 @@ class ViewEdge : public Interface1D {
 
   /* Information access interface */
 
-#if 0
-  inline Nature::EdgeNature viewedge_nature() const
-  {
-    return getNature();
-  }
-
-  float viewedge_length() const;
-#endif
-
   /** Returns the 2D length of the Viewedge. */
   real getLength2D() const;
-
-#if 0
-  inline Material material() const
-  {
-    return _FEdgeA->vertexA()->shape()->material();
-  }
-#endif
 
   inline int qi() const
   {
@@ -1736,11 +1714,6 @@ void ViewShape::SplitEdge(FEdge *fe,
       newId->setSecond(newId->getSecond() + 1);
       newVEdge->setId(*newId);
       newVEdge->setSplittingId(newId);
-#if 0
-      Id id(vEdge->getId().getFirst(), vEdge->getId().getSecond() + 1);
-      newVEdge->setId(vEdge->getId());
-      vEdge->setId(id);
-#endif
 
       AddEdge(newVEdge);  // here this shape is set as the edge's shape
 
@@ -1780,38 +1753,6 @@ void ViewShape::SplitEdge(FEdge *fe,
 /*                                */
 /**********************************/
 
-#if 0
-inline Vec3r ViewEdge::orientation2d(int iCombination) const
-{
-  return edge_orientation2d_function<ViewEdge>(*this, iCombination);
-}
-
-inline Vec3r ViewEdge::orientation3d(int iCombination) const
-{
-  return edge_orientation3d_function<ViewEdge>(*this, iCombination);
-}
-
-inline real ViewEdge::z_discontinuity(int iCombination) const
-{
-  return z_discontinuity_edge_function<ViewEdge>(*this, iCombination);
-}
-
-inline float ViewEdge::local_average_depth(int iCombination) const
-{
-  return local_average_depth_edge_function<ViewEdge>(*this, iCombination);
-}
-
-inline float ViewEdge::local_depth_variance(int iCombination) const
-{
-  return local_depth_variance_edge_function<ViewEdge>(*this, iCombination);
-}
-
-inline real ViewEdge::local_average_density(float sigma, int iCombination) const
-{
-  return density_edge_function<ViewEdge>(*this, iCombination);
-}
-#endif
-
 inline const SShape *ViewEdge::occluded_shape() const
 {
   if (0 == _aShape) {
@@ -1819,17 +1760,5 @@ inline const SShape *ViewEdge::occluded_shape() const
   }
   return _aShape->sshape();
 }
-
-#if 0
-inline Vec3r ViewEdge::curvature2d_as_vector(int iCombination) const
-{
-  return curvature2d_as_vector_edge_function<ViewEdge>(*this, iCombination);
-}
-
-inline real ViewEdge::curvature2d_as_angle(int iCombination) const
-{
-  return curvature2d_as_angle_edge_function<ViewEdge>(*this, iCombination);
-}
-#endif
 
 } /* namespace Freestyle */

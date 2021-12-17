@@ -36,25 +36,6 @@ namespace Freestyle {
 
 using namespace Geometry;
 
-#if 0
-//symbolic constant to call the appropriate renderers and textures
-#  define NO_TEXTURE_WITH_BLEND_STROKE -2
-#  define NO_TEXTURE_STROKE -1
-#  define PSEUDO_CHARCOAL_STROKE 0
-#  define WASH_BRUSH_STROKE 1
-#  define OIL_STROKE 2
-#  define NO_BLEND_STROKE 3
-#  define CHARCOAL_MIN_STROKE 4
-#  define BRUSH_MIN_STROKE 5
-#  define OPAQUE_DRY_STROKE 6
-#  define OPAQUE_STROKE 7
-
-#  define DEFAULT_STROKE 0
-
-#  define NUMBER_STROKE_RENDERER 8
-
-#endif
-
 class StrokeVertexRep {
  public:
   StrokeVertexRep()
@@ -264,12 +245,6 @@ class StrokeRep {
   {
     _material = mat;
   }
-#if 0
-  inline void setMTex(int idx, MTex *mtex_ptr)
-  {
-    _mtex[idx] = mtex_ptr;
-  }
-#endif
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:StrokeRep")

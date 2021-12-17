@@ -93,14 +93,6 @@ class BlenderFileLoader {
     return _numFacesRead;
   }
 
-#if 0
-  /** Gets the smallest edge size read */
-  inline real minEdgeSize()
-  {
-    return _minEdgeSize;
-  }
-#endif
-
   /** Modifiers */
   inline void setRenderMonitor(RenderMonitor *iRenderMonitor)
   {
@@ -148,9 +140,6 @@ class BlenderFileLoader {
   Depsgraph *_depsgraph;
   NodeGroup *_Scene;
   unsigned _numFacesRead;
-#if 0
-  real _minEdgeSize;
-#endif
   bool _smooth; /* if true, face smoothness is taken into account */
   float _z_near, _z_far;
   float _z_offset;

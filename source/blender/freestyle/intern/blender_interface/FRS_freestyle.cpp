@@ -514,11 +514,6 @@ void FRS_composite_result(Render *re, ViewLayer *view_layer, Render *freestyle_r
     }
     return;
   }
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "src: " << rl->rectx << " x " << rl->recty << endl;
-  }
-#endif
 
   rl = RE_GetRenderLayer(re->result, view_layer->name);
   if (!rl) {
@@ -542,11 +537,6 @@ void FRS_composite_result(Render *re, ViewLayer *view_layer, Render *freestyle_r
     }
     return;
   }
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "dest: " << rl->rectx << " x " << rl->recty << endl;
-  }
-#endif
 
   rectx = re->rectx;
   recty = re->recty;
@@ -693,11 +683,6 @@ void FRS_free_view_map_cache(void)
 {
   // free cache
   controller->DeleteViewMap(true);
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    printf("View map cache freed\n");
-  }
-#endif
 }
 
 //=======================================================
