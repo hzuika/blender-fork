@@ -830,30 +830,6 @@ template<class T, unsigned N> class SquareMatrix : public Matrix<T, N, N> {
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if 0
-template<class T, unsigned N> inline Vec<T, N> operator+(const Vec<T, N> &v1, const Vec<T, N> &v2)
-{
-  Vec<T, N> res(v1);
-  res += v2;
-  return res;
-}
-
-template<class T, unsigned N> inline Vec<T, N> operator-(const Vec<T, N> &v1, const Vec<T, N> &v2)
-{
-  Vec<T, N> res(v1);
-  res -= v2;
-  return res;
-}
-
-template<class T, unsigned N>
-inline Vec<T, N> operator*(const Vec<T, N> &v, const typename Vec<T, N>::value_type r)
-{
-  Vec<T, N> res(v);
-  res *= r;
-  return res;
-}
-#endif
-
 template<class T, unsigned N>
 inline Vec<T, N> operator*(const typename Vec<T, N>::value_type r, const Vec<T, N> &v)
 {
@@ -861,37 +837,6 @@ inline Vec<T, N> operator*(const typename Vec<T, N>::value_type r, const Vec<T, 
   res *= r;
   return res;
 }
-
-#if 0
-template<class T, unsigned N>
-inline Vec<T, N> operator/(const Vec<T, N> &v, const typename Vec<T, N>::value_type r)
-{
-  Vec<T, N> res(v);
-  if (r) {
-    res /= r;
-  }
-  return res;
-}
-
-// dot product
-template<class T, unsigned N>
-inline typename Vec<T, N>::value_type operator*(const Vec<T, N> &v1, const Vec<T, N> &v2)
-{
-  typename Vec<T, N>::value_type sum = 0;
-  for (unsigned int i = 0; i < N; i++) {
-    sum += v1[i] * v2[i];
-  }
-  return sum;
-}
-
-// cross product for 3D Vectors
-template<typename T> inline Vec3<T> operator^(const Vec<T, 3> &v1, const Vec<T, 3> &v2)
-{
-  Vec3<T> res(
-      v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
-  return res;
-}
-#endif
 
 // stream operator
 template<class T, unsigned N> inline std::ostream &operator<<(std::ostream &s, const Vec<T, N> &v)

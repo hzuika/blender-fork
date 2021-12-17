@@ -246,24 +246,8 @@ static int load(istream &in, FEdge *fe)
   READ(nature);
   fe->setNature(nature);
 
-#if 0  // hasVisibilityPoint
-  bool b;
-  READ(b);
-  fe->setHasVisibilityPoint(b);
-#endif
-
   Vec3r v;
   unsigned int matindex;
-
-#if 0
-  // VisibilityPointA
-  load(in, v);
-  fe->setVisibilityPointA(v);
-
-  // VisibilityPointB
-  load(in, v);
-  fe->setVisibilityPointB(v);
-#endif
 
   if (fe->isSmooth()) {
     // Normal
@@ -717,18 +701,6 @@ static int save(ostream &out, FEdge *fe)
 
   bool b;
 
-#if 0
-  // hasVisibilityPoint
-  b = fe->hasVisibilityPoint();
-  WRITE(b);
-
-  // VisibilityPointA
-  save(out, fe->visibilityPointA());
-
-  // VisibilityPointB
-  save(out, fe->visibilityPointB());
-#endif
-
   unsigned index;
   if (fe->isSmooth()) {
     // normal
@@ -1048,12 +1020,6 @@ int load(istream &in, ViewMap *vm, ProgressBar *pb)
     ss->setViewShape(vs);
     vm->AddViewShape(vs);
   }
-#if 0
-  for (unsigned int i1 = 0; i1 < fe_s; i1++) {
-    FEdge *fe = new FEdge();
-    vm->AddFEdge(fe);
-  }
-#endif
   for (unsigned int i2 = 0; i2 < sv_s; i2++) {
     SVertex *sv = new SVertex();
     vm->AddSVertex(sv);

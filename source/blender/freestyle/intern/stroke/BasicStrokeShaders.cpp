@@ -415,10 +415,6 @@ int BezierCurveShader::shade(Stroke &stroke) const
 
   // Re-sample the Stroke depending on the number of vertices of the bezier curve:
   int originalSize = CurveVertices.size();
-#if 0
-  float sampling = stroke.ComputeSampling(originalSize);
-  stroke.Resample(sampling);
-#endif
   stroke.Resample(originalSize);
   int newsize = stroke.strokeVerticesSize();
   int nExtraVertex = 0;
@@ -593,10 +589,6 @@ int PolygonalizationShader::shade(Stroke &stroke) const
       v->setPoint((*cp)->A.x() + v->u() * u.x() + n.x() * offset,
                   (*cp)->A.y() + v->u() * u.y() + n.y() * offset);
     }
-#if 0
-    u.normalize();
-    (*a)->setPoint((*a)->x() - u.x() * 10, (*a)->y() - u.y() * 10);
-#endif
   }
   stroke.UpdateLength();
 

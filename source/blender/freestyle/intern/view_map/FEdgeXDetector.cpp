@@ -33,9 +33,6 @@ namespace Freestyle {
 void FEdgeXDetector::processShapes(WingedEdge &we)
 {
   bool progressBarDisplay = false;
-#if 0
-  Vec3r Min, Max;
-#endif
   vector<WShape *> wshapes = we.getWShapes();
   WXShape *wxs;
 
@@ -52,10 +49,6 @@ void FEdgeXDetector::processShapes(WingedEdge &we)
       break;
     }
     wxs = dynamic_cast<WXShape *>(*it);
-#if 0
-    wxs->bbox(Min, Max);
-    _bbox_diagonal = (Max - Min).norm();
-#endif
     if (_changes) {
       vector<WFace *> &wfaces = wxs->GetFaceList();
       for (vector<WFace *>::iterator wf = wfaces.begin(), wfend = wfaces.end(); wf != wfend;
@@ -124,11 +117,7 @@ void FEdgeXDetector::preProcessShape(WXShape *iWShape)
   _minKr = FLT_MAX;
   _maxKr = -FLT_MAX;
   _nPoints = 0;
-#if 0
-  _meanEdgeSize = iWShape->getMeanEdgeSize();
-#else
   _meanEdgeSize = iWShape->ComputeMeanEdgeSize();
-#endif
 
   vector<WFace *> &wfaces = iWShape->GetFaceList();
   vector<WFace *>::iterator f, fend;
@@ -440,131 +429,7 @@ void FEdgeXDetector::ProcessRidgeFace(WXFace *iFace)
     WXVertex *wxv = dynamic_cast<WXVertex *>(wv);
     flayer->PushDotP(wxv->curvatures()->K1);
   }
-
-#if 0  // XXX fabs(flayer->dotP(i)) < threshold cannot be true
-  real threshold = 0;
-  //real threshold = _maxK1 - (_maxK1 - _meanK1) / 20.0;
-
-  if (flayer->nPosDotP() != numVertices) {
-    if ((fabs(flayer->dotP(0)) < threshold) && (fabs(flayer->dotP(1)) < threshold) &&
-        (fabs(flayer->dotP(2)) < threshold)) {
-      flayer->ReplaceDotP(0, 0);
-      flayer->ReplaceDotP(1, 0);
-      flayer->ReplaceDotP(2, 0);
-    }
-  }
-#endif
 }
-
-#if 0
-void FEdgeXDetector::ProcessRidgeFace(WXFace *iFace)
-{
-  // RIDGE LAYER
-  // Compute the RidgeFunction, that is the derivative of the ppal curvature along e1 at each vertex of the face
-  WVertex *v;
-  Vec3r v1v2;
-  real t;
-  vector<WXFaceLayer *> SmoothLayers;
-  WXFaceLayer *faceLayer;
-  Face_Curvature_Info *layer_info;
-  real K1_a(0), K1_b(0);
-  Vec3r Inter_a, Inter_b;
-
-  // find the ridge layer of the face
-  iFace->retrieveSmoothLayers(Nature::RIDGE, SmoothLayers);
-  if (SmoothLayers.size() != 1) {
-    return;
-  }
-  faceLayer = SmoothLayers[0];
-  // retrieve the curvature info of this layer
-  layer_info = (Face_Curvature_Info *)faceLayer->userdata;
-
-  int numVertices = iFace->numberOfVertices();
-  for (int i = 0; i < numVertices; i++) {
-    v = iFace->GetVertex(i);
-    // vec_curvature_info[i] contains the curvature info of this vertex
-    Vec3r e2 = layer_info->vec_curvature_info[i]->K2 * layer_info->vec_curvature_info[i]->e2;
-    Vec3r e1 = layer_info->vec_curvature_info[i]->K1 * layer_info->vec_curvature_info[i]->e1;
-    e2.normalize();
-
-    WVertex::face_iterator fit = v->faces_begin();
-    WVertex::face_iterator fitend = v->faces_end();
-    for (; fit != fitend; ++fit) {
-      WXFace *wxf = dynamic_cast<WXFace *>(*fit);
-      WOEdge *oppositeEdge;
-      if (!(wxf->getOppositeEdge(v, oppositeEdge))) {
-        continue;
-      }
-      v1v2 = oppositeEdge->GetbVertex()->GetVertex() - oppositeEdge->GetaVertex()->GetVertex();
-      GeomUtils::intersection_test res;
-      res = GeomUtils::intersectRayPlane(
-          oppositeEdge->GetaVertex()->GetVertex(), v1v2, e2, -(v->GetVertex() * e2), t, 1.0e-06);
-      if ((res == GeomUtils::DO_INTERSECT) && (t >= 0.0) && (t <= 1.0)) {
-        vector<WXFaceLayer *> second_ridge_layer;
-        wxf->retrieveSmoothLayers(Nature::RIDGE, second_ridge_layer);
-        if (second_ridge_layer.size() != 1) {
-          continue;
-        }
-        Face_Curvature_Info *second_layer_info =
-            (Face_Curvature_Info *)second_ridge_layer[0]->userdata;
-
-        unsigned index1 = wxf->GetIndex(oppositeEdge->GetaVertex());
-        unsigned index2 = wxf->GetIndex(oppositeEdge->GetbVertex());
-        real K1_1 = second_layer_info->vec_curvature_info[index1]->K1;
-        real K1_2 = second_layer_info->vec_curvature_info[index2]->K1;
-        real K1 = (1.0 - t) * K1_1 + t * K1_2;
-        Vec3r inter((1.0 - t) * oppositeEdge->GetaVertex()->GetVertex() +
-                    t * oppositeEdge->GetbVertex()->GetVertex());
-        Vec3r vtmp(inter - v->GetVertex());
-        // is it K1_a or K1_b ?
-        if (vtmp * e1 > 0) {
-          K1_b = K1;
-          Inter_b = inter;
-        }
-        else {
-          K1_a = K1;
-          Inter_a = inter;
-        }
-      }
-    }
-    // Once we have K1 along the ppal direction compute the derivative : K1b - K1a put it in DotP
-    //real d = fabs(K1_b) - fabs(K1_a);
-    real d = 0;
-    real threshold = _meanK1 + (_maxK1 - _meanK1) / 7.0;
-    //real threshold = _meanK1;
-    //if ((fabs(K1_b) > threshold) || ((fabs(K1_a) > threshold)))
-    d = (K1_b) - (K1_a) / (Inter_b - Inter_a).norm();
-    faceLayer->PushDotP(d);
-    //faceLayer->PushDotP(layer_info->vec_curvature_info[i]->K1);
-  }
-
-  // Make the values relevant by checking whether all principal directions have the "same" direction:
-  Vec3r e0((layer_info->vec_curvature_info[0]->K1 * layer_info->vec_curvature_info[0]->e1));
-  e0.normalize();
-  Vec3r e1((layer_info->vec_curvature_info[1]->K1 * layer_info->vec_curvature_info[1]->e1));
-  e1.normalize();
-  Vec3r e2((layer_info->vec_curvature_info[2]->K1 * layer_info->vec_curvature_info[2]->e1));
-  e2.normalize();
-  if (e0 * e1 < 0) {
-    // invert dotP[1]
-    faceLayer->ReplaceDotP(1, -faceLayer->dotP(1));
-  }
-  if (e0 * e2 < 0) {
-    // invert dotP[2]
-    faceLayer->ReplaceDotP(2, -faceLayer->dotP(2));
-  }
-
-#  if 0  // remove the weakest values;
-  real minDiff = (_maxK1 - _minK1) / 10.0;
-  real minDiff = _meanK1;
-  if ((faceLayer->dotP(0) < minDiff) && (faceLayer->dotP(1) < minDiff) && (faceLayer->dotP(2) < minDiff)) {
-    faceLayer->ReplaceDotP(0, 0);
-    faceLayer->ReplaceDotP(1, 0);
-    faceLayer->ReplaceDotP(2, 0);
-  }
-#  endif
-}
-#endif
 
 // SUGGESTIVE CONTOURS
 //////////////////////
@@ -590,18 +455,6 @@ void FEdgeXDetector::ProcessSuggestiveContourFace(WXFace *iFace)
     WXVertex *wxv = dynamic_cast<WXVertex *>(wv);
     faceLayer->PushDotP(wxv->curvatures()->Kr);
   }
-
-#if 0  // FIXME: find a more clever way to compute the threshold
-  real threshold = _meanKr;
-  if (faceLayer->nPosDotP() != numVertices) {
-    if ((fabs(faceLayer->dotP(0)) < threshold) && (fabs(faceLayer->dotP(1)) < threshold) &&
-        (fabs(faceLayer->dotP(2)) < threshold)) {
-      faceLayer->ReplaceDotP(0, 0);
-      faceLayer->ReplaceDotP(1, 0);
-      faceLayer->ReplaceDotP(2, 0);
-    }
-  }
-#endif
 }
 
 void FEdgeXDetector::postProcessSuggestiveContourShape(WXShape *iShape)
