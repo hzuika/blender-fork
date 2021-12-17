@@ -92,25 +92,6 @@ class Controller {
   NodeGroup *BuildRep(vector<ViewEdge *>::iterator vedges_begin,
                       vector<ViewEdge *>::iterator vedges_end);
 
-#if 0
-  NodeGroup *debugNode()
-  {
-    return _DebugNode;
-  }
-  AppView *view()
-  {
-    return _pView;
-  }
-  NodeGroup *debugScene()
-  {
-    return _DebugNode;
-  }
-  Grid &grid()
-  {
-    return _Grid;
-  }
-#endif
-
   void toggleVisibilityAlgo();
   void setVisibilityAlgo(int algo);
   int getVisibilityAlgo();
