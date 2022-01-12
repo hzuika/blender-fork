@@ -778,9 +778,6 @@ void Controller::init_options()
 
   Config::Path *cpath = Config::Path::getInstance();
 
-  // Directories
-  TextureManager::Options::setPatternsPath(cpath->getPatternsPath());
-
   // ViewMap Format
   setComputeSteerableViewMapFlag(false);
 

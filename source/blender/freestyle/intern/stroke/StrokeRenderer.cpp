@@ -97,14 +97,4 @@ unsigned TextureManager::getBrushTextureIndex(string name, Stroke::MediumType iT
   return _brushesMap[bt];
 }
 
-void TextureManager::Options::setPatternsPath(const string &path)
-{
-  _patterns_path = path;
-}
-
-string TextureManager::Options::getPatternsPath()
-{
-  return _patterns_path;
-}
-
 } /* namespace Freestyle */
