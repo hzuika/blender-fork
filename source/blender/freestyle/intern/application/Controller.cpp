@@ -477,34 +477,14 @@ void Controller::setVisibilityAlgo(int algo)
   }
 }
 
-int Controller::getVisibilityAlgo()
-{
-  switch (_VisibilityAlgo) {
-    case ViewMapBuilder::ray_casting_culled_adaptive_cumulative:
-      return FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE;
-    case ViewMapBuilder::ray_casting_adaptive_cumulative:
-      return FREESTYLE_ALGO_ADAPTIVE_CUMULATIVE;
-  }
-}
-
 void Controller::setViewMapCache(bool iBool)
 {
   _EnableViewMapCache = iBool;
 }
 
-bool Controller::getViewMapCache() const
-{
-  return _EnableViewMapCache;
-}
-
 void Controller::setQuantitativeInvisibility(bool iBool)
 {
   _EnableQI = iBool;
-}
-
-bool Controller::getQuantitativeInvisibility() const
-{
-  return _EnableQI;
 }
 
 void Controller::setFaceSmoothness(bool iBool)
@@ -629,11 +609,6 @@ void Controller::InsertStyleModule(unsigned index, const char *iName, struct Tex
   _Canvas->InsertStyleModule(index, sm);
 }
 
-void Controller::AddStyleModule(const char * /*iFileName*/)
-{
-  //_pStyleWindow->Add(iFileName);
-}
-
 void Controller::RemoveStyleModule(unsigned index)
 {
   _Canvas->RemoveStyleModule(index);
@@ -642,12 +617,6 @@ void Controller::RemoveStyleModule(unsigned index)
 void Controller::Clear()
 {
   _Canvas->Clear();
-}
-
-void Controller::ReloadStyleModule(unsigned index, const char *iFileName)
-{
-  StyleModule *sm = new StyleModule(iFileName, _inter);
-  _Canvas->ReplaceStyleModule(index, sm);
 }
 
 void Controller::SwapStyleModules(unsigned i1, unsigned i2)
@@ -681,64 +650,6 @@ void Controller::resetModified(bool iMod)
 {
   //_pStyleWindow->resetModified(iMod);
   _Canvas->resetModified(iMod);
-}
-
-NodeGroup *Controller::BuildRep(vector<ViewEdge *>::iterator vedges_begin,
-                                vector<ViewEdge *>::iterator vedges_end)
-{
-  ViewMapTesselator2D tesselator2D;
-  FrsMaterial mat;
-  mat.setDiffuse(1, 1, 0.3, 1);
-  tesselator2D.setFrsMaterial(mat);
-
-  return (tesselator2D.Tesselate(vedges_begin, vedges_end));
-}
-
-void Controller::toggleEdgeTesselationNature(Nature::EdgeNature iNature)
-{
-  _edgeTesselationNature ^= (iNature);
-  ComputeViewMap();
-}
-
-void Controller::resetInterpreter()
-{
-  if (_inter) {
-    _inter->reset();
-  }
-}
-
-void Controller::displayDensityCurves(int x, int y)
-{
-  SteerableViewMap *svm = _Canvas->getSteerableViewMap();
-  if (!svm) {
-    return;
-  }
-
-  unsigned int i, j;
-  using densityCurve = vector<Vec3r>;
-  vector<densityCurve> curves(svm->getNumberOfOrientations() + 1);
-  vector<densityCurve> curvesDirection(svm->getNumberOfPyramidLevels());
-
-  // collect the curves values
-  unsigned nbCurves = svm->getNumberOfOrientations() + 1;
-  unsigned nbPoints = svm->getNumberOfPyramidLevels();
-  if (!nbPoints) {
-    return;
-  }
-
-  // build the density/nbLevels curves for each orientation
-  for (i = 0; i < nbCurves; ++i) {
-    for (j = 0; j < nbPoints; ++j) {
-      curves[i].push_back(Vec3r(j, svm->readSteerableViewMapPixel(i, j, x, y), 0));
-    }
-  }
-  // build the density/nbOrientations curves for each level
-  for (i = 0; i < nbPoints; ++i) {
-    for (j = 0; j < nbCurves; ++j) {
-      curvesDirection[i].push_back(Vec3r(j, svm->readSteerableViewMapPixel(j, i, x, y), 0));
-    }
-  }
-
 }
 
 void Controller::init_options()

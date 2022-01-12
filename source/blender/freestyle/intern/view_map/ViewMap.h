@@ -1313,11 +1313,6 @@ class ViewEdge : public Interface1D {
 
   // inline real z_discontinuity(int iCombination = 0) const;
 
-  inline Id shape_id() const
-  {
-    return _FEdgeA->vertexA()->shape()->getId();
-  }
-
   inline const SShape *shape() const
   {
     return _FEdgeA->vertexA()->shape();

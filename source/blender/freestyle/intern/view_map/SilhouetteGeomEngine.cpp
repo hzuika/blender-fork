@@ -122,11 +122,6 @@ void SilhouetteGeomEngine::setFrustum(real iZNear, real iZFar)
   _zfar = iZFar;
 }
 
-void SilhouetteGeomEngine::retrieveViewport(int viewport[4])
-{
-  memcpy(viewport, _viewport, sizeof(int[4]));
-}
-
 void SilhouetteGeomEngine::ProjectSilhouette(vector<SVertex *> &ioVertices)
 {
   Vec3r newPoint;
@@ -266,21 +261,6 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
   }
 
   return T;
-}
-
-Vec3r SilhouetteGeomEngine::WorldToImage(const Vec3r &M)
-{
-  Vec3r newPoint;
-  GeomUtils::fromWorldToImage(M, newPoint, _transform, _viewport);
-  return newPoint;
-}
-
-Vec3r SilhouetteGeomEngine::CameraToImage(const Vec3r &M)
-{
-  Vec3r newPoint, p;
-  GeomUtils::fromCameraToRetina(M, p, _projectionMatrix);
-  GeomUtils::fromRetinaToImage(p, newPoint, _viewport);
-  return newPoint;
 }
 
 } /* namespace Freestyle */

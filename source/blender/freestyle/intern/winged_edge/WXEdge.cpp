@@ -187,20 +187,6 @@ WXSmoothEdge *WXFaceLayer::BuildSmoothEdge()
   return _pSmoothEdge;
 }
 
-void WXFace::ComputeCenter()
-{
-  vector<WVertex *> iVertexList;
-  RetrieveVertexList(iVertexList);
-  Vec3f center;
-  for (vector<WVertex *>::iterator wv = iVertexList.begin(), wvend = iVertexList.end();
-       wv != wvend;
-       ++wv) {
-    center += (*wv)->GetVertex();
-  }
-  center /= (float)iVertexList.size();
-  setCenter(center);
-}
-
 /**********************************
  *                                *
  *                                *

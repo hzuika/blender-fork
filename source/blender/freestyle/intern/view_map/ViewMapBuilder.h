@@ -101,10 +101,6 @@ class ViewMapBuilder {
     }
   }
 
-  /* Build Grid for ray casting */
-  /** Build non-culled Grid in camera space for ray casting */
-  void BuildGrid(WingedEdge &we, const BBox<Vec3r> &bbox, unsigned int sceneNumFaces);
-
   /** Compute Shapes from a WingedEdge containing a list of WShapes */
   void computeInitialViewEdges(WingedEdge &);
 
@@ -158,11 +154,6 @@ class ViewMapBuilder {
                         real epsilon,
                         const BBox<Vec3r> &bbox,
                         unsigned int sceneNumFaces);
-
-  void CullViewEdges(ViewMap *ioViewMap,
-                     real viewProscenium[4],
-                     real occluderProscenium[4],
-                     bool extensiveFEdgeSearch = true);
 
   /** computes the intersection between all 2D feature edges of the scene.
    *    ioViewMap

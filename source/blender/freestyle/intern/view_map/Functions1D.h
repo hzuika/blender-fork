@@ -628,9 +628,6 @@ class GetOccludeeF1D : public UnaryFunction1D<std::vector<ViewShape *>> {
 // getOccludeeF1D
 void getOccludeeF1D(Interface1D &inter, set<ViewShape *> &oShapes);
 
-// getOccludersF1D
-void getOccludersF1D(Interface1D &inter, set<ViewShape *> &oShapes);
-
 // getShapeF1D
 void getShapeF1D(Interface1D &inter, set<ViewShape *> &oShapes);
 

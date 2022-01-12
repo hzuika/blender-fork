@@ -58,7 +58,6 @@ class TextureManager {
   }
 
   void load();
-  unsigned getBrushTextureIndex(string name, Stroke::MediumType iType = Stroke::OPAQUE_MEDIUM);
 
   inline bool hasLoaded() const
   {
@@ -117,10 +116,6 @@ class StrokeRenderer {
   /** Renders a stroke rep */
   virtual void RenderStrokeRep(StrokeRep *iStrokeRep) const = 0;
   virtual void RenderStrokeRepBasic(StrokeRep *iStrokeRep) const = 0;
-
-  // initializes the texture manager
-  // lazy, checks if it has already been done
-  static bool loadTextures();
 
   // static unsigned int getTextureIndex(unsigned int index);
   static TextureManager *_textureManager;

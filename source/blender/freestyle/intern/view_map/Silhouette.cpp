@@ -66,11 +66,6 @@ float SVertex::shape_importance() const
   return shape()->importance();
 }
 
-Id SVertex::shape_id() const
-{
-  return _Shape->getId();
-}
-
 const SShape *SVertex::shape() const
 {
   return _Shape;
@@ -217,11 +212,6 @@ FEdge *SVertex::getFEdge(Interface0D &inter)
 /*                                */
 /**********************************/
 
-int FEdge::viewedge_nature() const
-{
-  return _ViewEdge->getNature();
-}
-
 const SShape *FEdge::occluded_shape() const
 {
   ViewShape *aShape = _ViewEdge->aShape();
@@ -264,11 +254,6 @@ int FEdge::occluders_size() const
 bool FEdge::occludee_empty() const
 {
   return _ViewEdge->occludee_empty();
-}
-
-Id FEdge::shape_id() const
-{
-  return _VertexA->shape()->getId();
 }
 
 const SShape *FEdge::shape() const

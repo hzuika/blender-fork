@@ -101,9 +101,6 @@ class SilhouetteGeomEngine {
   /** Sets the current znear and zfar */
   static void setFrustum(real iZNear, real iZFar);
 
-  /* accessors */
-  static void retrieveViewport(int viewport[4]);
-
   /** Projects the silhouette in camera coordinates
    *  This method modifies the ioEdges passed as argument.
    *    ioVertices
@@ -121,12 +118,6 @@ class SilhouetteGeomEngine {
    *      The parameter for the 2D intersection.
    */
   static real ImageToWorldParameter(FEdge *fe, real t);
-
-  /** From world to image */
-  static Vec3r WorldToImage(const Vec3r &M);
-
-  /** From camera to image */
-  static Vec3r CameraToImage(const Vec3r &M);
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:SilhouetteGeomEngine")

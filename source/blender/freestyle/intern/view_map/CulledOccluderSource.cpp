@@ -68,13 +68,6 @@ bool CulledOccluderSource::next()
   return false;
 }
 
-void CulledOccluderSource::getOccluderProscenium(real proscenium[4])
-{
-  for (unsigned int i = 0; i < 4; ++i) {
-    proscenium[i] = gridSpaceOccluderProscenium[i];
-  }
-}
-
 static inline real distance2D(const Vec3r &point, const real origin[2])
 {
   return ::hypot((point[0] - origin[0]), (point[1] - origin[1]));
