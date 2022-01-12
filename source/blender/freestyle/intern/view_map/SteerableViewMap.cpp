@@ -237,49 +237,4 @@ unsigned int SteerableViewMap::getNumberOfPyramidLevels() const
   return 0;
 }
 
-void SteerableViewMap::saveSteerableViewMap() const
-{
-  for (unsigned int i = 0; i <= _nbOrientations; ++i) {
-    if (_imagesPyramids[i] == nullptr) {
-      cerr << "SteerableViewMap warning: orientation " << i
-           << " of steerable View Map whas not been computed yet" << endl;
-      continue;
-    }
-    int ow = _imagesPyramids[i]->width(0);
-    int oh = _imagesPyramids[i]->height(0);
-
-    // soc QString base("SteerableViewMap");
-    string base("SteerableViewMap");
-    stringstream filename;
-
-    for (int j = 0; j < _imagesPyramids[i]->getNumberOfLevels(); ++j) {  // soc
-      float coeff = 1.0f;  // 1 / 255.0f; // 100 * 255; // * pow(2, j);
-      // soc QImage qtmp(ow, oh, QImage::Format_RGB32);
-      ImBuf *ibuf = IMB_allocImBuf(ow, oh, 32, IB_rect);
-      int rowbytes = ow * 4;
-      char *pix;
-
-      for (int y = 0; y < oh; ++y) {    // soc
-        for (int x = 0; x < ow; ++x) {  // soc
-          int c = (int)(coeff * _imagesPyramids[i]->pixel(x, y, j));
-          if (c > 255) {
-            c = 255;
-          }
-          // int c = (int)(_imagesPyramids[i]->pixel(x, y, j));
-
-          // soc qtmp.setPixel(x, y, qRgb(c, c, c));
-          pix = (char *)ibuf->rect + y * rowbytes + x * 4;
-          pix[0] = pix[1] = pix[2] = c;
-        }
-      }
-
-      // soc qtmp.save(base+QString::number(i)+"-"+QString::number(j)+".png", "PNG");
-      filename << base;
-      filename << i << "-" << j << ".png";
-      ibuf->ftype = IMB_FTYPE_PNG;
-      IMB_saveiff(ibuf, const_cast<char *>(filename.str().c_str()), 0);
-    }
-  }
-}
-
 } /* namespace Freestyle */

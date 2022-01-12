@@ -142,9 +142,6 @@ class SteerableViewMap {
     return _nbOrientations;
   }
 
-  /** for debug purposes */
-  void saveSteerableViewMap() const;
-
  protected:
   void Clear();
   void Build();

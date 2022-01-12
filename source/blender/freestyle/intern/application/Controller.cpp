@@ -465,16 +465,6 @@ void Controller::ComputeViewMap()
   DeleteWingedEdge();
 }
 
-void Controller::saveSteerableViewMapImages()
-{
-  SteerableViewMap *svm = _Canvas->getSteerableViewMap();
-  if (!svm) {
-    cerr << "the Steerable ViewMap has not been computed yet" << endl;
-    return;
-  }
-  svm->saveSteerableViewMap();
-}
-
 void Controller::setVisibilityAlgo(int algo)
 {
   switch (algo) {
