@@ -63,7 +63,6 @@ class Controller {
   int LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph);
   void CloseFile();
   void ComputeViewMap();
-  void ComputeSteerableViewMap();
   void saveSteerableViewMapImages();
   void toggleEdgeTesselationNature(Nature::EdgeNature iNature);
   int DrawStrokes();
@@ -108,8 +107,6 @@ class Controller {
   void setComputeMaterialBoundariesFlag(bool b);
   bool getComputeMaterialBoundariesFlag() const;
 
-  void setComputeSteerableViewMapFlag(bool iBool);
-  bool getComputeSteerableViewMapFlag() const;
   void setCreaseAngle(float angle)
   {
     _creaseAngle = angle;
@@ -198,8 +195,6 @@ class Controller {
   float _creaseAngle;
   float _sphereRadius;
   float _suggestiveContourKrDerivativeEpsilon;
-
-  bool _ComputeSteerableViewMap;
 
   FEdgeXDetector edgeDetector;
 

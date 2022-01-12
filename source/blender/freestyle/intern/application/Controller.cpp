@@ -104,7 +104,6 @@ Controller::Controller()
   _EnableQI = true;
   _EnableFaceSmoothness = false;
   _ComputeRidges = true;
-  _ComputeSteerableViewMap = false;
   _ComputeSuggestive = true;
   _ComputeMaterialBoundaries = true;
   _sphereRadius = 1.0;
@@ -460,19 +459,10 @@ void Controller::ComputeViewMap()
     printf("ViewMap building : %lf\n", duration);
   }
 
-  // Draw the steerable density map:
-  //--------------------------------
-  if (_ComputeSteerableViewMap) {
-    ComputeSteerableViewMap();
-  }
   // Reset Style modules modification flags
   resetModified(true);
 
   DeleteWingedEdge();
-}
-
-void Controller::ComputeSteerableViewMap()
-{
 }
 
 void Controller::saveSteerableViewMapImages()
@@ -565,16 +555,6 @@ void Controller::setComputeMaterialBoundariesFlag(bool b)
 bool Controller::getComputeMaterialBoundariesFlag() const
 {
   return _ComputeMaterialBoundaries;
-}
-
-void Controller::setComputeSteerableViewMapFlag(bool iBool)
-{
-  _ComputeSteerableViewMap = iBool;
-}
-
-bool Controller::getComputeSteerableViewMapFlag() const
-{
-  return _ComputeSteerableViewMap;
 }
 
 int Controller::DrawStrokes()
@@ -777,9 +757,6 @@ void Controller::init_options()
   // Default init options
 
   Config::Path *cpath = Config::Path::getInstance();
-
-  // ViewMap Format
-  setComputeSteerableViewMapFlag(false);
 
   // Visibility
   setQuantitativeInvisibility(true);
