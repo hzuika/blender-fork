@@ -224,7 +224,6 @@ static PyObject *ViewShape_vertices_get(BPy_ViewShape *self, void *UNUSED(closur
 
 static int ViewShape_vertices_set(BPy_ViewShape *self, PyObject *value, void *UNUSED(closure))
 {
-  PyObject *item;
   vector<ViewVertex *> v;
 
   if (!PyList_Check(value)) {
@@ -234,7 +233,7 @@ static int ViewShape_vertices_set(BPy_ViewShape *self, PyObject *value, void *UN
 
   v.reserve(PyList_GET_SIZE(value));
   for (unsigned int i = 0; i < PyList_GET_SIZE(value); i++) {
-    item = PyList_GET_ITEM(value, i);
+    PyObject *item = PyList_GET_ITEM(value, i);
     if (BPy_ViewVertex_Check(item)) {
       v.push_back(((BPy_ViewVertex *)item)->vv);
     }
@@ -267,7 +266,6 @@ static PyObject *ViewShape_edges_get(BPy_ViewShape *self, void *UNUSED(closure))
 
 static int ViewShape_edges_set(BPy_ViewShape *self, PyObject *value, void *UNUSED(closure))
 {
-  PyObject *item;
   vector<ViewEdge *> v;
 
   if (!PyList_Check(value)) {
@@ -277,7 +275,7 @@ static int ViewShape_edges_set(BPy_ViewShape *self, PyObject *value, void *UNUSE
 
   v.reserve(PyList_GET_SIZE(value));
   for (int i = 0; i < PyList_GET_SIZE(value); i++) {
-    item = PyList_GET_ITEM(value, i);
+    PyObject *item = PyList_GET_ITEM(value, i);
     if (BPy_ViewEdge_Check(item)) {
       v.push_back(((BPy_ViewEdge *)item)->ve);
     }

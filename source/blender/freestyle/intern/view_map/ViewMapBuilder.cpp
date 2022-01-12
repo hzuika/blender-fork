@@ -67,7 +67,6 @@ static void findOccludee(FEdge *fe,
     face = (WFace *)fes->face();
   }
   WFace *oface;
-  bool skipFace;
 
   WVertex::incoming_edge_iterator ie;
 
@@ -85,7 +84,7 @@ static void findOccludee(FEdge *fe,
       real t, t_u, t_v;
 
       if (nullptr != face) {
-        skipFace = false;
+        bool skipFace = false;
 
         if (face == oface) {
           continue;
