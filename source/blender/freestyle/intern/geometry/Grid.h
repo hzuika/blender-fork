@@ -310,9 +310,6 @@ class Grid {
   // Prepares to cast ray without generating OccludersSet.
   bool initAcceleratedInfiniteRay(const Vec3r &orig, const Vec3r &dir, unsigned timestamp);
 
-  /** Init all structures and values for computing the cells intersected by this new ray */
-  void initRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp);
-
   /** Init all structures and values for computing the cells intersected by this infinite ray.
    * Returns false if the ray doesn't intersect the grid.
    */

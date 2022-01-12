@@ -57,8 +57,6 @@ class TextureManager {
     return _pInstance;
   }
 
-  void load();
-
   inline bool hasLoaded() const
   {
     return _hasLoadedTextures;

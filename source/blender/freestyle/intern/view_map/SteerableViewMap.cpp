@@ -211,12 +211,4 @@ float SteerableViewMap::readCompleteViewMapPixel(int iLevel, int x, int y)
   return readSteerableViewMapPixel(_nbOrientations, iLevel, x, y);
 }
 
-unsigned int SteerableViewMap::getNumberOfPyramidLevels() const
-{
-  if (_imagesPyramids[0]) {
-    return _imagesPyramids[0]->getNumberOfLevels();
-  }
-  return 0;
-}
-
 } /* namespace Freestyle */

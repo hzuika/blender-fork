@@ -66,13 +66,4 @@ TextureManager::~TextureManager()
   _pInstance = nullptr;
 }
 
-void TextureManager::load()
-{
-  if (_hasLoadedTextures) {
-    return;
-  }
-  loadStandardBrushes();
-  _hasLoadedTextures = true;
-}
-
 } /* namespace Freestyle */

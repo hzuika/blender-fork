@@ -550,20 +550,6 @@ bool ViewEdgeXBuilder::stopSmoothViewEdge(WXFaceLayer *iFaceLayer)
   return true;
 }
 
-int ViewEdgeXBuilder::retrieveFaceMarks(WXEdge *iEdge)
-{
-  WFace *aFace = iEdge->GetaFace();
-  WFace *bFace = iEdge->GetbFace();
-  int result = 0;
-  if (aFace && aFace->GetMark()) {
-    result += 1;
-  }
-  if (bFace && bFace->GetMark()) {
-    result += 2;
-  }
-  return result;
-}
-
 FEdge *ViewEdgeXBuilder::BuildSharpFEdge(FEdge *feprevious, const OWXEdge &iwe)
 {
   SVertex *va, *vb;
