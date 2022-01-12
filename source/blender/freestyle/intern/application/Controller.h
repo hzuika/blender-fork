@@ -92,7 +92,6 @@ class Controller {
   NodeGroup *BuildRep(vector<ViewEdge *>::iterator vedges_begin,
                       vector<ViewEdge *>::iterator vedges_end);
 
-  void toggleVisibilityAlgo();
   void setVisibilityAlgo(int algo);
   int getVisibilityAlgo();
 

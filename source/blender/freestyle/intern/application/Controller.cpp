@@ -96,8 +96,7 @@ Controller::Controller()
 
   _Canvas = nullptr;
 
-  _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_traditional;
-  //_VisibilityAlgo = ViewMapBuilder::ray_casting;
+  _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_cumulative;
 
   _Canvas = new AppCanvas;
 
@@ -489,37 +488,9 @@ void Controller::saveSteerableViewMapImages()
   svm->saveSteerableViewMap();
 }
 
-void Controller::toggleVisibilityAlgo()
-{
-  if (_VisibilityAlgo == ViewMapBuilder::ray_casting) {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting_fast;
-  }
-  else if (_VisibilityAlgo == ViewMapBuilder::ray_casting_fast) {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting_very_fast;
-  }
-  else {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting;
-  }
-}
-
 void Controller::setVisibilityAlgo(int algo)
 {
   switch (algo) {
-    case FREESTYLE_ALGO_REGULAR:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting;
-      break;
-    case FREESTYLE_ALGO_FAST:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_fast;
-      break;
-    case FREESTYLE_ALGO_VERYFAST:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_very_fast;
-      break;
-    case FREESTYLE_ALGO_CULLED_ADAPTIVE_TRADITIONAL:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_traditional;
-      break;
-    case FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_traditional;
-      break;
     case FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE:
       _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_cumulative;
       break;
@@ -532,25 +503,11 @@ void Controller::setVisibilityAlgo(int algo)
 int Controller::getVisibilityAlgo()
 {
   switch (_VisibilityAlgo) {
-    case ViewMapBuilder::ray_casting:
-      return FREESTYLE_ALGO_REGULAR;
-    case ViewMapBuilder::ray_casting_fast:
-      return FREESTYLE_ALGO_FAST;
-    case ViewMapBuilder::ray_casting_very_fast:
-      return FREESTYLE_ALGO_VERYFAST;
-    case ViewMapBuilder::ray_casting_culled_adaptive_traditional:
-      return FREESTYLE_ALGO_CULLED_ADAPTIVE_TRADITIONAL;
-    case ViewMapBuilder::ray_casting_adaptive_traditional:
-      return FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL;
     case ViewMapBuilder::ray_casting_culled_adaptive_cumulative:
       return FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE;
     case ViewMapBuilder::ray_casting_adaptive_cumulative:
       return FREESTYLE_ALGO_ADAPTIVE_CUMULATIVE;
   }
-
-  // ray_casting_adaptive_traditional is the most exact replacement
-  // for legacy code
-  return FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL;
 }
 
 void Controller::setViewMapCache(bool iBool)
