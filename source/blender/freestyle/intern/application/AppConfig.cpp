@@ -42,8 +42,7 @@ Path::Path()
 
 void Path::setRootDir(const string &iRootDir)
 {
-  _ProjectDir = iRootDir + string(DIR_SEP) + "freestyle";
-  _MapsDir = _ProjectDir + string(DIR_SEP) + "data" + string(DIR_SEP) + "maps" + string(DIR_SEP);
+  _MapsDir = iRootDir + string(DIR_SEP) + "freestyle" + string(DIR_SEP) + "data" + string(DIR_SEP) + "maps" + string(DIR_SEP);
 }
 
 Path::~Path()
