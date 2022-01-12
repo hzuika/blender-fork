@@ -99,34 +99,6 @@ class GeomCleaner {
                                          unsigned *oVSize,
                                          unsigned **oIndices);
 
-  /** Sorts and compress an array of indexed vertices.
-   *    iVertices
-   *      The vertex array to sort then compress. It is organized as a float series of
-   *      vertex coordinates: XYZXYZXYZ...
-   *    iVSize
-   *      The size of iVertices array.
-   *    iIndices
-   *      The array containing the vertex indices
-   *      (used to refer to the vertex coordinates in an indexed face).
-   *      Each element is an unsignedeger multiple of 3.
-   *    iISize
-   *      The size of iIndices array
-   *    oVertices
-   *      The vertex array, result of the sorting-compression.
-   *      The array is organized as a 3-float series giving the vertices coordinates: XYZXYZXYZ...
-   *    oVSize
-   *      The size of oVertices.
-   *    oIndices
-   *      The indices array, reorganized to match the sorted and compressed oVertices array.
-   */
-  static void SortAndCompressIndexedVertexArray(const float *iVertices,
-                                                unsigned iVSize,
-                                                const unsigned *iIndices,
-                                                unsigned iISize,
-                                                float **oVertices,
-                                                unsigned *oVSize,
-                                                unsigned **oIndices);
-
   /** Cleans an indexed vertex array.
    *  (Identical to SortAndCompress except that we use here a hash table to create the new array.)
    *    iVertices

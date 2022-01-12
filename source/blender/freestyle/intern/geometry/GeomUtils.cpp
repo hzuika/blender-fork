@@ -56,58 +56,6 @@ bool include2dSeg2dArea(const Vec2r &min, const Vec2r &max, const Vec2r &A, cons
   return false;
 }
 
-intersection_test intersect2dSeg2dSeg(
-    const Vec2r &p1, const Vec2r &p2, const Vec2r &p3, const Vec2r &p4, Vec2r &res)
-{
-  real a1, a2, b1, b2, c1, c2;  // Coefficients of line eqns
-  real r1, r2, r3, r4;          // 'Sign' values
-  real denom, num;              // Intermediate values
-
-  // Compute a1, b1, c1, where line joining points p1 and p2 is "a1 x  +  b1 y  +  c1  =  0".
-  a1 = p2[1] - p1[1];
-  b1 = p1[0] - p2[0];
-  c1 = p2[0] * p1[1] - p1[0] * p2[1];
-
-  // Compute r3 and r4.
-  r3 = a1 * p3[0] + b1 * p3[1] + c1;
-  r4 = a1 * p4[0] + b1 * p4[1] + c1;
-
-  // Check signs of r3 and r4.  If both point 3 and point 4 lie on same side of line 1,
-  // the line segments do not intersect.
-  if (r3 != 0 && r4 != 0 && r3 * r4 > 0.0) {
-    return DONT_INTERSECT;
-  }
-
-  // Compute a2, b2, c2
-  a2 = p4[1] - p3[1];
-  b2 = p3[0] - p4[0];
-  c2 = p4[0] * p3[1] - p3[0] * p4[1];
-
-  // Compute r1 and r2
-  r1 = a2 * p1[0] + b2 * p1[1] + c2;
-  r2 = a2 * p2[0] + b2 * p2[1] + c2;
-
-  // Check signs of r1 and r2.  If both point 1 and point 2 lie on same side of second line
-  // segment, the line segments do not intersect.
-  if (r1 != 0 && r2 != 0 && r1 * r2 > 0.0) {
-    return DONT_INTERSECT;
-  }
-
-  // Line segments intersect: compute intersection point.
-  denom = a1 * b2 - a2 * b1;
-  if (fabs(denom) < M_EPSILON) {
-    return COLINEAR;
-  }
-
-  num = b1 * c2 - b2 * c1;
-  res[0] = num / denom;
-
-  num = a2 * c1 - a1 * c2;
-  res[1] = num / denom;
-
-  return DO_INTERSECT;
-}
-
 intersection_test intersect2dLine2dLine(
     const Vec2r &p1, const Vec2r &p2, const Vec2r &p3, const Vec2r &p4, Vec2r &res)
 {
@@ -583,40 +531,6 @@ bool intersectRayBBox(const Vec3r &orig,
   return ((tmin < t1) && (tmax > t0));
 }
 
-// Checks whether 3D points p lies inside or outside of the triangle ABC
-bool includePointTriangle(const Vec3r &P, const Vec3r &A, const Vec3r &B, const Vec3r &C)
-{
-  Vec3r AB(B - A);
-  Vec3r BC(C - B);
-  Vec3r CA(A - C);
-  Vec3r AP(P - A);
-  Vec3r BP(P - B);
-  Vec3r CP(P - C);
-
-  Vec3r N(AB ^ BC);  // triangle's normal
-
-  N.normalize();
-
-  Vec3r J(AB ^ AP), K(BC ^ BP), L(CA ^ CP);
-  J.normalize();
-  K.normalize();
-  L.normalize();
-
-  if (J * N < 0) {
-    return false;  // on the right of AB
-  }
-
-  if (K * N < 0) {
-    return false;  // on the right of BC
-  }
-
-  if (L * N < 0) {
-    return false;  // on the right of CA
-  }
-
-  return true;
-}
-
 void transformVertex(const Vec3r &vert, const Matrix44r &matrix, Vec3r &res)
 {
   HVec3r hvert(vert), res_tmp;
@@ -709,35 +623,6 @@ void fromImageToRetina(const Vec3r &p, Vec3r &q, const int viewport[4])
   q = p;
   q[0] = 2.0 * (q[0] - viewport[0]) / viewport[2] - 1.0;
   q[1] = 2.0 * (q[1] - viewport[1]) / viewport[3] - 1.0;
-}
-
-void fromRetinaToCamera(const Vec3r &p, Vec3r &q, real focal, const real projection_matrix[4][4])
-{
-  if (projection_matrix[3][3] == 0.0) {  // perspective
-    q[0] = (-p[0] * focal) / projection_matrix[0][0];
-    q[1] = (-p[1] * focal) / projection_matrix[1][1];
-    q[2] = focal;
-  }
-  else {  // orthogonal
-    q[0] = p[0] / projection_matrix[0][0];
-    q[1] = p[1] / projection_matrix[1][1];
-    q[2] = focal;
-  }
-}
-
-void fromCameraToWorld(const Vec3r &p, Vec3r &q, const real model_view_matrix[4][4])
-{
-  real translation[3] = {
-      model_view_matrix[0][3],
-      model_view_matrix[1][3],
-      model_view_matrix[2][3],
-  };
-  for (unsigned short i = 0; i < 3; i++) {
-    q[i] = 0.0;
-    for (unsigned short j = 0; j < 3; j++) {
-      q[i] += model_view_matrix[j][i] * (p[j] - translation[j]);
-    }
-  }
 }
 
 //

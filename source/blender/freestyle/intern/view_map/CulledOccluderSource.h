@@ -41,8 +41,6 @@ class CulledOccluderSource : public OccluderSource {
 
   bool next();
 
-  void getOccluderProscenium(real proscenium[4]);
-
  private:
   bool testCurrent();
   void expandGridSpaceOccluderProscenium(FEdge *fe);

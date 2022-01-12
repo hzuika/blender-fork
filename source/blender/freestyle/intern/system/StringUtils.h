@@ -36,8 +36,6 @@ namespace Freestyle {
 
 namespace StringUtils {
 
-void getPathName(const string &path, const string &base, vector<string> &pathnames);
-
 // STL related
 struct ltstr {
   bool operator()(const char *s1, const char *s2) const

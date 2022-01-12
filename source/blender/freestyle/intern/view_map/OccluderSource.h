@@ -48,9 +48,6 @@ class OccluderSource {
   Polygon3r getCameraSpacePolygon();
   Polygon3r &getGridSpacePolygon();
 
-  virtual void getOccluderProscenium(real proscenium[4]);
-  virtual real averageOccluderArea();
-
  protected:
   WingedEdge &wingedEdge;
   vector<WShape *>::const_iterator currentShape, shapesEnd;

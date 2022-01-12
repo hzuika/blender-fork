@@ -103,11 +103,6 @@ void NodeGroup::DetachChild(Node *iChild)
   }
 }
 
-void NodeGroup::RetrieveChildren(vector<Node *> &oNodes)
-{
-  oNodes = _Children;
-}
-
 const BBox<Vec3r> &NodeGroup::UpdateBBox()
 {
   vector<Node *>::iterator node;

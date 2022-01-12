@@ -86,25 +86,6 @@ class SteerableViewMap {
    */
   unsigned getSVMNumber(unsigned id);
 
-  /** Builds _nbOrientations+1 pyramids of images from the _nbOrientations+1 base images of the
-   *  steerable viewmap.
-   *  \param steerableBases:
-   *    The _nbOrientations+1 images constituting the basis for the steerable pyramid.
-   *  \param copy:
-   *    If false, the data is not duplicated, and Canvas deals with the memory management of these
-   *    _nbOrientations+1 images. If true, data is copied, and it's up to the caller to delete
-   *    the images.
-   *  \param iNbLevels:
-   *    The number of levels desired for each pyramid.
-   *    If iNbLevels == 0, the complete pyramid is built.
-   *  \param iSigma:
-   *    The sigma that will be used for the gaussian blur
-   */
-  void buildImagesPyramids(GrayImage **steerableBases,
-                           bool copy = false,
-                           unsigned iNbLevels = 4,
-                           float iSigma = 1.0f);
-
   /** Reads a pixel value in one of the VewMap density steerable pyramids.
    *  Returns a value between 0 and 1.
    *  \param iOrientation:

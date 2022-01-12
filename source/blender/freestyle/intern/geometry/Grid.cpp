@@ -288,16 +288,6 @@ bool Grid::nextRayCell(Vec3u &current_cell, Vec3u &next_cell)
   return true;
 }
 
-void Grid::castRay(const Vec3r &orig,
-                   const Vec3r &end,
-                   OccludersSet &occluders,
-                   unsigned timestamp)
-{
-  initRay(orig, end, timestamp);
-  allOccludersGridVisitor visitor(occluders);
-  castRayInternal(visitor);
-}
-
 void Grid::castInfiniteRay(const Vec3r &orig,
                            const Vec3r &dir,
                            OccludersSet &occluders,
@@ -310,27 +300,6 @@ void Grid::castInfiniteRay(const Vec3r &orig,
   }
   allOccludersGridVisitor visitor(occluders);
   castRayInternal(visitor);
-}
-
-Polygon3r *Grid::castRayToFindFirstIntersection(
-    const Vec3r &orig, const Vec3r &dir, double &t, double &u, double &v, unsigned timestamp)
-{
-  Polygon3r *occluder = nullptr;
-  Vec3r end = Vec3r(orig + FLT_MAX * dir / dir.norm());
-  bool inter = initInfiniteRay(orig, dir, timestamp);
-  if (!inter) {
-    return nullptr;
-  }
-  firstIntersectionGridVisitor visitor(orig, dir, _cell_size);
-  castRayInternal(visitor);
-  // ARB: This doesn't work, because occluders are unordered within any cell
-  // visitor.occluder() will be an occluder, but we have no guarantee it will be the *first*
-  // occluder. I assume that is the reason this code is not actually used for FindOccludee.
-  occluder = visitor.occluder();
-  t = visitor.t_;
-  u = visitor.u_;
-  v = visitor.v_;
-  return occluder;
 }
 
 void Grid::initRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp)

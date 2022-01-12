@@ -295,12 +295,6 @@ class Grid {
     _occluders.push_back(occluder);
   }
 
-  /** Casts a ray between a starting point and an ending point
-   *  Returns the list of occluders contained in the cells intersected by this ray
-   *  Starts with a call to InitRay.
-   */
-  void castRay(const Vec3r &orig, const Vec3r &end, OccludersSet &occluders, unsigned timestamp);
-
   // Prepares to cast ray without generating OccludersSet
   void initAcceleratedRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp);
 
@@ -315,13 +309,6 @@ class Grid {
 
   // Prepares to cast ray without generating OccludersSet.
   bool initAcceleratedInfiniteRay(const Vec3r &orig, const Vec3r &dir, unsigned timestamp);
-
-  /** Casts an infinite ray (still finishing at the end of the grid) from a starting point and in a
-   * given direction. Returns the first intersection (occluder,t,u,v) or null. Starts with a call
-   * to InitRay.
-   */
-  Polygon3r *castRayToFindFirstIntersection(
-      const Vec3r &orig, const Vec3r &dir, double &t, double &u, double &v, unsigned timestamp);
 
   /** Init all structures and values for computing the cells intersected by this new ray */
   void initRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp);

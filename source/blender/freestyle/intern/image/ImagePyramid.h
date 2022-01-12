@@ -54,7 +54,6 @@ class ImagePyramid {
   /** Builds a pyramid without copying the base level */
   virtual void BuildPyramid(GrayImage *level0, unsigned nbLevels) = 0;
 
-  virtual GrayImage *getLevel(int l);
   /** Returns the pixel x,y using bilinear interpolation.
    *  \param x:
    *    the abscissa specified in the finest level coordinate system
