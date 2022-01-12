@@ -61,7 +61,6 @@ class Controller {
   void init_options();
 
   int LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph);
-  int Load3DSFile(const char *iFileName);
   void CloseFile();
   void ComputeViewMap();
   void ComputeSteerableViewMap();
@@ -153,14 +152,8 @@ class Controller {
   AppCanvas *_Canvas;
 
  private:
-  // Main Window:
-  // AppMainWindow *_pMainWindow;
-
   // List of models currently loaded
   vector<string> _ListOfModels;
-
-  // Current directories
-  // ConfigIO* _current_dirs;
 
   // View
   // 3D
@@ -175,9 +168,6 @@ class Controller {
   // Winged-Edge structure
   WingedEdge *_winged_edge;
 
-  // debug
-  // NodeUser<ViewMap> *_ViewMapNode; // FIXME
-
   // Chronometer:
   Chronometer _Chrono;
 
@@ -188,7 +178,6 @@ class Controller {
   int _edgeTesselationNature;
 
   FastGrid _Grid;
-  // HashGrid _Grid;
 
   BBox<Vec3r> _Scene3dBBox;
   unsigned int _SceneNumFaces;
@@ -196,10 +185,6 @@ class Controller {
   real _bboxDiag;
 
   int _render_count;
-
-  // AppStyleWindow *_pStyleWindow;
-  // AppOptionsWindow *_pOptionsWindow;
-  // AppDensityCurvesWindow *_pDensityCurvesWindow;
 
   ViewMapBuilder::visibility_algo _VisibilityAlgo;
 
