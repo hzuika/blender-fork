@@ -1626,8 +1626,6 @@ void ViewShape::SplitEdge(FEdge *fe,
   ViewEdge *vEdge = fe->viewedge();
 
   // We first need to sort the view vertices from farther to closer to fe->vertexA
-  SVertex *sv, *sv2;
-  ViewVertex *vva, *vvb;
   vector<TVertex *>::const_iterator vv, vvend;
   for (vv = iViewVertices.begin(), vvend = iViewVertices.end(); vv != vvend; vv++) {
     // Add the viewvertices to the ViewShape
@@ -1635,8 +1633,8 @@ void ViewShape::SplitEdge(FEdge *fe,
 
     // retrieve the correct SVertex from the view vertex
     //--------------------------------------------------
-    sv = (*vv)->frontSVertex();
-    sv2 = (*vv)->backSVertex();
+    SVertex *sv = (*vv)->frontSVertex();
+    SVertex *sv2 = (*vv)->backSVertex();
 
     if (sv->shape() != sv2->shape()) {
       if (sv->shape() != _SShape) {
@@ -1650,8 +1648,8 @@ void ViewShape::SplitEdge(FEdge *fe,
       }
     }
 
-    vva = vEdge->A();
-    vvb = vEdge->B();
+    ViewVertex *vva = vEdge->A();
+    ViewVertex *vvb = vEdge->B();
 
     // We split Fedge AB into AA' and A'B. A' and A'B are created.
     // AB becomes (address speaking) AA'. B is updated.

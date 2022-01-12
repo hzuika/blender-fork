@@ -123,9 +123,8 @@ static Vector2 *V2Negate(Vector2 *v)
 static BezierCurve GenerateBezier(
     Vector2 *d, int first, int last, double *uPrime, Vector2 tHat1, Vector2 tHat2)
 {
-  int i;
   Vector2 A[2];     /* rhs for eqn */
-  int nPts;         /* Number of pts in sub-curve */
+  int nPts = last - first + 1; /* Number of pts in sub-curve */
   double C[2][2];   /* Matrix C */
   double X[2];      /* Matrix X */
   double det_C0_C1; /* Determinants of matrices */
@@ -134,10 +133,7 @@ static BezierCurve GenerateBezier(
   double alpha_l; /* Alpha values, left and right */
   double alpha_r;
   Vector2 tmp;          /* Utility variable */
-  BezierCurve bezCurve; /* RETURN bezier curve control points. */
-
-  bezCurve = (Vector2 *)malloc(4 * sizeof(Vector2));
-  nPts = last - first + 1;
+  BezierCurve bezCurve = (Vector2 *)malloc(4 * sizeof(Vector2)); /* RETURN bezier curve control points. */
 
   /* Create the C and X matrices */
   C[0][0] = 0.0;
@@ -146,7 +142,7 @@ static BezierCurve GenerateBezier(
   C[1][1] = 0.0;
   X[0] = 0.0;
   X[1] = 0.0;
-  for (i = 0; i < nPts; i++) {
+  for (int i = 0; i < nPts; i++) {
     /* Compute the A's */
     A[0] = tHat1;
     A[1] = tHat2;
@@ -415,18 +411,13 @@ static double *ChordLengthParameterize(Vector2 *d, int first, int last)
 static double ComputeMaxError(
     Vector2 *d, int first, int last, BezierCurve bezCurve, double *u, int *splitPoint)
 {
-  int i;
-  double maxDist; /* Maximum error */
-  double dist;    /* Current error */
-  Vector2 P;      /* Point on curve */
-  Vector2 v;      /* Vector from point to curve */
+  double maxDist = 0.0; /* Maximum error */
 
   *splitPoint = (last - first + 1) / 2;
-  maxDist = 0.0;
-  for (i = first + 1; i < last; i++) {
-    P = BezierII(3, bezCurve, u[i - first]);
-    v = V2SubII(P, d[i]);
-    dist = V2SquaredLength(&v);
+  for (int i = first + 1; i < last; i++) {
+    Vector2 P = BezierII(3, bezCurve, u[i - first]); /* Point on curve */
+    Vector2 v = V2SubII(P, d[i]); /* Vector from point to curve */
+    double dist = V2SquaredLength(&v); /* Current error */
     if (dist >= maxDist) {
       maxDist = dist;
       *splitPoint = i;
@@ -509,14 +500,10 @@ void FitCurveWrapper::FitCubic(
   double *uPrime;        /* Improved parameter values */
   double maxError;       /* Maximum fitting error */
   int splitPoint;        /* Point to split point set at */
-  int nPts;              /* Number of points in subset */
-  double iterationError; /* Error below which you try iterating */
-  int maxIterations = 4; /* Max times to try iterating */
   Vector2 tHatCenter;    /* Unit tangent vector at splitPoint */
-  int i;
 
-  iterationError = error * error;
-  nPts = last - first + 1;
+  double iterationError = error * error; /* Error below which you try iterating */
+  int nPts = last - first + 1; /* Number of points in subset */
 
   /* Use heuristic if region only has two points in it */
   if (nPts == 2) {
@@ -547,7 +534,8 @@ void FitCurveWrapper::FitCubic(
 
   /* If error not too large, try some reparameterization and iteration */
   if (maxError < iterationError) {
-    for (i = 0; i < maxIterations; i++) {
+    int maxIterations = 4; /* Max times to try iterating */
+    for (int i = 0; i < maxIterations; i++) {
       uPrime = Reparameterize(d, first, last, u, bezCurve);
 
       free((void *)u);

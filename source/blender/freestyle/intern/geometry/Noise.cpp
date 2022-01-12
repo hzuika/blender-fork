@@ -70,10 +70,9 @@ static void normalize3(float v[3])
 float Noise::turbulence1(float arg, float freq, float amp, unsigned oct)
 {
   float t;
-  float vec;
 
   for (t = 0; oct > 0 && freq > 0; freq *= 2, amp /= 2, --oct) {
-    vec = freq * arg;
+    float vec = freq * arg;
     t += smoothNoise1(vec) * amp;
   }
   return t;
@@ -223,7 +222,7 @@ Noise::Noise(long seed)
 {
   /* Use Blender RNG for repeatable results across platforms. */
   RNG *rng = BLI_rng_new(seed);
-  int i, j, k;
+  int i, j;
 
   for (i = 0; i < _NOISE_B; i++) {
     p[i] = i;
@@ -241,7 +240,7 @@ Noise::Noise(long seed)
   }
 
   while (--i) {
-    k = p[i];
+    int k = p[i];
     p[i] = p[j = BLI_rng_get_int(rng) % _NOISE_B];
     p[j] = k;
   }

@@ -158,8 +158,6 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
   group->AddChild(tshape);
   tshape->setFrsMaterial(_FrsMaterial);
 
-  LineRep *line;
-
   FEdge *firstEdge;
   FEdge *nextFEdge, *currentEdge;
 
@@ -167,7 +165,7 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
   for (ViewEdgesIterator c = begin, cend = end; c != cend; c++) {
     firstEdge = (*c)->fedgeA();
 
-    line = new OrientedLineRep();
+    LineRep *line = new OrientedLineRep();
     if (_overloadFrsMaterial) {
       line->setFrsMaterial(_FrsMaterial);
     }

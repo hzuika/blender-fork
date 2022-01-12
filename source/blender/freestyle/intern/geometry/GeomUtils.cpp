@@ -534,9 +534,8 @@ bool intersectRayBBox(const Vec3r &orig,
 void transformVertex(const Vec3r &vert, const Matrix44r &matrix, Vec3r &res)
 {
   HVec3r hvert(vert), res_tmp;
-  real scale;
   for (unsigned int j = 0; j < 4; j++) {
-    scale = hvert[j];
+    real scale = hvert[j];
     for (unsigned int i = 0; i < 4; i++) {
       res_tmp[i] += matrix(i, j) * scale;
     }
@@ -646,14 +645,12 @@ inline bool intersect2dSegPoly(Vec2r *seg, Vec2r *poly, unsigned n)
 
   real tE = 0;                   // the maximum entering segment parameter
   real tL = 1;                   // the minimum leaving segment parameter
-  real t, N, D;                  // intersect parameter t = N / D
   Vec2r dseg = seg[1] - seg[0];  // the segment direction vector
-  Vec2r e;                       // edge vector
 
   for (unsigned int i = 0; i < n; i++) {  // process polygon edge poly[i]poly[i+1]
-    e = poly[i + 1] - poly[i];
-    N = PERP(e, seg[0] - poly[i]);
-    D = -PERP(e, dseg);
+    Vec2r e = poly[i + 1] - poly[i]; // edge vector
+    real N = PERP(e, seg[0] - poly[i]);
+    real D = -PERP(e, dseg);
     if (fabs(D) < M_EPSILON) {
       if (N < 0) {
         return false;
@@ -662,7 +659,7 @@ inline bool intersect2dSegPoly(Vec2r *seg, Vec2r *poly, unsigned n)
       continue;
     }
 
-    t = N / D;
+    real t = N / D; // intersect parameter t = N / D
     if (D < 0) {     // segment seg is entering across this edge
       if (t > tE) {  // new max tE
         tE = t;

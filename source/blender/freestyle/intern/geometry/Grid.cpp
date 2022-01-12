@@ -167,13 +167,13 @@ void Grid::insertOccluder(Polygon3r *occluder)
   // overlapping with the triangle in order to only fill in the ones really overlapping the
   // triangle.
 
-  unsigned i, x, y, z;
+  unsigned x, y, z;
   vector<Vec3r>::const_iterator it;
   Vec3u coord;
 
   if (vertices.size() == 3) {  // Triangle case
     Vec3r triverts[3];
-    i = 0;
+    unsigned i = 0;
     for (it = vertices.begin(); it != vertices.end(); it++) {
       triverts[i] = Vec3r(*it);
       i++;

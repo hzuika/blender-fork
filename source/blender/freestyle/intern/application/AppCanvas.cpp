@@ -120,9 +120,9 @@ void AppCanvas::readColorPixels(int x, int y, int w, int h, RGBImage &oImage) co
     int recty = _pass_diffuse.height;
     float xfac = ((float)rectx) / ((float)(xmax - xmin));
     float yfac = ((float)recty) / ((float)(ymax - ymin));
-    int ii, jj;
+    int ii;
     for (int j = 0; j < h; j++) {
-      jj = (int)((y - ymin + j) * yfac);
+      int jj = (int)((y - ymin + j) * yfac);
       if (jj < 0 || jj >= recty) {
         continue;
       }
@@ -153,9 +153,9 @@ void AppCanvas::readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) c
     int recty = _pass_z.height;
     float xfac = ((float)rectx) / ((float)(xmax - xmin));
     float yfac = ((float)recty) / ((float)(ymax - ymin));
-    int ii, jj;
+    int ii;
     for (int j = 0; j < h; j++) {
-      jj = (int)((y - ymin + j) * yfac);
+      int jj = (int)((y - ymin + j) * yfac);
       if (jj < 0 || jj >= recty) {
         continue;
       }

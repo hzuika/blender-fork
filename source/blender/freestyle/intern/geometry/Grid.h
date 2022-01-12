@@ -222,9 +222,8 @@ class Grid {
    */
   inline void getCellCoordinates(const Vec3r &p, Vec3u &res)
   {
-    int tmp;
     for (int i = 0; i < 3; i++) {
-      tmp = (int)((p[i] - _orig[i]) / _cell_size[i]);
+      int tmp = (int)((p[i] - _orig[i]) / _cell_size[i]);
       if (tmp < 0) {
         res[i] = 0;
       }

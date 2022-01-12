@@ -1468,12 +1468,11 @@ class SShape {
 
     Vec3r newpoint3d, newpoint2d;
     vector<SVertex *> intersections;
-    real t, T;
     for (vector<Vec2r>::const_iterator p = iParameters.begin(), pend = iParameters.end();
          p != pend;
          p++) {
-      T = (*p)[0];
-      t = (*p)[1];
+      real T = (*p)[0];
+      real t = (*p)[1];
 
       if ((t < 0) || (t > 1)) {
         cerr << "Warning: Intersection out of range for edge " << ioA->getId() << " - "

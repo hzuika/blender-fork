@@ -203,7 +203,7 @@ void BlenderFileLoader::clipTriangle(int numTris,
 {
   float *v[3], *n[3];
   bool em[3];
-  int i, j, k;
+  int i, k;
 
   v[0] = v1;
   n[0] = n1;
@@ -216,7 +216,7 @@ void BlenderFileLoader::clipTriangle(int numTris,
   em[2] = em3; /* edge mark of the edge between v3 and v1 */
   k = 0;
   for (i = 0; i < 3; i++) {
-    j = (i + 1) % 3;
+    int j = (i + 1) % 3;
     if (clip[i] == NOT_CLIPPED) {
       copy_v3_v3(triCoords[k], v[i]);
       copy_v3_v3(triNormals[k], n[i]);
@@ -614,12 +614,11 @@ void BlenderFileLoader::insertShapeNode(Object *ob, Mesh *me, int id)
   // addressed later in WShape::MakeFace().
   vector<detri_t> detriList;
   Vec3r zero(0.0, 0.0, 0.0);
-  unsigned vi0, vi1, vi2;
   for (i = 0; i < viSize; i += 3) {
     detri_t detri;
-    vi0 = cleanVIndices[i];
-    vi1 = cleanVIndices[i + 1];
-    vi2 = cleanVIndices[i + 2];
+    unsigned vi0 = cleanVIndices[i];
+    unsigned vi1 = cleanVIndices[i + 1];
+    unsigned vi2 = cleanVIndices[i + 2];
     Vec3r v0(cleanVertices[vi0], cleanVertices[vi0 + 1], cleanVertices[vi0 + 2]);
     Vec3r v1(cleanVertices[vi1], cleanVertices[vi1 + 1], cleanVertices[vi1 + 2]);
     Vec3r v2(cleanVertices[vi2], cleanVertices[vi2 + 1], cleanVertices[vi2 + 2]);

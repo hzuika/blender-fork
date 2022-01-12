@@ -41,17 +41,12 @@ static int MAX_ITER = 100;
 void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, double *eigen_val)
 {
   double *a, *v;
-  double a_norm, a_normEPS, thr, thr_nn;
-  int nb_iter = 0;
-  int jj;
-  int i, j, k, ij, ik, l, m, lm, mq, lq, ll, mm, imv, im, iq, ilv, il, nn;
+  double a_norm;
+  int i, j, k, ij, nn;
   int *index;
-  double a_ij, a_lm, a_ll, a_mm, a_im, a_il;
+  double a_ij;
   double a_lm_2;
-  double v_ilv, v_imv;
   double x;
-  double sinx, sinx_2, cosx, cosx_2, sincos;
-  double delta;
 
   // Number of entries in mat
   nn = (n * (n + 1)) / 2;
@@ -98,34 +93,35 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
   }
 
   if (a_norm != 0.0) {
-    a_normEPS = a_norm * EPS;
-    thr = a_norm;
+    double a_normEPS = a_norm * EPS;
+    double thr = a_norm;
 
     // Step 4 : rotations
+    int nb_iter = 0;
     while (thr > a_normEPS && nb_iter < MAX_ITER) {
       nb_iter++;
-      thr_nn = thr / nn;
+      double thr_nn = thr / nn;
 
-      for (l = 1; l < n; l++) {
-        for (m = l + 1; m <= n; m++) {
+      for (int l = 1; l < n; l++) {
+        for (int m = l + 1; m <= n; m++) {
           // compute sinx and cosx
-          lq = (l * l - l) / 2;
-          mq = (m * m - m) / 2;
+          int lq = (l * l - l) / 2;
+          int mq = (m * m - m) / 2;
 
-          lm = l + mq;
-          a_lm = a[lm];
+          int lm = l + mq;
+          double a_lm = a[lm];
           a_lm_2 = a_lm * a_lm;
 
           if (a_lm_2 < thr_nn) {
             continue;
           }
 
-          ll = l + lq;
-          mm = m + mq;
-          a_ll = a[ll];
-          a_mm = a[mm];
+          int ll = l + lq;
+          int mm = m + mq;
+          double a_ll = a[ll];
+          double a_mm = a[mm];
 
-          delta = a_ll - a_mm;
+          double delta = a_ll - a_mm;
 
           if (delta == 0.0) {
             x = -M_PI / 4;
@@ -134,35 +130,25 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
             x = -atan((a_lm + a_lm) / delta) / 2.0;
           }
 
-          sinx = sin(x);
-          cosx = cos(x);
-          sinx_2 = sinx * sinx;
-          cosx_2 = cosx * cosx;
-          sincos = sinx * cosx;
+          double sinx = sin(x);
+          double cosx = cos(x);
+          double sinx_2 = sinx * sinx;
+          double cosx_2 = cosx * cosx;
+          double sincos = sinx * cosx;
 
           // rotate L and M columns
-          ilv = n * (l - 1);
-          imv = n * (m - 1);
+          int ilv = n * (l - 1);
+          int imv = n * (m - 1);
 
           for (i = 1; i <= n; i++) {
             if (!ELEM(i, l, m)) {
-              iq = (i * i - i) / 2;
+              int iq = (i * i - i) / 2;
 
-              if (i < m) {
-                im = i + mq;
-              }
-              else {
-                im = m + iq;
-              }
-              a_im = a[im];
+              int im = (i < m) ? (i + mq) : (m + iq);
+              double a_im = a[im];
 
-              if (i < l) {
-                il = i + lq;
-              }
-              else {
-                il = l + iq;
-              }
-              a_il = a[il];
+              int il = (i < l) ? (i + lq) : (l + iq);
+              double a_il = a[il];
 
               a[il] = a_il * cosx - a_im * sinx;
               a[im] = a_il * sinx + a_im * cosx;
@@ -171,8 +157,8 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
             ilv++;
             imv++;
 
-            v_ilv = v[ilv];
-            v_imv = v[imv];
+            double v_ilv = v[ilv];
+            double v_imv = v[imv];
 
             v[ilv] = cosx * v_ilv - sinx * v_imv;
             v[imv] = sinx * v_ilv + cosx * v_imv;
@@ -224,7 +210,7 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
     eigen_val[k] = eigen_val[i];
     eigen_val[i] = x;
 
-    jj = index[k];
+    int jj = index[k];
     index[k] = index[i];
     index[i] = jj;
   }
@@ -236,7 +222,7 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
 
   ij = 0;
   for (k = 0; k < n; k++) {
-    ik = index[k] * n;
+    int ik = index[k] * n;
     for (i = 0; i < n; i++) {
       eigen_vec[ij++] = v[ik++];
     }
