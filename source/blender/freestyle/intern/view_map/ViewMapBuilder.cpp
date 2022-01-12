@@ -230,9 +230,6 @@ static int computeVisibility(ViewMap *viewMap,
   vector<WVertex *> faceVertices;
   WVertex::incoming_edge_iterator ie;
 
-  WFace *oface;
-  bool skipFace;
-
   if (face) {
     face->RetrieveVertexList(faceVertices);
   }
@@ -244,14 +241,14 @@ static int computeVisibility(ViewMap *viewMap,
     // of not. (Indeed, we don't consider the occluders that share at least one vertex with the
     // face containing this edge).
     //-----------
-    oface = occluders.getWFace();
+    WFace *oface = occluders.getWFace();
     Polygon3r *p = occluders.getCameraSpacePolygon();
     real t, t_u, t_v;
 
     real d = -((p->getVertices())[0] * p->getNormal());
 
     if (face) {
-      skipFace = false;
+      bool skipFace = false;
 
       if (face == oface) {
         continue;
@@ -547,7 +544,6 @@ static inline bool insideProscenium(const real proscenium[4], const Vec3r &point
 void ViewMapBuilder::computeInitialViewEdges(WingedEdge &we)
 {
   vector<WShape *> wshapes = we.getWShapes();
-  SShape *psShape;
 
   for (vector<WShape *>::const_iterator it = wshapes.begin(); it != wshapes.end(); it++) {
     if (_pRenderMonitor && _pRenderMonitor->testBreak()) {
@@ -555,7 +551,7 @@ void ViewMapBuilder::computeInitialViewEdges(WingedEdge &we)
     }
 
     // create the embedding
-    psShape = new SShape;
+    SShape *psShape = new SShape;
     psShape->setId((*it)->GetId());
     psShape->setName((*it)->getName());
     psShape->setLibraryPath((*it)->getLibraryPath());
@@ -760,8 +756,6 @@ void ViewMapBuilder::FindOccludee(FEdge *fe,
     face = (WFace *)fes->face();
   }
   OccludersSet occluders;
-  WFace *oface;
-  bool skipFace;
 
   WVertex::incoming_edge_iterator ie;
   OccludersSet::iterator p, pend;
@@ -780,14 +774,14 @@ void ViewMapBuilder::FindOccludee(FEdge *fe,
       // check whether the edge and the polygon plane are coincident:
       //-------------------------------------------------------------
       // first let us compute the plane equation.
-      oface = (WFace *)(*p)->userdata;
+      WFace *oface = (WFace *)(*p)->userdata;
       Vec3r v1(((*p)->getVertices())[0]);
       Vec3r normal((*p)->getNormal());
       real d = -(v1 * normal);
       real t, t_u, t_v;
 
       if (face) {
-        skipFace = false;
+        bool skipFace = false;
 
         if (face == oface) {
           continue;

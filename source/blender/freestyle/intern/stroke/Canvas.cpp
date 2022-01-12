@@ -319,9 +319,8 @@ void Canvas::loadMap(const char *iFileName,
     return;
   }
 
-  ImBuf *scaledImg;
   if ((qimg->x != width()) || (qimg->y != height())) {
-    scaledImg = IMB_dupImBuf(qimg);
+    ImBuf *scaledImg = IMB_dupImBuf(qimg);
     IMB_scaleImBuf(scaledImg, width(), height());
   }
 

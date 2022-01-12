@@ -49,7 +49,6 @@ int CalligraphicShader::shade(Stroke &ioStroke) const
 {
   Interface0DIterator v;
   Functions0D::VertexOrientation2DF0D fun;
-  StrokeVertex *sv;
   for (v = ioStroke.verticesBegin(); !v.isEnd(); ++v) {
     real thickness;
     if (fun(v) < 0) {
@@ -60,7 +59,7 @@ int CalligraphicShader::shade(Stroke &ioStroke) const
     Vec2r ori2d(-vertexOri[1], vertexOri[0]);
     ori2d.normalizeSafe();
     real scal = ori2d * _orientation;
-    sv = dynamic_cast<StrokeVertex *>(&(*v));
+    StrokeVertex *sv = dynamic_cast<StrokeVertex *>(&(*v));
     if (_clamp && (scal < 0)) {
       scal = 0.0;
       sv->attribute().setColor(1, 1, 1);

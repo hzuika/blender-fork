@@ -32,14 +32,13 @@ int GetSteerableViewMapDensityF1D::operator()(Interface1D &inter)
   Interface0DIterator it = inter.pointsBegin(_sampling);
   Interface0DIterator itnext = it;
   ++itnext;
-  FEdge *fe;
   unsigned nSVM;
   vector<float> values;
 
   while (!itnext.isEnd()) {
     Interface0D &i0D = (*it);
     Interface0D &i0Dnext = (*itnext);
-    fe = i0D.getFEdge(i0Dnext);
+    FEdge *fe = i0D.getFEdge(i0Dnext);
     if (fe == nullptr) {
       cerr << "GetSteerableViewMapDensityF1D warning: no FEdge between " << i0D.getId() << " and "
            << i0Dnext.getId() << endl;

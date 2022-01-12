@@ -184,11 +184,10 @@ FEdge *SVertex::getFEdge(Interface0D &inter)
     }
   }
   if ((result == nullptr) && (iVertexB->getNature() & Nature::T_VERTEX)) {
-    SVertex *brother;
     ViewVertex *vvertex = iVertexB->viewvertex();
     TVertex *tvertex = dynamic_cast<TVertex *>(vvertex);
     if (tvertex) {
-      brother = tvertex->frontSVertex();
+      SVertex *brother = tvertex->frontSVertex();
       if (iVertexB == brother) {
         brother = tvertex->backSVertex();
       }

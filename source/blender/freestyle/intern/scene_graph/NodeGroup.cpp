@@ -50,11 +50,10 @@ int NodeGroup::destroy()
   }
 
   // If we are here, that means that nobody else needs our NodeGroup and we can destroy it.
-  int refCount = 0;
   vector<Node *>::iterator node;
 
   for (node = _Children.begin(); node != _Children.end(); ++node) {
-    refCount = (*node)->destroy();
+    int refCount = (*node)->destroy();
     if (0 == refCount) {
       delete (*node);
     }

@@ -45,7 +45,6 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
   int i, j, k, ij, nn;
   int *index;
   double a_ij;
-  double a_lm_2;
   double x;
 
   // Number of entries in mat
@@ -110,7 +109,7 @@ void semi_definite_symmetric_eigen(const double *mat, int n, double *eigen_vec, 
 
           int lm = l + mq;
           double a_lm = a[lm];
-          a_lm_2 = a_lm * a_lm;
+          double a_lm_2 = a_lm * a_lm;
 
           if (a_lm_2 < thr_nn) {
             continue;

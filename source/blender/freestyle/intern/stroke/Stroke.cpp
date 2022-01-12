@@ -544,7 +544,6 @@ int Stroke::Resample(int iNPoints)
   StrokeInternal::StrokeVertexIterator itend = strokeVerticesEnd();
 
   vertex_container newVertices;
-  real t = 0.0f;
   StrokeVertex *newVertex = nullptr;
   vector<StrokeSegment> strokeSegments;
   int N = 0;
@@ -568,9 +567,8 @@ int Stroke::Resample(int iNPoints)
 
   // if we don't have enough points let's resample finer some segments
   bool checkEveryone = false;
-  bool resampled;
   while (N < NPointsToAdd) {
-    resampled = false;
+    bool resampled = false;
     for (vector<StrokeSegment>::iterator s = strokeSegments.begin(), send = strokeSegments.end();
          s != send;
          ++s) {
@@ -611,7 +609,7 @@ int Stroke::Resample(int iNPoints)
       _sampling = s->_sampling;
     }
 
-    t = s->_sampling / s->_length;
+    real t = s->_sampling / s->_length;
     for (int i = 0; i < s->_n; ++i) {
       newVertex = new StrokeVertex(&(*(s->_begin)), &(*(s->_end)), t);
       newVertices.push_back(newVertex);
@@ -624,7 +622,7 @@ int Stroke::Resample(int iNPoints)
   // add last:
   ++it;
   ++next;
-  if ((it != itend) && (next == itend) /* && (t == 0.0f) */) {
+  if ((it != itend) && (next == itend)) {
     newVertices.push_back(&(*it));
   }
 

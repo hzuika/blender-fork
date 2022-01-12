@@ -479,7 +479,6 @@ set(SRC
   intern/system/RandGen.cpp
   intern/system/RandGen.h
   intern/system/RenderMonitor.h
-  intern/system/StringUtils.cpp
   intern/system/StringUtils.h
   intern/system/TimeStamp.cpp
   intern/system/TimeStamp.h
@@ -533,9 +532,7 @@ set(SRC
   intern/winged_edge/Nature.h
   intern/winged_edge/WEdge.cpp
   intern/winged_edge/WEdge.h
-  intern/winged_edge/WFillGrid.cpp
   intern/winged_edge/WFillGrid.h
-  intern/winged_edge/WSFillGrid.cpp
   intern/winged_edge/WSFillGrid.h
   intern/winged_edge/WXEdge.cpp
   intern/winged_edge/WXEdge.h

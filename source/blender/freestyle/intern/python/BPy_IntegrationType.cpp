@@ -210,7 +210,7 @@ static PyLongObject _IntegrationType_LAST = {
 //-------------------MODULE INITIALIZATION--------------------------------
 int IntegrationType_Init(PyObject *module)
 {
-  PyObject *m, *d, *f;
+  PyObject *m, *d;
 
   if (module == nullptr) {
     return -1;
@@ -238,7 +238,7 @@ int IntegrationType_Init(PyObject *module)
   // from Integrator import *
   d = PyModule_GetDict(m);
   for (PyMethodDef *p = module_functions; p->ml_name; p++) {
-    f = PyDict_GetItemString(d, p->ml_name);
+    PyObject *f = PyDict_GetItemString(d, p->ml_name);
     Py_INCREF(f);
     PyModule_AddObject(module, p->ml_name, f);
   }

@@ -31,7 +31,7 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
   ViewEdge::vertex_iterator v;
   ViewEdge::vertex_iterator vend;
   ViewEdge::vertex_iterator vfirst;
-  Vec3r previous, current;
+  Vec3r current;
   if (true == orientation) {
     v = iViewEdge->vertices_begin();
     vfirst = v;
@@ -44,7 +44,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
   }
 
   if (!_Vertices.empty()) {
-    previous = _Vertices.back()->point2d();
     if (orientation) {
       ++v;
     }
@@ -64,12 +63,10 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
     cp->setA(sv_first);
   }
   else {
-    previous = (*v)->point2d();
   }
   do {
     current = (*v)->point2d();
     Curve::push_vertex_back(*v);
-    previous = current;
     if (orientation) {
       ++v;
     }

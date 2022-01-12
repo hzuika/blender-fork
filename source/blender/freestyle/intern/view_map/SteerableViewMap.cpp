@@ -80,9 +80,8 @@ SteerableViewMap::~SteerableViewMap()
 
 void SteerableViewMap::Clear()
 {
-  unsigned int i;
   if (_imagesPyramids) {
-    for (i = 0; i <= _nbOrientations; ++i) {
+    for (unsigned int i = 0; i <= _nbOrientations; ++i) {
       if (_imagesPyramids[i]) {
         delete (_imagesPyramids)[i];
       }

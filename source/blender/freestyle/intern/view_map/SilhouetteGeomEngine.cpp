@@ -204,15 +204,15 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
     Vec3r Pc, Pr, Pi;
     real T_sta = 0.0;
     real T_end = 1.0;
-    real delta_x, delta_y, dist, dist_threshold = 1.0e-6;
+    real dist, dist_threshold = 1.0e-6;
     int i, max_iters = 100;
     for (i = 0; i < max_iters; i++) {
       T = T_sta + 0.5 * (T_end - T_sta);
       Pc = Ac + T * ABc;
       GeomUtils::fromCameraToRetina(Pc, Pr, _projectionMatrix);
       GeomUtils::fromRetinaToImage(Pr, Pi, _viewport);
-      delta_x = Ii[0] - Pi[0];
-      delta_y = Ii[1] - Pi[1];
+      real delta_x = Ii[0] - Pi[0];
+      real delta_y = Ii[1] - Pi[1];
       dist = sqrt(delta_x * delta_x + delta_y * delta_y);
       if (dist < dist_threshold) {
         break;

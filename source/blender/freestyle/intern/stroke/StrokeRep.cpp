@@ -339,7 +339,6 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
   }
   int i = 0, j;
   vector<StrokeVertex *>::const_iterator v, vend, v2;
-  StrokeVertex *sv, *sv2;
 
   bool singu1 = false, singu2 = false;
   int timeSinceSingu1 = 0, timeSinceSingu2 = 0;
@@ -352,8 +351,8 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
     if (v2 == vend) {
       break;
     }
-    sv = (*v);
-    sv2 = (*v2);
+    StrokeVertex *sv = (*v);
+    StrokeVertex *sv2 = (*v2);
     Vec2r p(sv->getPoint()), p2(sv2->getPoint());
 
     Vec2r dir(p2 - p);
@@ -452,10 +451,9 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
 void Strip::setVertexColor(const vector<StrokeVertex *> &iStrokeVertices)
 {
   vector<StrokeVertex *>::const_iterator v, vend;
-  StrokeVertex *sv;
   int i = 0;
   for (v = iStrokeVertices.begin(), vend = iStrokeVertices.end(); v != vend; v++) {
-    sv = (*v);
+    StrokeVertex *sv = (*v);
     _vertices[i]->setColor(Vec3r(sv->attribute().getColorRGB()));
     _vertices[i]->setAlpha(sv->attribute().getAlpha());
     i++;
@@ -471,10 +469,9 @@ void Strip::setVertexColor(const vector<StrokeVertex *> &iStrokeVertices)
 void Strip::computeTexCoord(const vector<StrokeVertex *> &iStrokeVertices, float texStep)
 {
   vector<StrokeVertex *>::const_iterator v, vend;
-  StrokeVertex *sv;
   int i = 0;
   for (v = iStrokeVertices.begin(), vend = iStrokeVertices.end(); v != vend; v++) {
-    sv = (*v);
+    StrokeVertex *sv = (*v);
     _vertices[i]->setTexCoord(
         Vec2r((real)(sv->curvilinearAbscissa() / (_averageThickness * texStep)), 0));
     i++;

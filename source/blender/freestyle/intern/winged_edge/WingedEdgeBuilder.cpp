@@ -226,9 +226,8 @@ bool WingedEdgeBuilder::buildWShape(WShape &shape, IndexedFaceSet &ifs)
 
 void WingedEdgeBuilder::buildWVertices(WShape &shape, const float *vertices, unsigned vsize)
 {
-  WVertex *vertex;
   for (unsigned int i = 0; i < vsize; i += 3) {
-    vertex = new WVertex(Vec3f(vertices[i], vertices[i + 1], vertices[i + 2]));
+    WVertex *vertex = new WVertex(Vec3f(vertices[i], vertices[i + 1], vertices[i + 2]));
     vertex->setId(i / 3);
     shape.AddVertex(vertex);
   }

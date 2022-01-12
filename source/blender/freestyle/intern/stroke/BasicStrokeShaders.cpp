@@ -188,12 +188,11 @@ int ThicknessNoiseShader::shade(Stroke &stroke) const
   real initU2 = v->strokeLength() * real(NB_VALUE_NOISE) +
                 RandGen::drand48() * real(NB_VALUE_NOISE);
 
-  real bruit, bruit2;
   PseudoNoise mynoise, mynoise2;
   for (vend = stroke.strokeVerticesEnd(); v != vend; ++v) {
-    bruit = mynoise.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU1,
+    real bruit = mynoise.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU1,
                                      2);  // 2 : nbOctaves
-    bruit2 = mynoise2.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU2,
+    real bruit2 = mynoise2.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU2,
                                        2);  // 2 : nbOctaves
     const float *originalThickness = v->attribute().getThickness();
     float r = bruit * _amplitude + originalThickness[0];
@@ -240,13 +239,12 @@ int MaterialColorShader::shade(Stroke &stroke) const
 {
   Interface0DIterator v, vend;
   Functions0D::MaterialF0D fun;
-  StrokeVertex *sv;
   for (v = stroke.verticesBegin(), vend = stroke.verticesEnd(); v != vend; ++v) {
     if (fun(v) < 0) {
       return -1;
     }
     const float *diffuse = fun.result.diffuse();
-    sv = dynamic_cast<StrokeVertex *>(&(*v));
+    StrokeVertex *sv = dynamic_cast<StrokeVertex *>(&(*v));
     sv->attribute().setColor(
         diffuse[0] * _coefficient, diffuse[1] * _coefficient, diffuse[2] * _coefficient);
     sv->attribute().setAlpha(diffuse[3]);
@@ -272,10 +270,9 @@ int ColorNoiseShader::shade(Stroke &stroke) const
   real initU = v->strokeLength() * real(NB_VALUE_NOISE) +
                RandGen::drand48() * real(NB_VALUE_NOISE);
 
-  real bruit;
   PseudoNoise mynoise;
   for (vend = stroke.strokeVerticesEnd(); v != vend; ++v) {
-    bruit = mynoise.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU,
+    real bruit = mynoise.turbulenceSmooth(_scale * v->curvilinearAbscissa() + initU,
                                      2);  // 2 : nbOctaves
     const float *originalColor = v->attribute().getColor();
     float r = bruit * _amplitude + originalColor[0];
@@ -357,13 +354,12 @@ int ExternalContourStretcherShader::shade(Stroke &stroke) const
 {
   Interface0DIterator it;
   Functions0D::Normal2DF0D fun;
-  StrokeVertex *sv;
   for (it = stroke.verticesBegin(); !it.isEnd(); ++it) {
     if (fun(it) < 0) {
       return -1;
     }
     Vec2f n(fun.result);
-    sv = dynamic_cast<StrokeVertex *>(&(*it));
+    StrokeVertex *sv = dynamic_cast<StrokeVertex *>(&(*it));
     Vec2d newPoint(sv->x() + _amount * n.x(), sv->y() + _amount * n.y());
     sv->setPoint(newPoint[0], newPoint[1]);
   }

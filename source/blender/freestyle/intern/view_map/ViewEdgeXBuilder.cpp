@@ -94,11 +94,10 @@ void ViewEdgeXBuilder::BuildViewEdges(WXShape *iWShape,
   // Now let's build sharp view edges:
   //----------------------------------
 
-  WXEdge *wxe;
   vector<WEdge *> &wedges = iWShape->getEdgeList();
   //------------------------------
   for (vector<WEdge *>::iterator we = wedges.begin(), weend = wedges.end(); we != weend; we++) {
-    wxe = dynamic_cast<WXEdge *>(*we);
+    WXEdge *wxe = dynamic_cast<WXEdge *>(*we);
     if (Nature::NO_FEATURE == wxe->nature()) {
       continue;
     }

@@ -329,10 +329,9 @@ int QuantitativeInvisibilityF0D::operator()(Interface0DIterator &iter)
 {
   ViewEdge *ve1, *ve2;
   getViewEdges(iter, ve1, ve2);
-  unsigned int qi1, qi2;
-  qi1 = ve1->qi();
+  unsigned int qi1 = ve1->qi();
   if (ve2 != nullptr) {
-    qi2 = ve2->qi();
+    unsigned int qi2 = ve2->qi();
     if (qi2 != qi1) {
       if (G.debug & G_DEBUG_FREESTYLE) {
         cout << "QuantitativeInvisibilityF0D: ambiguous evaluation for point " << iter->getId()

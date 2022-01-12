@@ -291,7 +291,6 @@ void Grid::castInfiniteRay(const Vec3r &orig,
                            OccludersSet &occluders,
                            unsigned timestamp)
 {
-  Vec3r end = Vec3r(orig + FLT_MAX * dir / dir.norm());
   bool inter = initInfiniteRay(orig, dir, timestamp);
   if (!inter) {
     return;

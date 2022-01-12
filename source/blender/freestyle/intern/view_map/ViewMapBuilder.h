@@ -174,7 +174,7 @@ class ViewMapBuilder {
                               WingedEdge &we,
                               const BBox<Vec3r> &bbox,
                               unsigned int sceneNumFaces,
-                              visibility_algo iAlgo = ray_casting,
+                              visibility_algo iAlgo = ray_casting_culled_adaptive_cumulative,
                               real epsilon = 1.0e-6);
 
   void setGrid(Grid *iGrid)
