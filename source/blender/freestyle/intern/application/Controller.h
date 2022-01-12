@@ -135,11 +135,6 @@ class Controller {
     return _suggestiveContourKrDerivativeEpsilon;
   }
 
-  void setModelsDir(const string &dir);
-  string getModelsDir() const;
-  void setModulesDir(const string &dir);
-  string getModulesDir() const;
-
   bool hitViewMapCache();
 
   void resetInterpreter();
