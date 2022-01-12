@@ -110,9 +110,6 @@ class Canvas {
   /* Basic Renders the created strokes */
   virtual void RenderBasic(const StrokeRenderer *iRenderer);
 
-  /* init the canvas */
-  virtual void init() = 0;
-
   /* Clears the Canvas (shaders stack, layers stack...) */
   void Clear();
 
@@ -123,9 +120,6 @@ class Canvas {
   virtual void readColorPixels(int x, int y, int w, int h, RGBImage &oImage) const = 0;
   /* Reads a depth pixel area from the canvas */
   virtual void readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) const = 0;
-
-  /* update the canvas (display) */
-  virtual void update() = 0;
 
   /* checks whether the canvas is empty or not */
   bool isEmpty() const

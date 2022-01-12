@@ -41,18 +41,12 @@ class AppCanvas : public Canvas {
   /** Erases the layers and clears the canvas */
   virtual void Erase();
 
-  /* init the canvas */
-  virtual void init();
-
   /** Reads a pixel area from the canvas */
   virtual void readColorPixels(int x, int y, int w, int h, RGBImage &oImage) const;
   /** Reads a depth pixel area from the canvas */
   virtual void readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) const;
 
   virtual BBox<Vec3r> scene3DBBox() const;
-
-  /* abstract */
-  virtual void update();
 
   /** accessors */
   virtual int width() const;

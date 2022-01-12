@@ -657,9 +657,6 @@ void Controller::init_options()
   // Visibility
   setQuantitativeInvisibility(true);
 
-  // soc: initialize canvas
-  _Canvas->init();
-
   // soc: initialize passes
   setPassDiffuse(nullptr, 0, 0);
   setPassZ(nullptr, 0, 0);

@@ -126,7 +126,6 @@ void Canvas::Draw()
 
 void Canvas::postDraw()
 {
-  update();
 }
 
 void Canvas::Clear()
@@ -171,7 +170,6 @@ void Canvas::Erase()
   if (_steerableViewMap) {
     _steerableViewMap->Reset();
   }
-  update();
 
   stroke_count = 0;
 }

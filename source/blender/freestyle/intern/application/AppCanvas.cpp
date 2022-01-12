@@ -87,10 +87,6 @@ void AppCanvas::preDraw()
   Canvas::preDraw();
 }
 
-void AppCanvas::init()
-{
-}
-
 void AppCanvas::postDraw()
 {
   for (unsigned int i = 0; i < _StyleModules.size(); i++) {
@@ -173,10 +169,6 @@ void AppCanvas::readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) c
     }
   }
   oImage.setArray(z, xsch, ysch, w, h, x, y, false);
-}
-
-void AppCanvas::update()
-{
 }
 
 } /* namespace Freestyle */
