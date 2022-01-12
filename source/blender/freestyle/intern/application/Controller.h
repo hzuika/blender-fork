@@ -63,7 +63,6 @@ class Controller {
   int LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph);
   void CloseFile();
   void ComputeViewMap();
-  void saveSteerableViewMapImages();
   void toggleEdgeTesselationNature(Nature::EdgeNature iNature);
   int DrawStrokes();
   void ResetRenderCount();
