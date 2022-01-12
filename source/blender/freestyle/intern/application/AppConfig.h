@@ -39,7 +39,6 @@ namespace Config {
 class Path {
  protected:
   static Path *_pInstance;
-  string _ProjectDir;
   string _MapsDir;
 
  public:
