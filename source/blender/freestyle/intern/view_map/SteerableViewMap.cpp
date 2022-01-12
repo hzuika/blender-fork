@@ -148,7 +148,6 @@ double *SteerableViewMap::AddFEdge(FEdge *iFEdge)
 
 unsigned SteerableViewMap::getSVMNumber(Vec2f dir)
 {
-  // soc unsigned res = 0;
   real norm = dir.norm();
   if (norm < 1.0e-6) {
     return _nbOrientations + 1;
@@ -197,7 +196,6 @@ float SteerableViewMap::readSteerableViewMapPixel(unsigned iOrientation, int iLe
   if ((x < 0) || (x >= pyramid->width()) || (y < 0) || (y >= pyramid->height())) {
     return 0;
   }
-  // float v = pyramid->pixel(x, pyramid->height() - 1 - y, iLevel) * 255.0f;
   // We encode both the directionality and the lines counting on 8 bits (because of frame buffer).
   // Thus, we allow until 8 lines to pass through the same pixel, so that we can discretize the
   // Pi/_nbOrientations angle into 32 slices. Therefore, for example, in the vertical direction, a

@@ -74,7 +74,6 @@ NodeGroup *StrokeTesselator::Tesselate(StrokeVertexIterator begin, StrokeVertexI
   NodeGroup *group = new NodeGroup;
   NodeShape *tshape = new NodeShape;
   group->AddChild(tshape);
-  // tshape->material().setDiffuse(0.0f, 0.0f, 0.0f, 1.0f);
   tshape->setFrsMaterial(_FrsMaterial);
 
   for (StrokeVertexIterator c = begin, cend = end; c != cend; c++) {

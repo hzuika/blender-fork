@@ -192,7 +192,6 @@ class orientedViewEdgeIterator : public Iterator {
   virtual ViewVertex::directedViewEdge &operator*() const
   {
     if (_Nature & Nature::T_VERTEX) {
-      // return _tvertex_iter;
       return **_tvertex_iter;
     }
     else {

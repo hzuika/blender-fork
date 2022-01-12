@@ -66,7 +66,6 @@ struct epsilonEquals {
   }
 };
 
-// typedef hash_map<Vec3r, SVertex*, SVertexHasher, epsilonEquals> SVertexMap;
 typedef map<Vec3r, SVertex *> SVertexMap;
 
 class WXFaceLayer;
@@ -265,9 +264,6 @@ class ViewEdgeXBuilder {
   /** instantiate a ViewVertex from a SVertex, if it doesn't exist yet */
   ViewVertex *MakeViewVertex(SVertex *iSVertex);
 
-  // oldtmp values
-  // IdHashTable _hashtable;
-  // VVIdHashTable _multivertexHashTable;
   SVertexMap _SVertexMap;
   SShape *_pCurrentSShape;
   ViewShape *_pCurrentVShape;

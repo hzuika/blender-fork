@@ -199,7 +199,6 @@ class CurvePoint : public Interface0D {
   SVertex *__A;
   SVertex *__B;
   float _t2d;
-  // float _t3d;
   Vec3r _Point2d;
   Vec3r _Point3d;
 
@@ -226,8 +225,6 @@ class CurvePoint : public Interface0D {
    *    The 2D interpolation parameter used to linearly interpolate \a iA and \a iB.
    */
   CurvePoint(CurvePoint *iA, CurvePoint *iB, float t);
-
-  // CurvePoint(SVertex *iA, SVertex *iB, float t2d, float t3d);
 
   /** Copy Constructor. */
   CurvePoint(const CurvePoint &iBrother);

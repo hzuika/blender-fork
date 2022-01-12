@@ -115,7 +115,6 @@ class StrokeRenderer {
   virtual void RenderStrokeRep(StrokeRep *iStrokeRep) const = 0;
   virtual void RenderStrokeRepBasic(StrokeRep *iStrokeRep) const = 0;
 
-  // static unsigned int getTextureIndex(unsigned int index);
   static TextureManager *_textureManager;
 
 #ifdef WITH_CXX_GUARDEDALLOC

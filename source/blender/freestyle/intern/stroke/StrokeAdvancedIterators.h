@@ -59,7 +59,6 @@ class vertex_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTa
 
  public:
   friend class Stroke;
-  // friend class vertex_iterator;
 
   inline vertex_iterator_base() : parent_class()
   {

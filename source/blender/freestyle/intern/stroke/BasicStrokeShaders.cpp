@@ -355,7 +355,6 @@ int SamplingShader::shade(Stroke &stroke) const
 
 int ExternalContourStretcherShader::shade(Stroke &stroke) const
 {
-  // float l = stroke.getLength2D();
   Interface0DIterator it;
   Functions0D::Normal2DF0D fun;
   StrokeVertex *sv;
@@ -582,7 +581,6 @@ int PolygonalizationShader::shade(Stroke &stroke) const
     Vec2d u = (*cp)->B - (*cp)->A;
     Vec2d n(u[1], -u[0]);
     n.normalize();
-    // Vec2d n(0, 0);
     float offset = ((*cp)->_error);
     StrokeInternal::StrokeVertexIterator v;
     for (v = a; v != b; ++v) {

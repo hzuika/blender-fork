@@ -170,8 +170,6 @@ class StrokeRep {
   Material *_material;
   bool _hasTex;
 
-  // float _averageTextureAlpha;
-
  public:
   StrokeRep();
   StrokeRep(const StrokeRep &);

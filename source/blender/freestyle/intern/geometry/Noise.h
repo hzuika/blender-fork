@@ -71,8 +71,6 @@ class Noise {
   float g3[_NOISE_B + _NOISE_B + 2][3];
   float g2[_NOISE_B + _NOISE_B + 2][2];
   float g1[_NOISE_B + _NOISE_B + 2];
-  /* UNUSED */
-  // int start;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:Noise")

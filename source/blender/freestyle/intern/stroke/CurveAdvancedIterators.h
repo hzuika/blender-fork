@@ -131,7 +131,6 @@ class __point_iterator : public IteratorBase<Traits, BidirectionalIteratorTag_Tr
 
   inline Self &operator=(const Self &iBrother)
   {
-    //((bidirectional_point_iterator*)this)->operator=(iBrother);
     __A = iBrother.__A;
     __B = iBrother.__B;
     _begin = iBrother._begin;

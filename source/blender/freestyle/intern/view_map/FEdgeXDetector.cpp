@@ -203,8 +203,8 @@ void FEdgeXDetector::computeCurvatures(WXVertex *vertex)
     ncycle.end();
     C->K1 = ncycle.kmin();
     C->K2 = ncycle.kmax();
-    C->e1 = ncycle.Kmax();  // ncycle.kmin() * ncycle.Kmax();
-    C->e2 = ncycle.Kmin();  // ncycle.kmax() * ncycle.Kmin();
+    C->e1 = ncycle.Kmax();
+    C->e2 = ncycle.Kmin();
 
     real absK1 = fabs(C->K1);
     _meanK1 += absK1;
@@ -402,7 +402,6 @@ void FEdgeXDetector::ProcessCreaseEdge(WXEdge *iEdge)
 void FEdgeXDetector::processRidgesAndValleysShape(WXShape *iWShape)
 {
   // Don't forget to add the built layer to the face at the end of the ProcessFace:
-  // iFace->AddSmoothLayer(faceLayer);
 
   if (!_computeViewIndependent) {
     return;

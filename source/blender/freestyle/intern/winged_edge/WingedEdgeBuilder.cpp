@@ -43,7 +43,6 @@ void WingedEdgeBuilder::visitIndexedFaceSet(IndexedFaceSet &ifs)
     return;
   }
   shape->setId(ifs.getId().getFirst());
-  // ifs.setId(shape->GetId());
 }
 
 void WingedEdgeBuilder::visitNodeShape(NodeShape &ns)
@@ -81,7 +80,6 @@ bool WingedEdgeBuilder::buildWShape(WShape &shape, IndexedFaceSet &ifs)
 {
   unsigned int vsize = ifs.vsize();
   unsigned int nsize = ifs.nsize();
-  // soc unused - unsigned tsize = ifs.tsize();
 
   const float *vertices = ifs.vertices();
   const float *normals = ifs.normals();
@@ -249,7 +247,6 @@ void WingedEdgeBuilder::buildTriangleStrip(const float * /*vertices*/,
 {
   unsigned nDoneVertices = 2;  // number of vertices already treated
   unsigned nTriangle = 0;      // number of the triangle currently being treated
-  // int nVertex = 0;            // vertex number
 
   WShape *currentShape = _current_wshape;  // the current shape being built
   vector<WVertex *> triangleVertices;

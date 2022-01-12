@@ -76,9 +76,6 @@ class GeomCleaner {
 #endif
 };
 
-/** Binary operators */
-// inline bool operator<(const IndexedVertex& iv1, const IndexedVertex& iv2);
-
 /** Class Indexed Vertex. Used to represent an indexed vertex by storing the vertex coordinates as
  * well as its index */
 class IndexedVertex {

@@ -407,7 +407,6 @@ Stroke::Stroke()
   _Length = 0;
   _id = 0;
   _sampling = FLT_MAX;
-  //_mediumType = DEFAULT_STROKE;
   _mediumType = OPAQUE_MEDIUM;
   _textureId = 0;
   _textureStep = 1.0;
@@ -643,7 +642,6 @@ int Stroke::Resample(int iNPoints)
 
 int Stroke::Resample(float iSampling)
 {
-  // cerr << "old size :" << strokeVerticesSize() << endl;
   if (iSampling == 0) {
     return 0;
   }
@@ -653,7 +651,6 @@ int Stroke::Resample(float iSampling)
 
   _sampling = iSampling;
   // Resample...
-  // real curvilinearLength = 0.0f;
   vertex_container newVertices;
   real t = 0.0f;
   const real limit = 0.99;
@@ -669,17 +666,14 @@ int Stroke::Resample(float iSampling)
     Vec2r vec_tmp(b - a);
     real norm_var = vec_tmp.norm();
     if (norm_var <= _sampling) {
-      // curvilinearLength += norm_var;
       ++it;
       ++next;
       continue;
     }
 
-    // curvilinearLength += _sampling;
     t = _sampling / norm_var;
     while (t < limit) {
       newVertex = new StrokeVertex(&(*it), &(*next), t);
-      // newVertex->setCurvilinearAbscissa(curvilinearLength);
       newVertices.push_back(newVertex);
       t = t + _sampling / norm_var;
     }
@@ -832,7 +826,6 @@ Stroke::vertex_iterator Stroke::vertices_begin(float sampling)
     Resample(sampling);
   }
   return vertex_iterator(_Vertices.begin(), _Vertices.begin(), _Vertices.end());
-  // return _Vertices.begin();
 }
 
 } /* namespace Freestyle */

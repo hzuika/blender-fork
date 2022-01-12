@@ -31,8 +31,6 @@
 #include "../view_map/ViewMapAdvancedIterators.h"
 #include "../view_map/ViewMapIterators.h"
 
-// using namespace ViewEdgeInternal;
-
 namespace Freestyle {
 
 //

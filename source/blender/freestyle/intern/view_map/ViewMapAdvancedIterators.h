@@ -172,7 +172,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   {
     if (_Nature & Nature::T_VERTEX) {
       return (_tvertex_iter == _tbegin);
-      // return (_tvertex_iter == _feA);
     }
     else {
       return (_nontvertex_iter == _begin);
@@ -182,7 +181,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   virtual bool end() const
   {
     if (_Nature & Nature::T_VERTEX) {
-      // return (_tvertex_iter.first == 0);
       return (_tvertex_iter == _tend);
     }
     else {
@@ -227,7 +225,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   virtual reference operator*() const
   {
     if (_Nature & Nature::T_VERTEX) {
-      // return _tvertex_iter;
       return **_tvertex_iter;
     }
     else {
@@ -283,8 +280,6 @@ class edge_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTag_
 
  public:
   mutable value_type _ViewEdge;
-  // friend class edge_iterator_base<Nonconst_traits<ViewEdge*> >;
-  // friend class edge_iterator_base<Const_traits<ViewEdge*> >;
   value_type _first;
   bool _orientation;
   typedef IteratorBase<Traits, BidirectionalIteratorTag_Traits> parent_class;
@@ -357,7 +352,6 @@ class edge_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTag_
   // operator corresponding to ++i
   inline Self &operator++()
   {
-    //++_ViewEdge->getTimeStamp();
     increment();
     return *this;
   }
@@ -366,7 +360,6 @@ class edge_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTag_
   // That's why we store the value in a temp.
   inline Self operator++(int)
   {
-    //++_ViewEdge->getTimeStamp();
     Self tmp = *this;
     increment();
     return tmp;
@@ -375,7 +368,6 @@ class edge_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTag_
   // operator corresponding to --i
   inline Self &operator--()
   {
-    //++_ViewEdge->getTimeStamp();
     decrement();
     return *this;
   }
@@ -384,7 +376,6 @@ class edge_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTag_
   // That's why we store the value in a temp.
   inline Self operator--(int)
   {
-    //++_ViewEdge->getTimeStamp();
     Self tmp = *this;
     decrement();
     return tmp;

@@ -56,7 +56,6 @@ class CurvePointIterator : public Interface0DIteratorNested {
     _step = step;
     _CurvilinearLength = 0.0f;
     _t = 0.0f;
-    //_Point = 0;
     _n = 0;
     _currentn = 0;
     _CurveLength = 0;

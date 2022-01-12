@@ -93,9 +93,6 @@ void ViewEdgeXBuilder::BuildViewEdges(WXShape *iWShape,
 
   // Now let's build sharp view edges:
   //----------------------------------
-  // Reset all userdata for WXEdge structure
-  //----------------------------------------
-  // iWShape->ResetUserData();
 
   WXEdge *wxe;
   vector<WEdge *> &wedges = iWShape->getEdgeList();

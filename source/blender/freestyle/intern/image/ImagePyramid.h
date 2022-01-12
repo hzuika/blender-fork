@@ -42,7 +42,6 @@ class ImagePyramid {
   {
   }
   ImagePyramid(const ImagePyramid &iBrother);
-  // ImagePyramid(const GrayImage& level0, unsigned nbLevels);
   virtual ~ImagePyramid();
 
   /** Builds the pyramid.

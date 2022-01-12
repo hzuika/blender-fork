@@ -56,7 +56,6 @@ using namespace Geometry;
 class ViewMapBuilder {
  private:
   ViewMap *_ViewMap;  // result
-  // SilhouetteGeomEngine _GeomEngine;
   ProgressBar *_pProgressBar;
   RenderMonitor *_pRenderMonitor;
   Vec3r _viewpoint;

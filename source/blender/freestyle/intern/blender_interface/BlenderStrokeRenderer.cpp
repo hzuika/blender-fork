@@ -95,12 +95,12 @@ BlenderStrokeRenderer::BlenderStrokeRenderer(Render *re, int render_count)
   freestyle_scene = BKE_scene_add(freestyle_bmain, name);
   freestyle_scene->r.cfra = old_scene->r.cfra;
   freestyle_scene->r.mode = old_scene->r.mode & ~(R_EDGE_FRS | R_BORDER);
-  freestyle_scene->r.xsch = re->rectx;    // old_scene->r.xsch
-  freestyle_scene->r.ysch = re->recty;    // old_scene->r.ysch
-  freestyle_scene->r.xasp = 1.0f;         // old_scene->r.xasp;
-  freestyle_scene->r.yasp = 1.0f;         // old_scene->r.yasp;
-  freestyle_scene->r.size = 100;          // old_scene->r.size
-  freestyle_scene->r.color_mgt_flag = 0;  // old_scene->r.color_mgt_flag;
+  freestyle_scene->r.xsch = re->rectx;
+  freestyle_scene->r.ysch = re->recty;
+  freestyle_scene->r.xasp = 1.0f;
+  freestyle_scene->r.yasp = 1.0f;
+  freestyle_scene->r.size = 100;
+  freestyle_scene->r.color_mgt_flag = 0;
   freestyle_scene->r.scemode = (old_scene->r.scemode &
                                 ~(R_SINGLE_LAYER | R_NO_FRAME_UPDATE | R_MULTIVIEW)) &
                                (re->r.scemode);

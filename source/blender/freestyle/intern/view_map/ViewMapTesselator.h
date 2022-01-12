@@ -156,7 +156,6 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
   NodeGroup *group = new NodeGroup;
   NodeShape *tshape = new NodeShape;
   group->AddChild(tshape);
-  // tshape->frs_material().setDiffuse(0.0f, 0.0f, 0.0f, 1.0f);
   tshape->setFrsMaterial(_FrsMaterial);
 
   LineRep *line;
@@ -165,8 +164,6 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
   FEdge *nextFEdge, *currentEdge;
 
   int id = 0;
-  // for (vector<ViewEdge*>::const_iterator c = viewedges.begin(), cend = viewedges.end(); c !=
-  // cend; c++)
   for (ViewEdgesIterator c = begin, cend = end; c != cend; c++) {
     firstEdge = (*c)->fedgeA();
 
@@ -178,25 +175,20 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
     // there might be chains containing a single element
     if (0 == (firstEdge)->nextEdge()) {
       line->setStyle(LineRep::LINES);
-      // line->AddVertex((*c)->vertexA()->point3D());
-      // line->AddVertex((*c)->vertexB()->point3D());
       AddVertexToLine(line, firstEdge->vertexA());
       AddVertexToLine(line, firstEdge->vertexB());
     }
     else {
       line->setStyle(LineRep::LINE_STRIP);
 
-      // firstEdge = (*c);
       nextFEdge = firstEdge;
       currentEdge = firstEdge;
       do {
-        // line->AddVertex(nextFEdge->vertexA()->point3D());
         AddVertexToLine(line, nextFEdge->vertexA());
         currentEdge = nextFEdge;
         nextFEdge = nextFEdge->nextEdge();
       } while ((nextFEdge != NULL) && (nextFEdge != firstEdge));
       // Add the last vertex
-      // line->AddVertex(currentEdge->vertexB()->point3D());
       AddVertexToLine(line, currentEdge->vertexB());
     }
 

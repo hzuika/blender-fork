@@ -238,7 +238,6 @@ class WVertex {
 
     // dereferencing
     virtual WOEdge *operator*();
-    // virtual WOEdge **operator->();
    protected:
     virtual void increment();
 
@@ -322,7 +321,6 @@ class WVertex {
 
     // dereferencing
     virtual WFace *operator*();
-    // virtual WOEdge **operator->();
 
    protected:
     inline void increment()

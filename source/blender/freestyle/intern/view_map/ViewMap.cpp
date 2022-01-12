@@ -240,7 +240,6 @@ ViewVertex *ViewMap::InsertViewVertex(SVertex *iVertex, vector<ViewEdge *> &newV
     ViewEdge *newVEdge = new ViewEdge(vva, ioEdge->B(), fbegin, ioEdge->fedgeB(), vshape);
     newVEdge->setId(Id(ioEdge->getId().getFirst(), ioEdge->getId().getSecond() + 1));
     newVEdge->setNature(ioEdge->getNature());
-    // newVEdge->UpdateFEdges(); // done in the ViewEdge constructor
     // Update old ViewEdge
     ioEdge->setB(vva);
     ioEdge->setFEdgeB(fend);
@@ -258,12 +257,9 @@ ViewVertex *ViewMap::InsertViewVertex(SVertex *iVertex, vector<ViewEdge *> &newV
       vvb->Replace(ioEdge, newVEdge);
     }
 
-    // update ViewShape
-    // vshape->AddEdge(newVEdge);
     // update SShape
     vshape->sshape()->AddChain(fbegin);
     // update ViewMap
-    //_VEdges.push_back(newVEdge);
     newViewEdges.push_back(newVEdge);
   }
 
@@ -424,27 +420,21 @@ void TVertex::Replace(ViewEdge *iOld, ViewEdge *iNew)
 /** iterators access */
 ViewVertex::edge_iterator TVertex::edges_begin()
 {
-  // return edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB, _FrontEdgeA);
   return edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.begin());
 }
 
 ViewVertex::const_edge_iterator TVertex::edges_begin() const
 {
-  // return const_edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB, _FrontEdgeA);
   return const_edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.begin());
 }
 
 ViewVertex::edge_iterator TVertex::edges_end()
 {
-  // return edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB,
-  // directedViewEdge(0,true));
   return edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.end());
 }
 
 ViewVertex::const_edge_iterator TVertex::edges_end() const
 {
-  // return const_edge_iterator(_FrontEdgeA, _FrontEdgeB, _BackEdgeA, _BackEdgeB,
-  // directedViewEdge(0, true));
   return const_edge_iterator(_sortedEdges.begin(), _sortedEdges.end(), _sortedEdges.end());
 }
 

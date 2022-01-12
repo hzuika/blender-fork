@@ -233,7 +233,6 @@ int Controller::LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph
   _RootNode->UpdateBBox();  // FIXME: Correct that by making a Renderer to compute the bbox
 
   _pView->setModel(_RootNode);
-  //_pView->FitBBox();
 
   if (_pRenderMonitor->testBreak()) {
     return 0;
@@ -259,7 +258,6 @@ int Controller::LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph
     _RootNode->AddChild(new NodeViewLayer(*re->scene, *view_layer));
 
     sceneHashFunc.reset();
-    // blenderScene->accept(sceneHashFunc);
     _RootNode->accept(sceneHashFunc);
     if (G.debug & G_DEBUG_FREESTYLE) {
       cout << "Scene hash       : " << sceneHashFunc.toString() << endl;
@@ -631,7 +629,6 @@ void Controller::toggleLayer(unsigned index, bool iDisplay)
 
 void Controller::setModified(unsigned index, bool iMod)
 {
-  //_pStyleWindow->setModified(index, iMod);
   _Canvas->setModified(index, iMod);
   updateCausalStyleModules(index + 1);
 }
@@ -641,14 +638,12 @@ void Controller::updateCausalStyleModules(unsigned index)
   vector<unsigned> vec;
   _Canvas->causalStyleModules(vec, index);
   for (vector<unsigned>::const_iterator it = vec.begin(); it != vec.end(); it++) {
-    //_pStyleWindow->setModified(*it, true);
     _Canvas->setModified(*it, true);
   }
 }
 
 void Controller::resetModified(bool iMod)
 {
-  //_pStyleWindow->resetModified(iMod);
   _Canvas->resetModified(iMod);
 }
 

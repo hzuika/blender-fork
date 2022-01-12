@@ -155,7 +155,6 @@ static BezierCurve GenerateBezier(
 
     C[0][0] += V2Dot(&A[0], &A[0]);
     C[0][1] += V2Dot(&A[0], &A[1]);
-    //      C[1][0] += V2Dot(&A[0], &A[1]);
     C[1][0] = C[0][1];
     C[1][1] += V2Dot(&A[1], &A[1]);
 

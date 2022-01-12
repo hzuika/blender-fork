@@ -108,7 +108,6 @@ static bool notValid(Vec2r p)
 
 void Strip::createStrip(const vector<StrokeVertex *> &iStrokeVertices)
 {
-  // computeParameterization();
   if (iStrokeVertices.size() < 2) {
     if (G.debug & G_DEBUG_FREESTYLE) {
       cout << "Warning: strip has less than 2 vertices" << endl;
@@ -335,7 +334,6 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
     }
   }
 
-  // return;
   if (iStrokeVertices.size() < 2) {
     return;
   }
@@ -385,7 +383,6 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
         for (j = i - timeSinceSingu1; j <= i; j++) {
           _vertices[2 * j]->setPoint2d(avP);
         }
-        //_vertex[2 * j] = _vertex[2 * i];
         singu1 = false;
         timeSinceSingu1 = 0;
       }
@@ -409,7 +406,6 @@ void Strip::cleanUpSingularities(const vector<StrokeVertex *> &iStrokeVertices)
         for (j = i - timeSinceSingu2; j <= i; j++) {
           _vertices[2 * j + 1]->setPoint2d(avP);
         }
-        //_vertex[2 * j + 1] = _vertex[2 * i + 1];
         singu2 = false;
         timeSinceSingu2 = 0;
       }
@@ -698,7 +694,6 @@ StrokeRep::StrokeRep(Stroke *iStroke)
 
 StrokeRep::StrokeRep(const StrokeRep &iBrother)
 {
-  // soc unused - int i = 0;
   _stroke = iBrother._stroke;
   _strokeType = iBrother._strokeType;
   _textureId = iBrother._textureId;

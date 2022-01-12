@@ -70,8 +70,6 @@ class SphericalGrid {
  private:
   struct Cell {
     // Can't store Cell in a vector without copy and assign
-    // Cell(const Cell& other);
-    // Cell& operator=(const Cell& other);
 
     explicit Cell() = default;
 
@@ -82,7 +80,6 @@ class SphericalGrid {
     void indexPolygons();
 
     real boundary[4];
-    // deque<OccluderData*> faces;
     vector<OccluderData *> faces;
   };
 
@@ -123,7 +120,6 @@ class SphericalGrid {
     Vec3r _target;
     bool _foundOccludee;
     real _occludeeDepth;
-    // deque<OccluderData*>::iterator _current, _occludeeCandidate;
     vector<OccluderData *>::iterator _current, _occludeeCandidate;
 
 #ifdef WITH_CXX_GUARDEDALLOC
@@ -172,7 +168,6 @@ class SphericalGrid {
   void getCellCoordinates(const Vec3r &point, unsigned &x, unsigned &y);
 
   typedef PointerSequence<vector<Cell *>, Cell *> cellContainer;
-  // typedef PointerSequence<deque<OccluderData*>, OccluderData*> occluderContainer;
   typedef PointerSequence<vector<OccluderData *>, OccluderData *> occluderContainer;
   unsigned _cellsX, _cellsY;
   float _cellSize;

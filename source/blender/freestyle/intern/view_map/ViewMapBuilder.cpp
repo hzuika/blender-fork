@@ -272,8 +272,6 @@ static int computeVisibility(ViewMap *viewMap,
           }
 
           WFace *sface = (*ie)->GetbFace();
-          // WFace *sfacea = (*ie)->GetaFace();
-          // if ((sface == oface) || (sfacea == oface))
           if (sface == oface) {
             skipFace = true;
             break;

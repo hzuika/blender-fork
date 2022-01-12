@@ -398,7 +398,6 @@ class SVertex : public Interface0D {
     return *(_Normals.begin());
   }
 
-  // Material material() const ;
   const SShape *shape() const;
   float shape_importance() const;
 
@@ -460,22 +459,11 @@ class FEdge : public Interface1D {
     return _Id;
   }
 
- public:
-  // An edge can only be of one kind (SILHOUETTE or BORDER, etc...)
-  // For an multi-nature edge there must be several different FEdge.
-  //  DEBUG:
-  //  Vec3r A;
-  //  Vec3r u;
-  //  vector<Polygon3r> _Occludees;
-  //  Vec3r intersection;
-  //  vector<Vec3i> _Cells;
-
  protected:
   SVertex *_VertexA;
   SVertex *_VertexB;
   Id _Id;
   Nature::EdgeNature _Nature;
-  // vector<Polygon3r> _Occluders; // visibility // NOT HANDLED BY THE COPY CONSTRUCTOR!!
 
   FEdge *_NextEdge;  // next edge on the chain
   FEdge *_PreviousEdge;
@@ -509,7 +497,6 @@ class FEdge : public Interface1D {
     _NextEdge = NULL;
     _PreviousEdge = NULL;
     _ViewEdge = NULL;
-    //_hasVisibilityPoint = false;
     _occludeeEmpty = true;
     _isSmooth = false;
     _isInImage = true;
@@ -526,7 +513,6 @@ class FEdge : public Interface1D {
     _NextEdge = NULL;
     _PreviousEdge = NULL;
     _ViewEdge = NULL;
-    //_hasVisibilityPoint = false;
     _occludeeEmpty = true;
     _isSmooth = false;
     _isInImage = true;
@@ -543,9 +529,6 @@ class FEdge : public Interface1D {
     _Nature = iBrother.getNature();
     _Id = iBrother._Id;
     _ViewEdge = iBrother._ViewEdge;
-    //_hasVisibilityPoint = iBrother._hasVisibilityPoint;
-    //_VisibilityPointA = iBrother._VisibilityPointA;
-    //_VisibilityPointB = iBrother._VisibilityPointB;
     _aFace = iBrother._aFace;
     _occludeeEmpty = iBrother._occludeeEmpty;
     _isSmooth = iBrother._isSmooth;
@@ -1516,7 +1499,6 @@ class SShape {
     for (vector<SVertex *>::iterator sv = intersections.begin(), svend = intersections.end();
          sv != svend;
          sv++) {
-      // SVertex *svA = fe->vertexA();
       SVertex *svB = fe->vertexB();
 
       // We split edge AB into AA' and A'B. A' and A'B are created.
@@ -1557,7 +1539,6 @@ class SShape {
       fe->setId(id);
 
       // update edge AA' for the next pointing edge
-      // ioEdge->setNextEdge(newEdge);
       (fe)->setNextEdge(NULL);
 
       // update vertex pointing edges list:
@@ -1575,7 +1556,6 @@ class SShape {
    */
   inline FEdge *SplitEdgeIn2(FEdge *ioEdge, SVertex *ioNewVertex)
   {
-    // soc unused - SVertex *A = ioEdge->vertexA();
     SVertex *B = ioEdge->vertexB();
 
     // We split edge AB into AA' and A'B. A' and A'B are created.

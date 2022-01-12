@@ -118,18 +118,15 @@ CurvePoint::CurvePoint(CurvePoint *iA, CurvePoint *iB, float t3)
       __A = iA->A();
       __B = iA->B();
       _t2d = t1 + t3 - t1 * t3;
-      //_t2d = t3;
     }
     else if ((iA->t2d() == 1.0f) && (iB->t2d() != 0.0f)) {
       __A = iB->A();
       __B = iB->B();
-      //_t2d = t3;
       _t2d = t2 * t3;
     }
     else if ((iA->getPoint2D() - iB->getPoint2D()).norm() < 1.0e-6) {
       __A = iB->A();
       __B = iB->B();
-      //_t2d = t3;
       _t2d = t2 * t3;
     }
   }
@@ -412,7 +409,6 @@ Curve::point_iterator Curve::points_begin(float step)
   ++second;
   return point_iterator(
       _Vertices.begin(), second, _Vertices.begin(), _Vertices.end(), _nSegments, step, 0.0f, 0.0f);
-  // return point_iterator(_Vertices.begin(), second, _nSegments, step, 0.0f, 0.0f);
 }
 
 Curve::const_point_iterator Curve::points_begin(float step) const
@@ -421,7 +417,6 @@ Curve::const_point_iterator Curve::points_begin(float step) const
   ++second;
   return const_point_iterator(
       _Vertices.begin(), second, _Vertices.begin(), _Vertices.end(), _nSegments, step, 0.0f, 0.0f);
-  // return const_point_iterator(_Vertices.begin(), second, _nSegments, step, 0.0f, 0.0f);
 }
 
 Curve::point_iterator Curve::points_end(float step)
@@ -434,7 +429,6 @@ Curve::point_iterator Curve::points_end(float step)
                         step,
                         1.0f,
                         _Length);
-  // return point_iterator(_Vertices.end(), _Vertices.end(), _nSegments, step, 1.0f, _Length);
 }
 
 Curve::const_point_iterator Curve::points_end(float step) const
@@ -447,8 +441,6 @@ Curve::const_point_iterator Curve::points_end(float step) const
                               step,
                               1.0f,
                               _Length);
-  // return const_point_iterator(_Vertices.end(), _Vertices.end(), _nSegments, step, 1.0f,
-  // _Length);
 }
 
 // Adavnced Iterators access

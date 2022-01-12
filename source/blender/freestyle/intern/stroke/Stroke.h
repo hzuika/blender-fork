@@ -529,9 +529,6 @@ class Stroke : public Interface1D {
   typedef StrokeInternal::vertex_iterator_base<StrokeInternal::vertex_const_traits>
       const_vertex_iterator;
 
- public:
-  // typedef StrokeVertex vertex_type;
-
  private:
   vertex_container _Vertices;  //! The stroke's backbone vertices
   Id _id;
@@ -539,7 +536,6 @@ class Stroke : public Interface1D {
   viewedge_container _ViewEdges;
   float _sampling;
   float _textureStep;
-  // StrokeRenderer *_renderer; // mark implementation OpenGL renderer
   MediumType _mediumType;
   unsigned int _textureId;
   MTex *_mtex[MAX_MTEX];

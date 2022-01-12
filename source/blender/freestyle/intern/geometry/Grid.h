@@ -384,7 +384,6 @@ class Grid {
   real _t_end;  // To know when we are at the end of the ray
   real _t;
 
-  // OccludersSet _ray_occluders; // Set storing the occluders contained in the cells traversed by
   // a ray
   OccludersSet _occluders;  // List of all occluders inserted in the grid
 

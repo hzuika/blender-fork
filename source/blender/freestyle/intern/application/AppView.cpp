@@ -91,10 +91,10 @@ AppView::AppView(const char * /*iName*/)
 
 AppView::~AppView()
 {
-  /*int ref =*//* UNUSED */ _RootNode.destroy();
+  _RootNode.destroy();
 
   _Light.destroy();
-  /*ref =*//* UNUSED */ _p2DNode.destroy();
+  _p2DNode.destroy();
 }
 
 real AppView::distanceToSceneCenter()

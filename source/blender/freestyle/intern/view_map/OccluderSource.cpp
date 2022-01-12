@@ -39,7 +39,6 @@ void OccluderSource::buildCachedPolygon()
 {
   vector<Vec3r> vertices(GridHelpers::enumerateVertices((*currentFace)->getEdgeList()));
   // This doesn't work, because our functor's polymorphism won't survive the copy:
-  // std::transform(vertices.begin(), vertices.end(), vertices.begin(), transform);
   // so we have to do:
   for (vector<Vec3r>::iterator i = vertices.begin(); i != vertices.end(); ++i) {
     (*i) = transform(*i);
@@ -89,7 +88,6 @@ bool OccluderSource::next()
 bool OccluderSource::isValid()
 {
   // Or:
-  // return currentShapes != shapesEnd && currentFace != facesEnd;
   return valid;
 }
 

@@ -69,7 +69,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
   do {
     current = (*v)->point2d();
     Curve::push_vertex_back(*v);
-    //_Length += (current - previous).norm();
     previous = current;
     if (orientation) {
       ++v;
@@ -83,7 +82,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
     // Add last one:
     current = (*v)->point2d();
     Curve::push_vertex_back(*v);
-    //_Length += (current - previous).norm();
   }
 
   _fedgeB = (orientation) ? iViewEdge->fedgeB() : iViewEdge->fedgeA();
@@ -135,7 +133,6 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
   do {
     current = (*v)->point2d();
     Curve::push_vertex_front((*v));
-    //_Length += (current - previous).norm();
     previous = current;
     if (orientation) {
       ++v;
@@ -149,7 +146,6 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
     // Add last one:
     current = (*v)->point2d();
     Curve::push_vertex_front(*v);
-    //_Length += (current - previous).norm();
   }
 
   if (!_fedgeB) {

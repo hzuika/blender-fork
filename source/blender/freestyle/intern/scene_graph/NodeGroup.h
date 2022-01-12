@@ -56,9 +56,6 @@ class NodeGroup : public Node {
   /** Detached the specified child */
   virtual void DetachChild(Node *iChild);
 
-  /** Renders every children */
-  //  virtual void Render(Renderer *iRenderer);
-
   /** Accept the corresponding visitor */
   virtual void accept(SceneVisitor &v);
 

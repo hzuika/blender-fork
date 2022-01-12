@@ -134,8 +134,6 @@ static PyObject *ViewMap_get_closest_fedge(BPy_ViewMap *self, PyObject *args, Py
   Py_RETURN_NONE;
 }
 
-// static ViewMap *getInstance ();
-
 static PyMethodDef BPy_ViewMap_methods[] = {
     {"get_closest_viewedge",
      (PyCFunction)ViewMap_get_closest_viewedge,

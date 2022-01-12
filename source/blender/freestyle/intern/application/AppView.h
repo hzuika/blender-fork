@@ -119,16 +119,6 @@ class AppView {
     _SilhouetteRootNode->AddChild(iSilhouette);
   }
 
-  inline void Add2DSilhouette(NodeGroup * /*iSilhouette*/)
-  {
-    //_pFENode->AddChild(iSilhouette);
-  }
-
-  inline void Add2DVisibleSilhouette(NodeGroup * /*iVSilhouette*/)
-  {
-    //_pVisibleSilhouetteNode->AddChild(iVSilhouette);
-  }
-
   inline void setDebug(NodeGroup *iDebug)
   {
     if (0 != _DebugRootNode->numberOfChildren()) {
@@ -174,7 +164,6 @@ class AppView {
 
   inline void DetachVisibleSilhouette()
   {
-    //_pVisibleSilhouetteNode->DetachChildren();
     _p2DSelectionNode->destroy();
   }
 

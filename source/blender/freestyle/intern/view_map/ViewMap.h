@@ -229,7 +229,6 @@ class ViewMap {
   ViewVertex *InsertViewVertex(SVertex *iVertex, vector<ViewEdge *> &newViewEdges);
 
   /* connects a FEdge to the graph through a SVertex */
-  // FEdge *Connect(FEdge *ioEdge, SVertex *ioVertex);
 
   /* Clean temporary FEdges created by chaining */
   virtual void Clean();
@@ -1311,8 +1310,6 @@ class ViewEdge : public Interface1D {
     return false;
   }
 
-  // inline real z_discontinuity(int iCombination = 0) const;
-
   inline const SShape *shape() const
   {
     return _FEdgeA->vertexA()->shape();
@@ -1406,7 +1403,6 @@ class ViewShape {
   {
     userdata = NULL;
     _SShape = iSShape;
-    //_SShape->setViewShape(this);
   }
 
   /** Copy constructor. */
@@ -1587,7 +1583,6 @@ class ViewShape {
   inline void AddVertex(ViewVertex *iVertex)
   {
     _Vertices.push_back(iVertex);
-    //_SShape->AddNewVertex(iVertex->svertex());
   }
 
   /** Adds a ViewEdge to the list */
@@ -1595,7 +1590,6 @@ class ViewShape {
   {
     _Edges.push_back(iEdge);
     iEdge->setShape(this);
-    //_SShape->AddNewEdge(iEdge->fedge());
   }
 
   /* removes the view edge iViewEdge in the View Shape and the associated FEdge chain entry in the
@@ -1681,7 +1675,6 @@ void ViewShape::SplitEdge(FEdge *fe,
       vEdge->setA(*vv);
       vEdge->setB(*vv);
       vEdge->setFEdgeA(newEdge);
-      // FEdge *previousEdge = newEdge->previousEdge();
       vEdge->setFEdgeB(fe);
       newVEdge = vEdge;
       vEdge->fedgeA()->setViewEdge(newVEdge);
@@ -1689,10 +1682,9 @@ void ViewShape::SplitEdge(FEdge *fe,
     else {
       // while we create the view edge, it updates the "ViewEdge" pointer of every underlying
       // FEdges to this.
-      newVEdge = new ViewEdge((*vv), vvb);  //, newEdge, vEdge->fedgeB());
+      newVEdge = new ViewEdge((*vv), vvb);
       newVEdge->setNature((fe)->getNature());
       newVEdge->setFEdgeA(newEdge);
-      // newVEdge->setFEdgeB(fe);
       // If our original viewedge is made of one FEdge, then
       if ((vEdge->fedgeA() == vEdge->fedgeB()) || (fe == vEdge->fedgeB())) {
         newVEdge->setFEdgeB(newEdge);

@@ -592,7 +592,7 @@ static int __recursiveSplit(Chain *_curve,
   CurveInternal::CurvePointIterator it = second;
   CurveInternal::CurvePointIterator split = second;
   Interface0DIterator it0d = it.castToInterface0DIterator();
-  real _min = FLT_MAX;  // func(it0d);
+  real _min = FLT_MAX;
   ++it;
   CurveInternal::CurvePointIterator next = it;
   ++next;
@@ -756,8 +756,6 @@ static int __recursiveSplit(Chain *_curve,
   Interface0DIterator it0d = it.castToInterface0DIterator();
   real _min = FLT_MAX;
   ++it;
-  // real mean = 0.0f;
-  // soc unused - real variance                              = 0.0f;
   unsigned count = 0;
   CurveInternal::CurvePointIterator next = it;
   ++next;
@@ -775,16 +773,13 @@ static int __recursiveSplit(Chain *_curve,
     if (func(it0d) < 0) {
       return -1;
     }
-    // mean += func.result;
     if (func.result < _min) {
       _min = func.result;
       split = it;
       bsplit = true;
     }
   }
-  // mean /= (float)count;
 
-  // if ((!bsplit) || (mean - _min > mean)) { // we didn't find any minimum
   if (!bsplit) {  // we didn't find any minimum
     newChains.push_back(_curve);
     return 0;
@@ -1139,7 +1134,6 @@ inline int applyShading(Stroke &stroke, vector<StrokeShader *> &shaders)
 
 int Operators::create(UnaryPredicate1D &pred, vector<StrokeShader *> shaders)
 {
-  // Canvas* canvas = Canvas::getInstance();
   if (!_current_set) {
     cerr << "Warning: current set empty" << endl;
     return 0;
