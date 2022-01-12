@@ -57,8 +57,6 @@ TextureManager *TextureManager::_pInstance = nullptr;
 
 string TextureManager::_patterns_path;
 
-string TextureManager::_brushes_path;
-
 TextureManager::TextureManager()
 {
   _hasLoadedTextures = false;
@@ -107,16 +105,6 @@ void TextureManager::Options::setPatternsPath(const string &path)
 string TextureManager::Options::getPatternsPath()
 {
   return _patterns_path;
-}
-
-void TextureManager::Options::setBrushesPath(const string &path)
-{
-  _brushes_path = path;
-}
-
-string TextureManager::Options::getBrushesPath()
-{
-  return _brushes_path;
 }
 
 } /* namespace Freestyle */

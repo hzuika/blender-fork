@@ -780,7 +780,6 @@ void Controller::init_options()
 
   // Directories
   TextureManager::Options::setPatternsPath(cpath->getPatternsPath());
-  TextureManager::Options::setBrushesPath(cpath->getModelsPath());
 
   // ViewMap Format
   setComputeSteerableViewMapFlag(false);

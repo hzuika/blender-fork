@@ -73,9 +73,6 @@ class TextureManager {
   struct Options {
     static void setPatternsPath(const string &path);
     static string getPatternsPath();
-
-    static void setBrushesPath(const string &path);
-    static string getBrushesPath();
   };
 
  protected:
@@ -101,7 +98,6 @@ class TextureManager {
   bool _hasLoadedTextures;
   brushesMap _brushesMap;
   static string _patterns_path;
-  static string _brushes_path;
   unsigned int _defaultTextureId;
 
 #ifdef WITH_CXX_GUARDEDALLOC
