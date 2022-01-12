@@ -41,8 +41,6 @@ class WSFillGrid {
   {
   }
 
-  void fillGrid();
-
   /** Accessors */
   WingedEdge *getWingedEdge()
   {

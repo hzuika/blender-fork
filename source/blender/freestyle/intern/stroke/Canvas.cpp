@@ -236,22 +236,6 @@ void Canvas::SwapStyleModules(unsigned i1, unsigned i2)
   _Layers[i2] = tmp2;
 }
 
-void Canvas::ReplaceStyleModule(unsigned index, StyleModule *iStyleModule)
-{
-  unsigned i = 0;
-  for (deque<StyleModule *>::iterator s = _StyleModules.begin(), send = _StyleModules.end();
-       s != send;
-       ++s, ++i) {
-    if (i == index) {
-      if (*s) {
-        delete *s;
-      }
-      *s = iStyleModule;
-      break;
-    }
-  }
-}
-
 void Canvas::setVisible(unsigned index, bool iVisible)
 {
   _StyleModules[index]->setDisplayed(iVisible);

@@ -223,7 +223,6 @@ class Canvas {
   void InsertStyleModule(unsigned index, StyleModule *iStyleModule);
   void RemoveStyleModule(unsigned index);
   void SwapStyleModules(unsigned i1, unsigned i2);
-  void ReplaceStyleModule(unsigned index, StyleModule *iStyleModule);
   void setVisible(unsigned index, bool iVisible);
 
   inline void AddLayer(StrokeLayer *iLayer)

@@ -45,8 +45,6 @@ class WFillGrid {
   {
   }
 
-  void fillGrid();
-
   /** Accessors */
   WingedEdge *getWingedEdge()
   {

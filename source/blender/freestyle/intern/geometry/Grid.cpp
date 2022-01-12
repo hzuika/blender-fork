@@ -302,22 +302,6 @@ void Grid::castInfiniteRay(const Vec3r &orig,
   castRayInternal(visitor);
 }
 
-void Grid::initRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp)
-{
-  _ray_dir = end - orig;
-  _t_end = _ray_dir.norm();
-  _t = 0;
-  _ray_dir.normalize();
-  _timestamp = timestamp;
-
-  for (unsigned i = 0; i < 3; i++) {
-    _current_cell[i] = (unsigned)floor((orig[i] - _orig[i]) / _cell_size[i]);
-    // soc unused - unsigned u = _current_cell[i];
-    _pt[i] = orig[i] - _orig[i] - _current_cell[i] * _cell_size[i];
-  }
-  //_ray_occluders.clear();
-}
-
 bool Grid::initInfiniteRay(const Vec3r &orig, const Vec3r &dir, unsigned timestamp)
 {
   _ray_dir = dir;

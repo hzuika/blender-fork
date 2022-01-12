@@ -470,10 +470,10 @@ void Controller::setVisibilityAlgo(int algo)
   switch (algo) {
     case FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE:
       _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_cumulative;
-      break;
+      return;
     case FREESTYLE_ALGO_ADAPTIVE_CUMULATIVE:
       _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_cumulative;
-      break;
+      return;
   }
 }
 
