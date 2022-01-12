@@ -50,7 +50,6 @@ extern "C" {
 
 #include "../view_map/SteerableViewMap.h"
 #include "../view_map/ViewMap.h"
-#include "../view_map/ViewMapIO.h"
 #include "../view_map/ViewMapTesselator.h"
 
 #include "../winged_edge/Curvature.h"
@@ -806,13 +805,10 @@ void Controller::init_options()
   Config::Path *cpath = Config::Path::getInstance();
 
   // Directories
-  ViewMapIO::Options::setModelsPath(cpath->getModelsPath());
   TextureManager::Options::setPatternsPath(cpath->getPatternsPath());
   TextureManager::Options::setBrushesPath(cpath->getModelsPath());
 
   // ViewMap Format
-  ViewMapIO::Options::rmFlags(ViewMapIO::Options::FLOAT_VECTORS);
-  ViewMapIO::Options::rmFlags(ViewMapIO::Options::NO_OCCLUDERS);
   setComputeSteerableViewMapFlag(false);
 
   // Visibility
