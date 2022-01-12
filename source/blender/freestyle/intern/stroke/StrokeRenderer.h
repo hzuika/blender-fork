@@ -70,11 +70,6 @@ class TextureManager {
     return _defaultTextureId;
   }
 
-  struct Options {
-    static void setPatternsPath(const string &path);
-    static string getPatternsPath();
-  };
-
  protected:
   virtual void loadStandardBrushes() = 0;
   virtual unsigned loadBrush(string fileName, Stroke::MediumType = Stroke::OPAQUE_MEDIUM) = 0;

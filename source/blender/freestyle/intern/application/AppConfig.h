@@ -40,8 +40,6 @@ class Path {
  protected:
   static Path *_pInstance;
   string _ProjectDir;
-  string _PatternsPath;
-  string _BrushesPath;
   string _MapsDir;
 
  public:
@@ -51,10 +49,6 @@ class Path {
 
   void setRootDir(const string &iRootDir);
 
-  const string &getPatternsPath() const
-  {
-    return _PatternsPath;
-  }
   const string &getMapsDir() const
   {
     return _MapsDir;
