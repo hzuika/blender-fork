@@ -431,14 +431,6 @@ PyObject *BPy_Interface0DIterator_from_Interface0DIterator(Interface0DIterator &
   return py_if0D_it;
 }
 
-PyObject *BPy_CurvePointIterator_from_CurvePointIterator(CurveInternal::CurvePointIterator &cp_it)
-{
-  PyObject *py_cp_it = CurvePointIterator_Type.tp_new(&CurvePointIterator_Type, nullptr, nullptr);
-  ((BPy_CurvePointIterator *)py_cp_it)->cp_it = new CurveInternal::CurvePointIterator(cp_it);
-  ((BPy_CurvePointIterator *)py_cp_it)->py_it.it = ((BPy_CurvePointIterator *)py_cp_it)->cp_it;
-  return py_cp_it;
-}
-
 PyObject *BPy_StrokeVertexIterator_from_StrokeVertexIterator(
     StrokeInternal::StrokeVertexIterator &sv_it, bool reversed)
 {
@@ -448,14 +440,6 @@ PyObject *BPy_StrokeVertexIterator_from_StrokeVertexIterator(
   ((BPy_StrokeVertexIterator *)py_sv_it)->py_it.it = ((BPy_StrokeVertexIterator *)py_sv_it)->sv_it;
   ((BPy_StrokeVertexIterator *)py_sv_it)->at_start = true;
   ((BPy_StrokeVertexIterator *)py_sv_it)->reversed = reversed;
-  return py_sv_it;
-}
-
-PyObject *BPy_SVertexIterator_from_SVertexIterator(ViewEdgeInternal::SVertexIterator &sv_it)
-{
-  PyObject *py_sv_it = SVertexIterator_Type.tp_new(&SVertexIterator_Type, nullptr, nullptr);
-  ((BPy_SVertexIterator *)py_sv_it)->sv_it = new ViewEdgeInternal::SVertexIterator(sv_it);
-  ((BPy_SVertexIterator *)py_sv_it)->py_it.it = ((BPy_SVertexIterator *)py_sv_it)->sv_it;
   return py_sv_it;
 }
 
@@ -471,42 +455,6 @@ PyObject *BPy_orientedViewEdgeIterator_from_orientedViewEdgeIterator(
   ((BPy_orientedViewEdgeIterator *)py_ove_it)->at_start = true;
   ((BPy_orientedViewEdgeIterator *)py_ove_it)->reversed = reversed;
   return py_ove_it;
-}
-
-PyObject *BPy_ViewEdgeIterator_from_ViewEdgeIterator(ViewEdgeInternal::ViewEdgeIterator &ve_it)
-{
-  PyObject *py_ve_it = ViewEdgeIterator_Type.tp_new(&ViewEdgeIterator_Type, nullptr, nullptr);
-  ((BPy_ViewEdgeIterator *)py_ve_it)->ve_it = new ViewEdgeInternal::ViewEdgeIterator(ve_it);
-  ((BPy_ViewEdgeIterator *)py_ve_it)->py_it.it = ((BPy_ViewEdgeIterator *)py_ve_it)->ve_it;
-  return py_ve_it;
-}
-
-PyObject *BPy_ChainingIterator_from_ChainingIterator(ChainingIterator &c_it)
-{
-  PyObject *py_c_it = ChainingIterator_Type.tp_new(&ChainingIterator_Type, nullptr, nullptr);
-  ((BPy_ChainingIterator *)py_c_it)->c_it = new ChainingIterator(c_it);
-  ((BPy_ChainingIterator *)py_c_it)->py_ve_it.py_it.it = ((BPy_ChainingIterator *)py_c_it)->c_it;
-  return py_c_it;
-}
-
-PyObject *BPy_ChainPredicateIterator_from_ChainPredicateIterator(ChainPredicateIterator &cp_it)
-{
-  PyObject *py_cp_it = ChainPredicateIterator_Type.tp_new(
-      &ChainPredicateIterator_Type, nullptr, nullptr);
-  ((BPy_ChainPredicateIterator *)py_cp_it)->cp_it = new ChainPredicateIterator(cp_it);
-  ((BPy_ChainPredicateIterator *)py_cp_it)->py_c_it.py_ve_it.py_it.it =
-      ((BPy_ChainPredicateIterator *)py_cp_it)->cp_it;
-  return py_cp_it;
-}
-
-PyObject *BPy_ChainSilhouetteIterator_from_ChainSilhouetteIterator(ChainSilhouetteIterator &cs_it)
-{
-  PyObject *py_cs_it = ChainSilhouetteIterator_Type.tp_new(
-      &ChainSilhouetteIterator_Type, nullptr, nullptr);
-  ((BPy_ChainSilhouetteIterator *)py_cs_it)->cs_it = new ChainSilhouetteIterator(cs_it);
-  ((BPy_ChainSilhouetteIterator *)py_cs_it)->py_c_it.py_ve_it.py_it.it =
-      ((BPy_ChainSilhouetteIterator *)py_cs_it)->cs_it;
-  return py_cs_it;
 }
 
 //==============================
@@ -769,35 +717,6 @@ bool Vec3r_ptr_from_PyTuple(PyObject *obj, Vec3r &vec)
 }
 
 // helpers for argument parsing
-
-bool float_array_from_PyObject(PyObject *obj, float *v, int n)
-{
-  if (VectorObject_Check(obj) && ((VectorObject *)obj)->size == n) {
-    if (BaseMath_ReadCallback((BaseMathObject *)obj) == -1) {
-      return false;
-    }
-    for (int i = 0; i < n; i++) {
-      v[i] = ((VectorObject *)obj)->vec[i];
-    }
-    return true;
-  }
-  if (ColorObject_Check(obj) && n == 3) {
-    if (BaseMath_ReadCallback((BaseMathObject *)obj) == -1) {
-      return false;
-    }
-    for (int i = 0; i < n; i++) {
-      v[i] = ((ColorObject *)obj)->col[i];
-    }
-    return true;
-  }
-  if (PyList_Check(obj) && PyList_GET_SIZE(obj) == n) {
-    return float_array_from_PyList(obj, v, n);
-  }
-  if (PyTuple_Check(obj) && PyTuple_GET_SIZE(obj) == n) {
-    return float_array_from_PyTuple(obj, v, n);
-  }
-  return false;
-}
 
 int convert_v4(PyObject *obj, void *v)
 {

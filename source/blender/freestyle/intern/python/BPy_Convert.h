@@ -128,21 +128,10 @@ PyObject *BPy_ViewShape_from_ViewShape(Freestyle::ViewShape &vs);
 PyObject *BPy_AdjacencyIterator_from_AdjacencyIterator(Freestyle::AdjacencyIterator &a_it);
 PyObject *BPy_Interface0DIterator_from_Interface0DIterator(Freestyle::Interface0DIterator &if0D_it,
                                                            bool reversed);
-PyObject *BPy_CurvePointIterator_from_CurvePointIterator(
-    Freestyle::CurveInternal::CurvePointIterator &cp_it);
 PyObject *BPy_StrokeVertexIterator_from_StrokeVertexIterator(
     Freestyle::StrokeInternal::StrokeVertexIterator &sv_it, bool reversed);
-PyObject *BPy_SVertexIterator_from_SVertexIterator(
-    Freestyle::ViewEdgeInternal::SVertexIterator &sv_it);
 PyObject *BPy_orientedViewEdgeIterator_from_orientedViewEdgeIterator(
     Freestyle::ViewVertexInternal::orientedViewEdgeIterator &ove_it, bool reversed);
-PyObject *BPy_ViewEdgeIterator_from_ViewEdgeIterator(
-    Freestyle::ViewEdgeInternal::ViewEdgeIterator &ve_it);
-PyObject *BPy_ChainingIterator_from_ChainingIterator(Freestyle::ChainingIterator &c_it);
-PyObject *BPy_ChainPredicateIterator_from_ChainPredicateIterator(
-    Freestyle::ChainPredicateIterator &cp_it);
-PyObject *BPy_ChainSilhouetteIterator_from_ChainSilhouetteIterator(
-    Freestyle::ChainSilhouetteIterator &cs_it);
 
 //==============================
 // Python => C++
@@ -166,8 +155,6 @@ bool Vec3r_ptr_from_PyList(PyObject *obj, Freestyle::Geometry::Vec3r &vec);
 bool Vec2f_ptr_from_PyTuple(PyObject *obj, Freestyle::Geometry::Vec2f &vec);
 bool Vec3f_ptr_from_PyTuple(PyObject *obj, Freestyle::Geometry::Vec3f &vec);
 bool Vec3r_ptr_from_PyTuple(PyObject *obj, Freestyle::Geometry::Vec3r &vec);
-
-bool float_array_from_PyObject(PyObject *obj, float *v, int n);
 
 int convert_v4(PyObject *obj, void *v);
 int convert_v3(PyObject *obj, void *v);

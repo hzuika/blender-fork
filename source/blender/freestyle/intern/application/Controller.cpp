@@ -652,8 +652,6 @@ void Controller::init_options()
   // from AppOptionsWindow.cpp
   // Default init options
 
-  Config::Path *cpath = Config::Path::getInstance();
-
   // Visibility
   setQuantitativeInvisibility(true);
 
