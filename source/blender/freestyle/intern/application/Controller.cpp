@@ -147,8 +147,6 @@ Controller::~Controller()
     delete _ProgressBar;
     _ProgressBar = nullptr;
   }
-
-  // delete _current_dirs;
 }
 
 void Controller::setView(AppView *iView)
@@ -730,30 +728,6 @@ void Controller::toggleEdgeTesselationNature(Nature::EdgeNature iNature)
 {
   _edgeTesselationNature ^= (iNature);
   ComputeViewMap();
-}
-
-void Controller::setModelsDir(const string & /*dir*/)
-{
-  //_current_dirs->setValue("models/dir", dir);
-}
-
-string Controller::getModelsDir() const
-{
-  string dir = ".";
-  //_current_dirs->getValue("models/dir", dir);
-  return dir;
-}
-
-void Controller::setModulesDir(const string & /*dir*/)
-{
-  //_current_dirs->setValue("modules/dir", dir);
-}
-
-string Controller::getModulesDir() const
-{
-  string dir = ".";
-  //_current_dirs->getValue("modules/dir", dir);
-  return dir;
 }
 
 void Controller::resetInterpreter()
