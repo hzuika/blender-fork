@@ -50,7 +50,7 @@ class NodeViewLayer : public Node {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v);
+  virtual void accept(SceneVisitor &v) override;
 
  protected:
   Scene &_Scene;

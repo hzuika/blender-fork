@@ -128,14 +128,14 @@ class LineRep : public Rep {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v)
+  virtual void accept(SceneVisitor &v) override
   {
     Rep::accept(v);
     v.visitLineRep(*this);
   }
 
   /** Computes the line bounding box. */
-  virtual void ComputeBBox();
+  virtual void ComputeBBox() override;
 
  private:
   LINES_STYLE _Style;

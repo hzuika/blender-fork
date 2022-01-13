@@ -48,7 +48,7 @@ class NodeGroup : public Node {
   /** destroys all the underlying nodes
    *  Returns the reference counter after having done a release()
    */
-  virtual int destroy();
+  virtual int destroy() override;
 
   /** Detaches all the children */
   virtual void DetachChildren();
@@ -57,10 +57,10 @@ class NodeGroup : public Node {
   virtual void DetachChild(Node *iChild);
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v);
+  virtual void accept(SceneVisitor &v) override;
 
   /** Updates the BBox */
-  virtual const BBox<Vec3r> &UpdateBBox();
+  virtual const BBox<Vec3r> &UpdateBBox() override;
 
   /** Returns the number of children */
   virtual int numberOfChildren()

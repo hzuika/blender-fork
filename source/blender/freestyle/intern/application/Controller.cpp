@@ -73,8 +73,6 @@ namespace Freestyle {
 
 Controller::Controller()
 {
-  const string sep(Config::DIR_SEP);
-
   _RootNode = new NodeGroup;
   _RootNode->addRef();
 

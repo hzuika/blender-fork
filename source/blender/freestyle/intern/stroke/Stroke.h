@@ -326,7 +326,7 @@ class StrokeAttribute {
 class StrokeVertex : public CurvePoint {
  public:  // Implementation of Interface0D
   /** Returns the string "StrokeVertex" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "StrokeVertex";
   }
@@ -501,7 +501,7 @@ class StrokeVertexIterator;
 class Stroke : public Interface1D {
  public:  // Implementation of Interface1D
   /** Returns the string "Stroke" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "Stroke";
   }
@@ -509,7 +509,7 @@ class Stroke : public Interface1D {
   // Data access methods
 
   /** Returns the Id of the Stroke */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _id;
   }
@@ -857,13 +857,13 @@ class Stroke : public Interface1D {
 
   // Iterator access (Interface1D)
   /** Returns an Interface0DIterator pointing on the first StrokeVertex of the Stroke. */
-  virtual Interface0DIterator verticesBegin();
+  virtual Interface0DIterator verticesBegin() override;
 
   /** Returns an Interface0DIterator pointing after the last StrokeVertex of the Stroke. */
-  virtual Interface0DIterator verticesEnd();
+  virtual Interface0DIterator verticesEnd() override;
 
-  virtual Interface0DIterator pointsBegin(float t = 0.0f);
-  virtual Interface0DIterator pointsEnd(float t = 0.0f);
+  virtual Interface0DIterator pointsBegin(float t = 0.0f) override;
+  virtual Interface0DIterator pointsEnd(float t = 0.0f) override;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:Stroke")

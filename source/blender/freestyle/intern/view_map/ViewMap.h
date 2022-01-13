@@ -269,7 +269,7 @@ class orientedViewEdgeIterator;
 class ViewVertex : public Interface0D {
  public:  // Implementation of Interface0D
   /** Returns the string "ViewVertex". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ViewVertex";
   }
@@ -327,7 +327,7 @@ class ViewVertex : public Interface0D {
 
   /* accessors */
   /** Returns the nature of the vertex. */
-  virtual Nature::VertexNature getNature() const
+  virtual Nature::VertexNature getNature() const override
   {
     return _Nature;
   }
@@ -395,26 +395,26 @@ class TVertex : public ViewVertex {
 
  public:  // Implementation of Interface0D
   /** Returns the string "TVertex". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "TVertex";
   }
 
   // Data access methods
   /* Returns the 3D x coordinate of the vertex. Ambiguous in this case. */
-  virtual real getX() const
+  virtual real getX() const override
   {
     cerr << "Warning: getX() undefined for this point" << endl;
     return _FrontSVertex->point3D().x();
   }
 
-  virtual real getY() const
+  virtual real getY() const override
   {
     cerr << "Warning: getX() undefined for this point" << endl;
     return _FrontSVertex->point3D().y();
   }
 
-  virtual real getZ() const
+  virtual real getZ() const override
   {
     cerr << "Warning: getX() undefined for this point" << endl;
     return _FrontSVertex->point3D().z();
@@ -428,18 +428,18 @@ class TVertex : public ViewVertex {
   }
 
   /** Returns the projected 3D  x coordinate of the vertex. */
-  virtual real getProjectedX() const
+  virtual real getProjectedX() const override
   {
     return _FrontSVertex->point2D().x();
   }
 
   /** Returns the projected 3D  y coordinate of the vertex. */
-  virtual real getProjectedY() const
+  virtual real getProjectedY() const override
   {
     return _FrontSVertex->point2D().y();
   }
 
-  virtual real getProjectedZ() const
+  virtual real getProjectedZ() const override
   {
     return _FrontSVertex->point2D().z();
   }
@@ -451,20 +451,20 @@ class TVertex : public ViewVertex {
   }
 
   /** Returns the Id of the TVertex. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _Id;
   }
 
   /** Cast the Interface0D in SVertex if it can be. */
   // it can't
-  virtual ViewVertex *castToViewVertex()
+  virtual ViewVertex *castToViewVertex() override
   {
     return this;
   }
 
   /** Cast the Interface0D in TVertex if it can be. */
-  virtual TVertex *castToTVertex()
+  virtual TVertex *castToTVertex() override
   {
     return this;
   }
@@ -678,26 +678,26 @@ class NonTVertex : public ViewVertex {
 
  public:  // Implementation of Interface0D
   /** Returns the string "ViewVertex". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "NonTVertex";
   }
 
   // Data access methods
   /** Returns the 3D x coordinate of the vertex. */
-  virtual real getX() const
+  virtual real getX() const override
   {
     return _SVertex->point3D().x();
   }
 
   /** Returns the 3D y coordinate of the vertex. */
-  virtual real getY() const
+  virtual real getY() const override
   {
     return _SVertex->point3D().y();
   }
 
   /** Returns the 3D z coordinate of the vertex. */
-  virtual real getZ() const
+  virtual real getZ() const override
   {
     return _SVertex->point3D().z();
   }
@@ -709,19 +709,19 @@ class NonTVertex : public ViewVertex {
   }
 
   /** Returns the projected 3D  x coordinate of the vertex. */
-  virtual real getProjectedX() const
+  virtual real getProjectedX() const override
   {
     return _SVertex->point2D().x();
   }
 
   /** Returns the projected 3D  y coordinate of the vertex. */
-  virtual real getProjectedY() const
+  virtual real getProjectedY() const override
   {
     return _SVertex->point2D().y();
   }
 
   /** Returns the projected 3D  z coordinate of the vertex. */
-  virtual real getProjectedZ() const
+  virtual real getProjectedZ() const override
   {
     return _SVertex->point2D().z();
   }
@@ -733,25 +733,25 @@ class NonTVertex : public ViewVertex {
   }
 
   /** Returns the Id of the vertex. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _SVertex->getId();
   }
 
   /** Cast the Interface0D in SVertex if it can be. */
-  virtual SVertex *castToSVertex()
+  virtual SVertex *castToSVertex() override
   {
     return _SVertex;
   }
 
   /** Cast the Interface0D in ViewVertex if it can be. */
-  virtual ViewVertex *castToViewVertex()
+  virtual ViewVertex *castToViewVertex() override
   {
     return this;
   }
 
   /** Cast the Interface0D in NonTVertex if it can be. */
-  virtual NonTVertex *castToNonTVertex()
+  virtual NonTVertex *castToNonTVertex() override
   {
     return this;
   }
@@ -784,7 +784,7 @@ class NonTVertex : public ViewVertex {
   }
 
   /** Cloning method. */
-  virtual ViewVertex *duplicate()
+  virtual ViewVertex *duplicate() override
   {
     NonTVertex *clone = new NonTVertex(*this);
     return clone;
@@ -835,7 +835,7 @@ class NonTVertex : public ViewVertex {
   }
 
   /* Replaces old edge by new edge */
-  virtual void Replace(ViewEdge *iOld, ViewEdge *iNew)
+  virtual void Replace(ViewEdge *iOld, ViewEdge *iNew) override
   {
     edges_container::iterator insertedve;
     for (edges_container::iterator ve = _ViewEdges.begin(), vend = _ViewEdges.end(); ve != vend;
@@ -864,15 +864,15 @@ class NonTVertex : public ViewVertex {
    * the first ViewEdge of the list. The orientedViewEdgeIterator allows to iterate in CCW order
    * over these ViewEdges and to get the orientation for each ViewEdge (incoming/outgoing).
    */
-  virtual ViewVertexInternal::orientedViewEdgeIterator edgesBegin();
+  virtual ViewVertexInternal::orientedViewEdgeIterator edgesBegin() override;
 
   /** Returns an orientedViewEdgeIterator over the ViewEdges around this ViewVertex, pointing after
    * the last ViewEdge.
    */
-  virtual ViewVertexInternal::orientedViewEdgeIterator edgesEnd();
+  virtual ViewVertexInternal::orientedViewEdgeIterator edgesEnd() override;
 
   /** Returns an orientedViewEdgeIterator pointing to the ViewEdge given as argument. */
-  virtual ViewVertexInternal::orientedViewEdgeIterator edgesIterator(ViewEdge *iEdge);
+  virtual ViewVertexInternal::orientedViewEdgeIterator edgesIterator(ViewEdge *iEdge) override;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:NonTVertex")
@@ -911,20 +911,20 @@ template<class Traits> class vertex_iterator_base;
 class ViewEdge : public Interface1D {
  public:  // Implementation of Interface0D
   /** Returns the string "ViewEdge". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ViewEdge";
   }
 
   // Data access methods
   /** Returns the Id of the vertex. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _Id;
   }
 
   /** Returns the nature of the ViewEdge. */
-  virtual Nature::EdgeNature getNature() const
+  virtual Nature::EdgeNature getNature() const override
   {
     return _Nature;
   }
@@ -1268,7 +1268,7 @@ class ViewEdge : public Interface1D {
   /* Information access interface */
 
   /** Returns the 2D length of the Viewedge. */
-  real getLength2D() const;
+  real getLength2D() const override;
 
   inline int qi() const
   {
@@ -1343,26 +1343,26 @@ class ViewEdge : public Interface1D {
   /** Returns an Interface0DIterator to iterate over the SVertex constituting the embedding of this
    * ViewEdge. The returned Interface0DIterator points to the first SVertex of the ViewEdge.
    */
-  virtual Interface0DIterator verticesBegin();
+  virtual Interface0DIterator verticesBegin() override;
 
   /** Returns an Interface0DIterator to iterate over the SVertex constituting the embedding of this
    * ViewEdge. The returned Interface0DIterator points after the last SVertex of the ViewEdge.
    */
-  virtual Interface0DIterator verticesEnd();
+  virtual Interface0DIterator verticesEnd() override;
 
   /** Returns an Interface0DIterator to iterate over the points of this ViewEdge at a given
    * resolution. The returned Interface0DIterator points on the first Point of the ViewEdge.
    *  \param t:
    *    the sampling value.
    */
-  virtual Interface0DIterator pointsBegin(float t = 0.0f);
+  virtual Interface0DIterator pointsBegin(float t = 0.0f) override;
 
   /** Returns an Interface0DIterator to iterate over the points of this ViewEdge at a given
    * resolution. The returned Interface0DIterator points after the last Point of the ViewEdge.
    *  \param t:
    *    the sampling value.
    */
-  virtual Interface0DIterator pointsEnd(float t = 0.0f);
+  virtual Interface0DIterator pointsEnd(float t = 0.0f) override;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:ViewEdge")

@@ -71,7 +71,7 @@ class Chain : public Curve {
   }
 
   /** Returns the string "Chain" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "Chain";
   }

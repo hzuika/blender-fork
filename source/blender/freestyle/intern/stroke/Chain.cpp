@@ -31,7 +31,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
   ViewEdge::vertex_iterator v;
   ViewEdge::vertex_iterator vend;
   ViewEdge::vertex_iterator vfirst;
-  Vec3r current;
   if (true == orientation) {
     v = iViewEdge->vertices_begin();
     vfirst = v;
@@ -65,7 +64,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
   else {
   }
   do {
-    current = (*v)->point2d();
     Curve::push_vertex_back(*v);
     if (orientation) {
       ++v;
@@ -77,7 +75,6 @@ void Chain::push_viewedge_back(ViewEdge *iViewEdge, bool orientation)
 
   if (v == vfirst) {
     // Add last one:
-    current = (*v)->point2d();
     Curve::push_vertex_back(*v);
   }
 
@@ -90,7 +87,6 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
   ViewEdge::vertex_iterator v;
   ViewEdge::vertex_iterator vend;
   ViewEdge::vertex_iterator vfirst;
-  Vec3r previous, current;
   if (true == orientation) {
     v = iViewEdge->vertices_begin();
     vfirst = v;
@@ -103,7 +99,6 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
   }
 
   if (!_Vertices.empty()) {
-    previous = _Vertices.front()->point2d();
     if (orientation) {
       ++v;
     }
@@ -125,12 +120,9 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
     sv_curr->shape()->AddEdge(fe2);
   }
   else {
-    previous = (*v)->point2d();
   }
   do {
-    current = (*v)->point2d();
     Curve::push_vertex_front((*v));
-    previous = current;
     if (orientation) {
       ++v;
     }
@@ -141,7 +133,6 @@ void Chain::push_viewedge_front(ViewEdge *iViewEdge, bool orientation)
 
   if (v == vfirst) {
     // Add last one:
-    current = (*v)->point2d();
     Curve::push_vertex_front(*v);
   }
 

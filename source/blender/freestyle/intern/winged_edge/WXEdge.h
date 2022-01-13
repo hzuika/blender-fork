@@ -58,7 +58,7 @@ class WXVertex : public WVertex {
     _curvatures = new CurvatureInfo(*iBrother._curvatures);
   }
 
-  virtual WVertex *duplicate()
+  virtual WVertex *duplicate() override
   {
     WXVertex *clone = new WXVertex(*this);
     return clone;
@@ -143,7 +143,7 @@ class WXEdge : public WEdge {
     _order = iBrother._order;
   }
 
-  virtual WEdge *duplicate()
+  virtual WEdge *duplicate() override
   {
     WXEdge *clone = new WXEdge(*this);
     return clone;
@@ -526,7 +526,7 @@ class WXFace : public WFace {
     }
   }
 
-  virtual WFace *duplicate()
+  virtual WFace *duplicate() override
   {
     WXFace *clone = new WXFace(*this);
     return clone;
@@ -546,7 +546,7 @@ class WXFace : public WFace {
   }
 
   /** designed to build a specialized WEdge for use in MakeEdge */
-  virtual WEdge *instanciateEdge() const
+  virtual WEdge *instanciateEdge() const override
   {
     return new WXEdge;
   }
@@ -683,7 +683,7 @@ class WXFace : public WFace {
     _SmoothLayers.clear();
   }
 
-  virtual void ResetUserData()
+  virtual void ResetUserData() override
   {
     WFace::ResetUserData();
     for (vector<WXFaceLayer *>::iterator wxf = _SmoothLayers.begin(), wxfend = _SmoothLayers.end();
@@ -723,7 +723,7 @@ class WXShape : public WShape {
     _computeViewIndependent = iBrother._computeViewIndependent;
   }
 
-  virtual WShape *duplicate()
+  virtual WShape *duplicate() override
   {
     WXShape *clone = new WXShape(*this);
     return clone;
@@ -744,7 +744,7 @@ class WXShape : public WShape {
   }
 
   /** designed to build a specialized WFace for use in MakeFace */
-  virtual WFace *instanciateFace() const
+  virtual WFace *instanciateFace() const override
   {
     return new WXFace;
   }
@@ -759,7 +759,7 @@ class WXShape : public WShape {
    */
   virtual WFace *MakeFace(vector<WVertex *> &iVertexList,
                           vector<bool> &iFaceEdgeMarksList,
-                          unsigned iMaterialIndex);
+                          unsigned iMaterialIndex) override;
 
   /**
    * Adds a new face to the shape.
@@ -783,7 +783,7 @@ class WXShape : public WShape {
                           vector<Vec3f> &iNormalsList,
                           vector<Vec2f> &iTexCoordsList,
                           vector<bool> &iFaceEdgeMarksList,
-                          unsigned iMaterialIndex);
+                          unsigned iMaterialIndex) override;
 
   /** Reset all edges and vertices flags (which might have been set up on a previous pass) */
   virtual void Reset()

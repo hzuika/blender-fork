@@ -73,7 +73,7 @@ class NodeDrawingStyle : public NodeGroup {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v);
+  virtual void accept(SceneVisitor &v) override;
 
   /** accessors */
   inline DrawingStyle::STYLE style() const

@@ -33,25 +33,25 @@ class AppCanvas : public Canvas {
   virtual ~AppCanvas();
 
   /** operations that need to be done before a draw */
-  virtual void preDraw();
+  virtual void preDraw() override;
 
   /** operations that need to be done after a draw */
-  virtual void postDraw();
+  virtual void postDraw() override;
 
   /** Erases the layers and clears the canvas */
-  virtual void Erase();
+  virtual void Erase() override;
 
   /** Reads a pixel area from the canvas */
-  virtual void readColorPixels(int x, int y, int w, int h, RGBImage &oImage) const;
+  virtual void readColorPixels(int x, int y, int w, int h, RGBImage &oImage) const override;
   /** Reads a depth pixel area from the canvas */
-  virtual void readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) const;
+  virtual void readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) const override;
 
-  virtual BBox<Vec3r> scene3DBBox() const;
+  virtual BBox<Vec3r> scene3DBBox() const override;
 
   /** accessors */
-  virtual int width() const;
-  virtual int height() const;
-  virtual BBox<Vec2i> border() const;
+  virtual int width() const override;
+  virtual int height() const override;
+  virtual BBox<Vec2i> border() const override;
   virtual float thickness() const;
 
   AppView *_pViewer;

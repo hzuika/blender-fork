@@ -130,14 +130,14 @@ class TriangleRep : public Rep {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v)
+  virtual void accept(SceneVisitor &v) override
   {
     Rep::accept(v);
     v.visitTriangleRep(*this);
   }
 
   /** Computes the triangle bounding box. */
-  virtual void ComputeBBox();
+  virtual void ComputeBBox() override;
 };
 
 } /* namespace Freestyle */

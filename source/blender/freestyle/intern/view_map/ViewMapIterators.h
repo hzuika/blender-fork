@@ -292,7 +292,7 @@ class SVertexIterator : public Interface0DIteratorNested {
   {
   }
 
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "SVertexIterator";
   }
@@ -449,7 +449,7 @@ class ViewEdgeIterator : public Iterator {
   }
 
   /** Returns the string "ViewEdgeIterator" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ViewEdgeIterator";
   }

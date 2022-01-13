@@ -133,7 +133,7 @@ class CurvePointIterator : public Interface0DIteratorNested {
     return ret;
   }
 
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "CurvePointIterator";
   }

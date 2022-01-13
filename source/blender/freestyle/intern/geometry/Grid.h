@@ -121,7 +121,7 @@ class allOccludersGridVisitor : public GridVisitor {
   {
   }
 
-  virtual void examineOccluder(Polygon3r *occ);
+  virtual void examineOccluder(Polygon3r *occ) override;
 
   OccludersSet &occluders()
   {
@@ -168,14 +168,14 @@ class firstIntersectionGridVisitor : public GridVisitor {
   {
   }
 
-  virtual void discoverCell(Cell *cell)
+  virtual void discoverCell(Cell *cell) override
   {
     current_cell_ = cell;
   }
 
-  virtual void examineOccluder(Polygon3r *occ);
+  virtual void examineOccluder(Polygon3r *occ) override;
 
-  virtual bool stop();
+  virtual bool stop() override;
 
   Polygon3r *occluder()
   {

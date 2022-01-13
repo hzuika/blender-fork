@@ -267,7 +267,7 @@ class RGBImage : public FrsImage {
     *tmp = b;
   }
 
-  virtual float pixel(unsigned x, unsigned y) const
+  virtual float pixel(unsigned x, unsigned y) const override
   {
     float res = 0.0f;
     float *tmp = &(_rgb[3 * (y - _Oy) * _storedWidth + (x - _Ox) * 3]);
@@ -290,7 +290,7 @@ class RGBImage : public FrsImage {
                         unsigned sh,
                         unsigned x,
                         unsigned y,
-                        bool copy = true)
+                        bool copy = true) override
   {
     _width = width;
     _height = height;
@@ -306,7 +306,7 @@ class RGBImage : public FrsImage {
     memcpy(_rgb, rgb, 3 * _storedWidth * _storedHeight * sizeof(float));
   }
 
-  virtual float *getArray()
+  virtual float *getArray() override
   {
     return _rgb;
   }
@@ -386,7 +386,7 @@ class GrayImage : public FrsImage {
     _lvl[(y - _Oy) * _storedWidth + (x - _Ox)] = v;
   }
 
-  inline float pixel(unsigned x, unsigned y) const
+  inline float pixel(unsigned x, unsigned y) const override
   {
     return _lvl[(y - _Oy) * _storedWidth + (x - _Ox)];
   }
@@ -402,7 +402,7 @@ class GrayImage : public FrsImage {
                 unsigned sh,
                 unsigned x,
                 unsigned y,
-                bool copy = true)
+                bool copy = true) override
   {
     _width = width;
     _height = height;
@@ -419,7 +419,7 @@ class GrayImage : public FrsImage {
   }
 
   /** Returns the array containing the gray values. */
-  virtual float *getArray()
+  virtual float *getArray() override
   {
     return _lvl;
   }

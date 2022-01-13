@@ -62,7 +62,7 @@ using namespace Geometry;
 class CurvePoint : public Interface0D {
  public:  // Implementation of Interface0D
   /** Returns the string "CurvePoint". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "CurvePoint";
   }
@@ -116,10 +116,10 @@ class CurvePoint : public Interface0D {
     return Vec2r(_Point2d.x(), _Point2d.y());
   }
 
-  virtual FEdge *getFEdge(Interface0D &inter);
+  virtual FEdge *getFEdge(Interface0D &inter) override;
 
   /** Returns the CurvePoint's Id */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     Id id;
     if (_t2d == 0) {
@@ -157,7 +157,7 @@ class CurvePoint : public Interface0D {
   }
 
   /** Cast the Interface0D in ViewVertex if it can be. */
-  virtual ViewVertex *castToViewVertex()
+  virtual ViewVertex *castToViewVertex() override
   {
     if (_t2d == 0) {
       return __A->castToViewVertex();
@@ -169,7 +169,7 @@ class CurvePoint : public Interface0D {
   }
 
   /** Cast the Interface0D in NonTVertex if it can be. */
-  virtual NonTVertex *castToNonTVertex()
+  virtual NonTVertex *castToNonTVertex() override
   {
     if (_t2d == 0) {
       return __A->castToNonTVertex();
@@ -181,7 +181,7 @@ class CurvePoint : public Interface0D {
   }
 
   /** Cast the Interface0D in TVertex if it can be. */
-  virtual TVertex *castToTVertex()
+  virtual TVertex *castToTVertex() override
   {
     if (_t2d == 0) {
       return __A->castToTVertex();
@@ -384,7 +384,7 @@ class Curve : public Interface1D {
   virtual ~Curve();
 
   /** Returns the string "Curve" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "Curve";
   }
@@ -450,7 +450,7 @@ class Curve : public Interface1D {
   }
 
   /** Returns the Id of the 1D element. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _Id;
   }
@@ -491,24 +491,24 @@ class Curve : public Interface1D {
   /** Returns an Interface0DIterator pointing onto the first vertex of the Curve and that can
    * iterate over the \a vertices of the Curve.
    */
-  virtual Interface0DIterator verticesBegin();
+  virtual Interface0DIterator verticesBegin() override;
 
   /** Returns an Interface0DIterator pointing after the last vertex of the Curve and that can
    * iterate over the \a vertices of the Curve.
    */
-  virtual Interface0DIterator verticesEnd();
+  virtual Interface0DIterator verticesEnd() override;
 
   /** Returns an Interface0DIterator pointing onto the first point of the Curve and that can
    * iterate over the \a points of the Curve at any resolution. At each iteration a virtual
    * temporary CurvePoint is created.
    */
-  virtual Interface0DIterator pointsBegin(float t = 0.0f);
+  virtual Interface0DIterator pointsBegin(float t = 0.0f) override;
 
   /** Returns an Interface0DIterator pointing after the last point of the Curve and that can
    * iterate over the \a points of the Curve at any resolution. At each iteration a virtual
    * temporary CurvePoint is created.
    */
-  virtual Interface0DIterator pointsEnd(float t = 0.0f);
+  virtual Interface0DIterator pointsEnd(float t = 0.0f) override;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:Curve")

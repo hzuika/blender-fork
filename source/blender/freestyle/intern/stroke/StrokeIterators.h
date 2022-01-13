@@ -95,7 +95,7 @@ class StrokeVertexIterator : public Interface0DIteratorNested {
   }
 
   /** Returns the string "StrokeVertexIterator". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "StrokeVertexIterator";
   }

@@ -48,14 +48,14 @@ class VertexRep : public Rep {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v)
+  virtual void accept(SceneVisitor &v) override
   {
     Rep::accept(v);
     v.visitVertexRep(*this);
   }
 
   /** Computes the rep bounding box. */
-  virtual void ComputeBBox();
+  virtual void ComputeBBox() override;
 
   /** accessors */
   inline const int vid() const

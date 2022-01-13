@@ -81,7 +81,7 @@ class AdjacencyIterator : public Iterator {
   {
   }
 
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "AdjacencyIterator";
   }
@@ -191,7 +191,7 @@ class ChainingIterator : public ViewEdgeInternal::ViewEdgeIterator {
   }
 
   /** Returns the string "ChainingIterator" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ChainingIterator";
   }
@@ -286,7 +286,7 @@ class ChainSilhouetteIterator : public ChainingIterator {
   }
 
   /** Returns the string "ChainSilhouetteIterator" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ChainSilhouetteIterator";
   }
@@ -394,7 +394,7 @@ class ChainPredicateIterator : public ChainingIterator {
   }
 
   /** Returns the string "ChainPredicateIterator" */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "ChainPredicateIterator";
   }

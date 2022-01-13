@@ -51,7 +51,7 @@ class NodeCamera : public Node {
   }
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v);
+  virtual void accept(SceneVisitor &v) override;
 
   /** Matrix is copied */
   void setProjectionMatrix(double projection_matrix[16]);

@@ -172,10 +172,10 @@ class IndexedFaceSet : public Rep {
   virtual ~IndexedFaceSet();
 
   /** Accept the corresponding visitor */
-  virtual void accept(SceneVisitor &v);
+  virtual void accept(SceneVisitor &v) override;
 
   /** Compute the Bounding Box */
-  virtual void ComputeBBox();
+  virtual void ComputeBBox() override;
 
   /** Accessors */
   virtual const float *vertices() const

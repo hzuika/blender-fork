@@ -132,7 +132,7 @@ class Interface0DIteratorNested : public Iterator {
   {
   }
 
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "Interface0DIteratorNested";
   }
@@ -215,7 +215,7 @@ class Interface0DIterator : public Iterator {
   }
 
   /** Returns the string "Interface0DIterator". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     if (!_iterator) {
       return "Interface0DIterator";

@@ -70,26 +70,26 @@ class SShape;
 class SVertex : public Interface0D {
  public:  // Implementation of Interface0D
   /** Returns the string "SVertex". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "SVertex";
   }
 
   // Data access methods
   /** Returns the 3D x coordinate of the vertex. */
-  virtual real getX() const
+  virtual real getX() const override
   {
     return _Point3D.x();
   }
 
   /** Returns the 3D y coordinate of the vertex. */
-  virtual real getY() const
+  virtual real getY() const override
   {
     return _Point3D.y();
   }
 
   /** Returns the 3D z coordinate of the vertex. */
-  virtual real getZ() const
+  virtual real getZ() const override
   {
     return _Point3D.z();
   }
@@ -101,19 +101,19 @@ class SVertex : public Interface0D {
   }
 
   /** Returns the projected 3D  x coordinate of the vertex. */
-  virtual real getProjectedX() const
+  virtual real getProjectedX() const override
   {
     return _Point2D.x();
   }
 
   /** Returns the projected 3D  y coordinate of the vertex. */
-  virtual real getProjectedY() const
+  virtual real getProjectedY() const override
   {
     return _Point2D.y();
   }
 
   /** Returns the projected 3D  z coordinate of the vertex. */
-  virtual real getProjectedZ() const
+  virtual real getProjectedZ() const override
   {
     return _Point2D.z();
   }
@@ -125,28 +125,28 @@ class SVertex : public Interface0D {
   }
 
   /** Returns the FEdge that lies between this Svertex and the Interface0D given as argument. */
-  virtual FEdge *getFEdge(Interface0D &);
+  virtual FEdge *getFEdge(Interface0D &) override;
 
   /** Returns the Id of the vertex. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _Id;
   }
 
   /** Returns the nature of the vertex. */
-  virtual Nature::VertexNature getNature() const;
+  virtual Nature::VertexNature getNature() const override;
 
   /** Cast the Interface0D in SVertex if it can be. */
-  virtual SVertex *castToSVertex();
+  virtual SVertex *castToSVertex() override;
 
   /** Cast the Interface0D in ViewVertex if it can be. */
-  virtual ViewVertex *castToViewVertex();
+  virtual ViewVertex *castToViewVertex() override;
 
   /** Cast the Interface0D in NonTVertex if it can be. */
-  virtual NonTVertex *castToNonTVertex();
+  virtual NonTVertex *castToNonTVertex() override;
 
   /** Cast the Interface0D in TVertex if it can be. */
-  virtual TVertex *castToTVertex();
+  virtual TVertex *castToTVertex() override;
 
  public:
   typedef vector<FEdge *> fedges_container;
@@ -437,7 +437,7 @@ class ViewEdge;
 class FEdge : public Interface1D {
  public:  // Implementation of Interface0D
   /** Returns the string "FEdge". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "FEdge";
   }
@@ -445,7 +445,7 @@ class FEdge : public Interface1D {
   // Data access methods
 
   /** Returns the 2D length of the FEdge. */
-  virtual real getLength2D() const
+  virtual real getLength2D() const override
   {
     if (!_VertexA || !_VertexB) {
       return 0;
@@ -454,7 +454,7 @@ class FEdge : public Interface1D {
   }
 
   /** Returns the Id of the FEdge. */
-  virtual Id getId() const
+  virtual Id getId() const override
   {
     return _Id;
   }
@@ -570,7 +570,7 @@ class FEdge : public Interface1D {
   }
 
   /** Returns the nature of the FEdge. */
-  inline Nature::EdgeNature getNature() const
+  inline Nature::EdgeNature getNature() const override
   {
     return _Nature;
   }
@@ -802,10 +802,10 @@ class FEdge : public Interface1D {
 
   // Iterator access (Interface1D)
   /** Returns an iterator over the 2 (!) SVertex pointing to the first SVertex. */
-  virtual inline Interface0DIterator verticesBegin();
+  virtual inline Interface0DIterator verticesBegin() override;
 
   /** Returns an iterator over the 2 (!) SVertex pointing after the last SVertex. */
-  virtual inline Interface0DIterator verticesEnd();
+  virtual inline Interface0DIterator verticesEnd() override;
 
   /** Returns an iterator over the FEdge points, pointing to the first point. The difference with
    * verticesBegin() is that here we can iterate over points of the FEdge at a any given sampling.
@@ -813,7 +813,7 @@ class FEdge : public Interface1D {
    *  \param t:
    *    The sampling with which we want to iterate over points of this FEdge.
    */
-  virtual inline Interface0DIterator pointsBegin(float t = 0.0f);
+  virtual inline Interface0DIterator pointsBegin(float t = 0.0f) override;
 
   /** Returns an iterator over the FEdge points, pointing after the last point. The difference with
    * verticesEnd() is that here we can iterate over points of the FEdge at a any given sampling.
@@ -821,7 +821,7 @@ class FEdge : public Interface1D {
    *  \param t:
    *    The sampling with which we want to iterate over points of this FEdge.
    */
-  virtual inline Interface0DIterator pointsEnd(float t = 0.0f);
+  virtual inline Interface0DIterator pointsEnd(float t = 0.0f) override;
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:FEdge")
@@ -862,7 +862,7 @@ class SVertexIterator : public Interface0DIteratorNested {
     return *this;
   }
 
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "SVertexIterator";
   }
@@ -1009,7 +1009,7 @@ class FEdgeSharp : public FEdge {
 
  public:
   /** Returns the string "FEdgeSharp". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "FEdgeSharp";
   }
@@ -1045,7 +1045,7 @@ class FEdgeSharp : public FEdge {
   }
 
   /** Cloning method. */
-  virtual FEdge *duplicate()
+  virtual FEdge *duplicate() override
   {
     FEdge *clone = new FEdgeSharp(*this);
     return clone;
@@ -1156,7 +1156,7 @@ class FEdgeSmooth : public FEdge {
 
  public:
   /** Returns the string "FEdgeSmooth". */
-  virtual string getExactTypeName() const
+  virtual string getExactTypeName() const override
   {
     return "FEdgeSmooth";
   }
@@ -1195,7 +1195,7 @@ class FEdgeSmooth : public FEdge {
   }
 
   /** Cloning method. */
-  virtual FEdge *duplicate()
+  virtual FEdge *duplicate() override
   {
     FEdge *clone = new FEdgeSmooth(*this);
     return clone;

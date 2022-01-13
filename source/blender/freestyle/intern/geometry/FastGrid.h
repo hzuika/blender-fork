@@ -47,7 +47,7 @@ class FastGrid : public Grid {
    * clears the grid
    * Deletes all the cells, clears the hashtable, resets size, size of cell, number of cells.
    */
-  virtual void clear();
+  virtual void clear() override;
 
   /** Sets the different parameters of the grid
    *    orig
@@ -57,13 +57,13 @@ class FastGrid : public Grid {
    *    nb
    *      The number of cells of the grid
    */
-  virtual void configure(const Vec3r &orig, const Vec3r &size, unsigned nb);
+  virtual void configure(const Vec3r &orig, const Vec3r &size, unsigned nb) override;
 
   /** returns the cell whose coordinates are passed as argument */
-  Cell *getCell(const Vec3u &p);
+  Cell *getCell(const Vec3u &p) override;
 
   /** Fills the case p with the cell iCell */
-  virtual void fillCell(const Vec3u &p, Cell &cell);
+  virtual void fillCell(const Vec3u &p, Cell &cell) override;
 
  protected:
   Cell **_cells;
