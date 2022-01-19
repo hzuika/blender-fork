@@ -163,16 +163,14 @@ void Controller::setRenderMonitor(RenderMonitor *iRenderMonitor)
 
 void Controller::setPassDiffuse(float *buf, int width, int height)
 {
-  AppCanvas *app_canvas = dynamic_cast<AppCanvas *>(_Canvas);
-  BLI_assert(app_canvas != nullptr);
-  app_canvas->setPassDiffuse(buf, width, height);
+  BLI_assert(_Canvas != nullptr);
+  _Canvas->setPassDiffuse(buf, width, height);
 }
 
 void Controller::setPassZ(float *buf, int width, int height)
 {
-  AppCanvas *app_canvas = dynamic_cast<AppCanvas *>(_Canvas);
-  BLI_assert(app_canvas != nullptr);
-  app_canvas->setPassZ(buf, width, height);
+  BLI_assert(_Canvas != nullptr);
+  _Canvas->setPassZ(buf, width, height);
 }
 
 void Controller::setContext(bContext *C)
