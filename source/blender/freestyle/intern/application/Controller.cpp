@@ -650,9 +650,6 @@ void Controller::init_options()
   // from AppOptionsWindow.cpp
   // Default init options
 
-  // Visibility
-  setQuantitativeInvisibility(true);
-
   // soc: initialize passes
   setPassDiffuse(nullptr, 0, 0);
   setPassZ(nullptr, 0, 0);
