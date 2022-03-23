@@ -17,7 +17,6 @@
 #include "../scene_graph/NodeGroup.h"
 #include "../scene_graph/NodeShape.h"
 #include "../scene_graph/NodeTransform.h"
-#include "../system/FreestyleConfig.h"
 #include "../system/RenderMonitor.h"
 
 #include "MEM_guardedalloc.h"

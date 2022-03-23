@@ -16,7 +16,6 @@
 #include "../image/Image.h"
 #include "../image/ImagePyramid.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/PseudoNoise.h"
 #include "../system/TimeStamp.h"
 

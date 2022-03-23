@@ -23,7 +23,6 @@
 #include "../scene_graph/NodeGroup.h"
 #include "../scene_graph/TriangleRep.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/ProgressBar.h"
 #include "../system/RenderMonitor.h"
 #include "../system/TimeUtils.h"

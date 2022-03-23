@@ -13,8 +13,6 @@
 //! inherits from class Rep
 #include "Rep.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 class IndexedFaceSet : public Rep {

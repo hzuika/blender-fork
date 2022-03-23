@@ -23,7 +23,6 @@
 #include "../scene_graph/FrsMaterial.h"
 
 #include "../system/Exception.h"
-#include "../system/FreestyleConfig.h"
 
 #include "../winged_edge/Curvature.h"
 

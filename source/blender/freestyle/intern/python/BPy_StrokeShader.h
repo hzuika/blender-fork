@@ -10,8 +10,6 @@ extern "C" {
 #include <Python.h>
 }
 
-#include "../system/FreestyleConfig.h"
-
 #include "../stroke/StrokeShader.h"
 
 #ifdef __cplusplus

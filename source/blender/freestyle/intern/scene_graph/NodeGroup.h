@@ -13,8 +13,6 @@
 
 #include "Node.h"
 
-#include "../system/FreestyleConfig.h"
-
 using namespace std;
 
 namespace Freestyle {

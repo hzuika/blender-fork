@@ -14,8 +14,6 @@
 
 #include "../scene_graph/FrsMaterial.h"
 
-#include "../system/FreestyleConfig.h"
-
 #include "BLI_math.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC

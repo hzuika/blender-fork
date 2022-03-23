@@ -11,8 +11,6 @@
 #include "DrawingStyle.h"
 #include "NodeGroup.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 class NodeDrawingStyle : public NodeGroup {

@@ -447,7 +447,6 @@ set(SRC
   intern/system/Cast.h
   intern/system/Exception.cpp
   intern/system/Exception.h
-  intern/system/FreestyleConfig.h
   intern/system/Id.h
   intern/system/Interpreter.h
   intern/system/Iterator.cpp

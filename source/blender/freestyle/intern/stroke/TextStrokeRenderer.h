@@ -24,8 +24,6 @@
 
 #include "StrokeRenderer.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 /**********************************/

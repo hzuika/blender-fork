@@ -16,8 +16,6 @@
 #include "GeomUtils.h"
 #include "Polygon.h"
 
-#include "../system/FreestyleConfig.h"
-
 #include "BLI_utildefines.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC

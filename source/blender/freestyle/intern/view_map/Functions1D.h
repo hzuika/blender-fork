@@ -11,7 +11,6 @@
 #include "Interface1D.h"
 #include "ViewMap.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/Precision.h"
 #include "../system/TimeStamp.h"
 

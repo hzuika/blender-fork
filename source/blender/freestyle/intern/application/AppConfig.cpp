@@ -7,7 +7,6 @@
 #include "AppConfig.h"
 #include <iostream>
 
-#include "../system/FreestyleConfig.h"
 #include "../system/StringUtils.h"
 
 using namespace std;

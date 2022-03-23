@@ -9,8 +9,6 @@
  * \ingroup freestyle
  */
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 namespace OGF {

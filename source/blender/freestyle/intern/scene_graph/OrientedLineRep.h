@@ -9,8 +9,6 @@
 
 #include "LineRep.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 class OrientedLineRep : public LineRep {

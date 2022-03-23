@@ -9,7 +9,6 @@
 #include "BLI_map.hh"
 
 #include "../stroke/StrokeRenderer.h"
-#include "../system/FreestyleConfig.h"
 
 extern "C" {
 struct Depsgraph;

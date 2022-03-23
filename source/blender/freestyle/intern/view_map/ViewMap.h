@@ -16,7 +16,6 @@
 #include "../geometry/GeomUtils.h"
 
 #include "../system/BaseIterator.h"
-#include "../system/FreestyleConfig.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC
 #  include "MEM_guardedalloc.h"

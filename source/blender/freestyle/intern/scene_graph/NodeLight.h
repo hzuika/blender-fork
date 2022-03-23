@@ -11,8 +11,6 @@
 
 #include "../geometry/Geom.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 using namespace Geometry;

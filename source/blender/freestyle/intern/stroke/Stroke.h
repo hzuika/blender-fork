@@ -15,7 +15,6 @@
 #include "../view_map/Interface1D.h"
 #include "../view_map/Silhouette.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/StringUtils.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC

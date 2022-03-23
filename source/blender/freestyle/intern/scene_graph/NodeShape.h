@@ -12,8 +12,6 @@
 #include "../geometry/BBox.h"
 #include "../geometry/Geom.h"
 
-#include "../system/FreestyleConfig.h"
-
 #include "FrsMaterial.h"
 #include "Node.h"
 #include "Rep.h"

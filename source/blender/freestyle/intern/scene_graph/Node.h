@@ -11,7 +11,6 @@
 #include "SceneVisitor.h"
 
 #include "../system/BaseObject.h"
-#include "../system/FreestyleConfig.h"
 #include "../system/Precision.h"
 
 #include "../geometry/BBox.h"

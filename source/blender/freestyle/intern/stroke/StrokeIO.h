@@ -11,8 +11,6 @@
 
 #include "Stroke.h"
 
-#include "../system/FreestyleConfig.h"
-
 namespace Freestyle {
 
 ostream &operator<<(ostream &out, const StrokeAttribute &iStrokeAttribute);

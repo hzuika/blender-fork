@@ -7,8 +7,6 @@
  * \brief Class to visit (without doing anything) a scene graph structure
  */
 
-#include "../system/FreestyleConfig.h"
-
 #ifdef WITH_CXX_GUARDEDALLOC
 #  include "MEM_guardedalloc.h"
 #endif

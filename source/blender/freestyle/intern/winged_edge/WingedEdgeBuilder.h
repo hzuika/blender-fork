@@ -14,7 +14,6 @@
 #include "../scene_graph/NodeTransform.h"
 #include "../scene_graph/SceneVisitor.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/RenderMonitor.h"
 
 namespace Freestyle {

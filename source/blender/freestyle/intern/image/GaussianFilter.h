@@ -10,8 +10,6 @@
 #include <cstdlib>   // for abs
 #include <string.h>  // for memcpy
 
-#include "../system/FreestyleConfig.h"
-
 #include "BLI_math.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC

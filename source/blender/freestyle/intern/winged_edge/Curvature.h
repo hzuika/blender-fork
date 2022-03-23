@@ -16,7 +16,6 @@
 
 #include "../geometry/Geom.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/Precision.h"
 
 #ifdef WITH_CXX_GUARDEDALLOC

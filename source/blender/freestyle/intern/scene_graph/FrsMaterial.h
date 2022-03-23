@@ -7,8 +7,6 @@
  * \brief Class used to handle materials.
  */
 
-#include "../system/FreestyleConfig.h"
-
 #ifdef WITH_CXX_GUARDEDALLOC
 #  include "MEM_guardedalloc.h"
 #endif

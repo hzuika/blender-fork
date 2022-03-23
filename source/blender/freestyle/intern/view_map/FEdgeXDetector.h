@@ -11,7 +11,6 @@
 
 #include "../geometry/Geom.h"
 
-#include "../system/FreestyleConfig.h"
 #include "../system/ProgressBar.h"
 #include "../system/RenderMonitor.h"
 
