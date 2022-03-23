@@ -462,7 +462,6 @@ set(SRC
   intern/system/RandGen.cpp
   intern/system/RandGen.h
   intern/system/RenderMonitor.h
-  intern/system/StringUtils.cpp
   intern/system/StringUtils.h
   intern/system/TimeStamp.cpp
   intern/system/TimeStamp.h
