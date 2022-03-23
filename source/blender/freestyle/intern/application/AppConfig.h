@@ -22,22 +22,6 @@ namespace Freestyle {
 
 namespace Config {
 
-class Path {
- protected:
-  static Path *_pInstance;
-
- public:
-  Path();
-  virtual ~Path();
-  static Path *getInstance();
-
-  static string getEnvVar(const string &iEnvVarName);
-
-#ifdef WITH_CXX_GUARDEDALLOC
-  MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:Config:Path")
-#endif
-};
-
 //
 // Configuration, default values
 //

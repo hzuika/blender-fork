@@ -55,7 +55,6 @@ struct FreestyleGlobals g_freestyle;
 
 // Freestyle configuration
 static bool freestyle_is_initialized = false;
-static Config::Path *pathconfig = nullptr;
 static Controller *controller = nullptr;
 static AppView *view = nullptr;
 
@@ -89,7 +88,6 @@ void FRS_init()
     return;
   }
 
-  pathconfig = new Config::Path;
   controller = new Controller();
   view = new AppView;
   controller->setView(view);
@@ -112,7 +110,6 @@ void FRS_set_context(bContext *C)
 
 void FRS_exit()
 {
-  delete pathconfig;
   delete controller;
   delete view;
 }

@@ -5,7 +5,6 @@ set(SRC
   FRS_freestyle.h
   intern/application/AppCanvas.cpp
   intern/application/AppCanvas.h
-  intern/application/AppConfig.cpp
   intern/application/AppConfig.h
   intern/application/AppView.cpp
   intern/application/AppView.h
