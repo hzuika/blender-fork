@@ -6,7 +6,6 @@
 
 #include "BlenderStrokeRenderer.h"
 
-#include "../application/AppConfig.h"
 #include "../stroke/Canvas.h"
 
 #include "MEM_guardedalloc.h"

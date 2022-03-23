@@ -9,7 +9,6 @@
 #include <set>
 
 #include "../application/AppCanvas.h"
-#include "../application/AppConfig.h"
 #include "../application/AppView.h"
 #include "../application/Controller.h"
 

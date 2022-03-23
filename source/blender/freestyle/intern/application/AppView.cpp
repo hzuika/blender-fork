@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "AppConfig.h"
 #include "AppView.h"
 #include "Controller.h"
 

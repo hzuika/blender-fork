@@ -6,8 +6,6 @@
  * \ingroup freestyle
  */
 
-#include "AppConfig.h"
-
 #include "../geometry/BBox.h"
 #include "../geometry/Geom.h"
 #include "../scene_graph/NodeDrawingStyle.h"

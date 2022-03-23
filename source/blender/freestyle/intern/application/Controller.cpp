@@ -13,7 +13,6 @@ extern "C" {
 #include <string>
 
 #include "AppCanvas.h"
-#include "AppConfig.h"
 #include "AppView.h"
 #include "Controller.h"
 
