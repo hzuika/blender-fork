@@ -86,6 +86,139 @@
  */
 #define BROKEN_PEEK_TOUCHPAD
 
+#define KEY_PRINT(key, param) if(key==param){printf(#param "\n");}
+
+void key_check_print(GHOST_TKey key)
+{
+  printf("WM_INPUT\n");
+  KEY_PRINT(key, GHOST_kKeyUnknown)
+  KEY_PRINT(key, GHOST_kKeyBackSpace)
+  KEY_PRINT(key, GHOST_kKeyTab)
+  KEY_PRINT(key, GHOST_kKeyLinefeed)
+  KEY_PRINT(key, GHOST_kKeyClear)
+  KEY_PRINT(key, GHOST_kKeyEnter)
+  KEY_PRINT(key, GHOST_kKeyEsc)
+  KEY_PRINT(key, GHOST_kKeySpace)
+  KEY_PRINT(key, GHOST_kKeyQuote)
+  KEY_PRINT(key, GHOST_kKeyComma)
+  KEY_PRINT(key, GHOST_kKeyMinus)
+  KEY_PRINT(key, GHOST_kKeyPlus)
+  KEY_PRINT(key, GHOST_kKeyPeriod)
+  KEY_PRINT(key, GHOST_kKeySlash)
+  KEY_PRINT(key, GHOST_kKey0)
+  KEY_PRINT(key, GHOST_kKey1)
+  KEY_PRINT(key, GHOST_kKey2)
+  KEY_PRINT(key, GHOST_kKey3)
+  KEY_PRINT(key, GHOST_kKey4)
+  KEY_PRINT(key, GHOST_kKey5)
+  KEY_PRINT(key, GHOST_kKey6)
+  KEY_PRINT(key, GHOST_kKey7)
+  KEY_PRINT(key, GHOST_kKey8)
+  KEY_PRINT(key, GHOST_kKey9)
+  KEY_PRINT(key, GHOST_kKeySemicolon)
+  KEY_PRINT(key, GHOST_kKeyEqual)
+  KEY_PRINT(key, GHOST_kKeyA)
+  KEY_PRINT(key, GHOST_kKeyB)
+  KEY_PRINT(key, GHOST_kKeyC)
+  KEY_PRINT(key, GHOST_kKeyD)
+  KEY_PRINT(key, GHOST_kKeyE)
+  KEY_PRINT(key, GHOST_kKeyF)
+  KEY_PRINT(key, GHOST_kKeyG)
+  KEY_PRINT(key, GHOST_kKeyH)
+  KEY_PRINT(key, GHOST_kKeyI)
+  KEY_PRINT(key, GHOST_kKeyJ)
+  KEY_PRINT(key, GHOST_kKeyK)
+  KEY_PRINT(key, GHOST_kKeyL)
+  KEY_PRINT(key, GHOST_kKeyM)
+  KEY_PRINT(key, GHOST_kKeyN)
+  KEY_PRINT(key, GHOST_kKeyO)
+  KEY_PRINT(key, GHOST_kKeyP)
+  KEY_PRINT(key, GHOST_kKeyQ)
+  KEY_PRINT(key, GHOST_kKeyR)
+  KEY_PRINT(key, GHOST_kKeyS)
+  KEY_PRINT(key, GHOST_kKeyT)
+  KEY_PRINT(key, GHOST_kKeyU)
+  KEY_PRINT(key, GHOST_kKeyV)
+  KEY_PRINT(key, GHOST_kKeyW)
+  KEY_PRINT(key, GHOST_kKeyX)
+  KEY_PRINT(key, GHOST_kKeyY)
+  KEY_PRINT(key, GHOST_kKeyZ)
+  KEY_PRINT(key, GHOST_kKeyLeftBracket)
+  KEY_PRINT(key, GHOST_kKeyRightBracket)
+  KEY_PRINT(key, GHOST_kKeyBackslash)
+  KEY_PRINT(key, GHOST_kKeyAccentGrave)
+  KEY_PRINT(key, GHOST_kKeyLeftShift)
+  KEY_PRINT(key, GHOST_kKeyRightShift)
+  KEY_PRINT(key, GHOST_kKeyLeftControl)
+  KEY_PRINT(key, GHOST_kKeyRightControl)
+  KEY_PRINT(key, GHOST_kKeyLeftAlt)
+  KEY_PRINT(key, GHOST_kKeyRightAlt)
+  KEY_PRINT(key, GHOST_kKeyOS)
+  KEY_PRINT(key, GHOST_kKeyGrLess)
+  KEY_PRINT(key, GHOST_kKeyApp)
+  KEY_PRINT(key, GHOST_kKeyCapsLock)
+  KEY_PRINT(key, GHOST_kKeyNumLock)
+  KEY_PRINT(key, GHOST_kKeyScrollLock)
+  KEY_PRINT(key, GHOST_kKeyLeftArrow)
+  KEY_PRINT(key, GHOST_kKeyRightArrow)
+  KEY_PRINT(key, GHOST_kKeyUpArrow)
+  KEY_PRINT(key, GHOST_kKeyDownArrow)
+  KEY_PRINT(key, GHOST_kKeyPrintScreen)
+  KEY_PRINT(key, GHOST_kKeyPause)
+  KEY_PRINT(key, GHOST_kKeyInsert)
+  KEY_PRINT(key, GHOST_kKeyDelete)
+  KEY_PRINT(key, GHOST_kKeyHome)
+  KEY_PRINT(key, GHOST_kKeyEnd)
+  KEY_PRINT(key, GHOST_kKeyUpPage)
+  KEY_PRINT(key, GHOST_kKeyDownPage)
+  KEY_PRINT(key, GHOST_kKeyNumpad0)
+  KEY_PRINT(key, GHOST_kKeyNumpad1)
+  KEY_PRINT(key, GHOST_kKeyNumpad2)
+  KEY_PRINT(key, GHOST_kKeyNumpad3)
+  KEY_PRINT(key, GHOST_kKeyNumpad4)
+  KEY_PRINT(key, GHOST_kKeyNumpad5)
+  KEY_PRINT(key, GHOST_kKeyNumpad6)
+  KEY_PRINT(key, GHOST_kKeyNumpad7)
+  KEY_PRINT(key, GHOST_kKeyNumpad8)
+  KEY_PRINT(key, GHOST_kKeyNumpad9)
+  KEY_PRINT(key, GHOST_kKeyNumpadPeriod)
+  KEY_PRINT(key, GHOST_kKeyNumpadEnter)
+  KEY_PRINT(key, GHOST_kKeyNumpadPlus)
+  KEY_PRINT(key, GHOST_kKeyNumpadMinus)
+  KEY_PRINT(key, GHOST_kKeyNumpadAsterisk)
+  KEY_PRINT(key, GHOST_kKeyNumpadSlash)
+  KEY_PRINT(key, GHOST_kKeyF1)
+  KEY_PRINT(key, GHOST_kKeyF2)
+  KEY_PRINT(key, GHOST_kKeyF3)
+  KEY_PRINT(key, GHOST_kKeyF4)
+  KEY_PRINT(key, GHOST_kKeyF5)
+  KEY_PRINT(key, GHOST_kKeyF6)
+  KEY_PRINT(key, GHOST_kKeyF7)
+  KEY_PRINT(key, GHOST_kKeyF8)
+  KEY_PRINT(key, GHOST_kKeyF9)
+  KEY_PRINT(key, GHOST_kKeyF10)
+  KEY_PRINT(key, GHOST_kKeyF11)
+  KEY_PRINT(key, GHOST_kKeyF12)
+  KEY_PRINT(key, GHOST_kKeyF13)
+  KEY_PRINT(key, GHOST_kKeyF14)
+  KEY_PRINT(key, GHOST_kKeyF15)
+  KEY_PRINT(key, GHOST_kKeyF16)
+  KEY_PRINT(key, GHOST_kKeyF17)
+  KEY_PRINT(key, GHOST_kKeyF18)
+  KEY_PRINT(key, GHOST_kKeyF19)
+  KEY_PRINT(key, GHOST_kKeyF20)
+  KEY_PRINT(key, GHOST_kKeyF21)
+  KEY_PRINT(key, GHOST_kKeyF22)
+  KEY_PRINT(key, GHOST_kKeyF23)
+  KEY_PRINT(key, GHOST_kKeyF24)
+  KEY_PRINT(key, GHOST_kKeyMediaPlay)
+  KEY_PRINT(key, GHOST_kKeyMediaStop)
+  KEY_PRINT(key, GHOST_kKeyMediaFirst)
+  KEY_PRINT(key, GHOST_kKeyMediaLast)
+}
+
+#undef KEY_PRINT
+
 static bool isStartedFromCommandPrompt();
 
 static void initRawInput()
@@ -1161,6 +1294,10 @@ GHOST_EventKey *GHOST_SystemWin32::processKeyEvent(GHOST_WindowWin32 *window, RA
   GHOST_TKey key = system->hardKey(raw, &keyDown, &is_repeated_modifier);
   GHOST_EventKey *event;
 
+  if (keyDown) {
+    key_check_print(key);
+  }
+
   /* We used to check `if (key != GHOST_kKeyUnknown)`, but since the message
    * values `WM_SYSKEYUP`, `WM_KEYUP` and `WM_CHAR` are ignored, we capture
    * those events here as well. */
@@ -1479,6 +1616,7 @@ LRESULT WINAPI GHOST_SystemWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, 
           break;
         }
         case WM_IME_STARTCOMPOSITION: {
+          printf("WM_IME_STARTCOMPOSITION\n");
           GHOST_ImeWin32 *ime = window->getImeInput();
           eventHandled = true;
           ime->CreateImeWindow(hwnd);
@@ -1487,6 +1625,7 @@ LRESULT WINAPI GHOST_SystemWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, 
           break;
         }
         case WM_IME_COMPOSITION: {
+          printf("WM_IME_COMPOSITION\n");
           GHOST_ImeWin32 *ime = window->getImeInput();
           eventHandled = true;
           ime->UpdateImeWindow(hwnd);
@@ -1499,6 +1638,7 @@ LRESULT WINAPI GHOST_SystemWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, 
           break;
         }
         case WM_IME_ENDCOMPOSITION: {
+          printf("WM_IME_ENDCOMPOSITION\n");
           GHOST_ImeWin32 *ime = window->getImeInput();
           eventHandled = true;
           /* remove input event after end comp event, avoid redundant input */
@@ -1517,7 +1657,10 @@ LRESULT WINAPI GHOST_SystemWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, 
         case WM_KEYUP:
         case WM_SYSKEYUP:
         /* These functions were replaced by #WM_INPUT. */
+          break;
         case WM_CHAR:
+          printf("WM_CHAR\n");
+          break;
         /* The WM_CHAR message is posted to the window with the keyboard focus when
          * a WM_KEYDOWN message is translated by the TranslateMessage function. WM_CHAR
          * contains the character code of the key that was pressed.
