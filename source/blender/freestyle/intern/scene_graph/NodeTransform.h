@@ -28,29 +28,6 @@ class NodeTransform : public NodeGroup {
   {
   }
 
-  /** multiplies the current matrix by the x, y, z translation matrix. */
-  void Translate(real x, real y, real z);
-
-  /** multiplies the current matrix by a rotation matrix
-   *    iAngle
-   *      The rotation angle
-   *    x, y, z
-   *      The rotation axis
-   */
-  void Rotate(real iAngle, real x, real y, real z);
-
-  /** multiplies the current matrix by a scaling matrix.
-   *    x, y, z
-   *      The scaling coefficients with respect to the x,y,z axis
-   */
-  void Scale(real x, real y, real z);
-
-  /** Multiplies the current matrix by iMatrix */
-  void MultiplyMatrix(const Matrix44r &iMatrix);
-
-  /** Sets the current matrix to iMatrix */
-  void setMatrix(const Matrix44r &iMatrix);
-
   /** Accept the corresponding visitor */
   virtual void accept(SceneVisitor &v);
 

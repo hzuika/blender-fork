@@ -40,9 +40,6 @@ class NodeGroup : public Node {
   /** Detached the specified child */
   virtual void DetachChild(Node *iChild);
 
-  /** Retrieve children */
-  virtual void RetrieveChildren(vector<Node *> &oNodes);
-
   /** Renders every children */
   //  virtual void Render(Renderer *iRenderer);
 
