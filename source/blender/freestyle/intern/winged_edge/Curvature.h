@@ -100,22 +100,6 @@ class Face_Curvature_Info {
 #endif
 };
 
-/**
- * \param Kh: mean curvature.
- * \param Kg: Gaussian curvature.
- * \param K1: first principal curvature.
- * \param K2: second principal curvature.
- *
- * Computes the principal curvatures at a point given the mean and Gaussian curvatures at that
- * point.
- *
- * The mean curvature can be computed as one-half the magnitude of the vector computed by
- * #gts_vertex_mean_curvature_normal().
- *
- * The Gaussian curvature can be computed with gts_vertex_gaussian_curvature().
- */
-void gts_vertex_principal_curvatures(real Kh, real Kg, real *K1, real *K2);
-
 namespace OGF {
 
 class NormalCycle;

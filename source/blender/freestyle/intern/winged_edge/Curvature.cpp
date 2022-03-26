@@ -26,68 +26,6 @@
 
 namespace Freestyle {
 
-static bool angle_obtuse(WVertex *v, WFace *f)
-{
-  WOEdge *e;
-  f->getOppositeEdge(v, e);
-
-  Vec3r vec1(e->GetaVertex()->GetVertex() - v->GetVertex());
-  Vec3r vec2(e->GetbVertex()->GetVertex() - v->GetVertex());
-  return ((vec1 * vec2) < 0);
-}
-
-static real cotan(WVertex *vo, WVertex *v1, WVertex *v2)
-{
-  /* cf. Appendix B of [Meyer et al 2002] */
-  real udotv, denom;
-
-  Vec3r u(v1->GetVertex() - vo->GetVertex());
-  Vec3r v(v2->GetVertex() - vo->GetVertex());
-
-  udotv = u * v;
-  denom = sqrt(u.squareNorm() * v.squareNorm() - udotv * udotv);
-
-  /* denom can be zero if u==v.  Returning 0 is acceptable, based on the callers of this function
-   * below. */
-  if (denom == 0.0) {
-    return 0.0;
-  }
-  return (udotv / denom);
-}
-
-static real angle_from_cotan(WVertex *vo, WVertex *v1, WVertex *v2)
-{
-  /* cf. Appendix B and the caption of Table 1 from [Meyer et al 2002] */
-  real udotv, denom;
-
-  Vec3r u(v1->GetVertex() - vo->GetVertex());
-  Vec3r v(v2->GetVertex() - vo->GetVertex());
-
-  udotv = u * v;
-  denom = sqrt(u.squareNorm() * v.squareNorm() - udotv * udotv);
-
-  /* NOTE(Ray Jones): I assume this is what they mean by using #atan2. */
-
-  /* tan = denom/udotv = y/x (see man page for atan2) */
-  return (fabs(atan2(denom, udotv)));
-}
-
-void gts_vertex_principal_curvatures(real Kh, real Kg, real *K1, real *K2)
-{
-  real temp = Kh * Kh - Kg;
-
-  if (!K1 || !K2) {
-    return;
-  }
-
-  if (temp < 0.0) {
-    temp = 0.0;
-  }
-  temp = sqrt(temp);
-  *K1 = Kh + temp;
-  *K2 = Kh - temp;
-}
-
 namespace OGF {
 
 // precondition1: P is inside the sphere

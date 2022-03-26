@@ -26,34 +26,6 @@ class GeomCleaner {
   {
   }
 
-  /** Sorts an array of Indexed vertices
-   *    iVertices
-   *      Array of vertices to sort.
-   *      It is organized as a float series of vertex coordinates: XYZXYZXYZ...
-   *    iVSize
-   *      The size of iVertices array.
-   *    iIndices
-   *      The array containing the vertex indices
-   *      (used to refer to the vertex coordinates in an indexed face).
-   *      Each element is an unsignedeger multiple of 3.
-   *    iISize
-   *      The size of iIndices array
-   *    oVertices
-   *      Output of sorted vertices.
-   *      A vertex v1 precedes another one v2 in this array
-   *      if v1.x<v2.x, or v1.x=v2.x && v1.y < v2.y or v1.x=v2.y && v1.y=v2.y && v1.z < v2.z.
-   *      The array is organized as a 3-float series giving the vertices coordinates: XYZXYZXYZ...
-   *    oIndices
-   *      Output corresponding to the iIndices array but reorganized in
-   *      order to match the sorted vertex array.
-   */
-  static void SortIndexedVertexArray(const float *iVertices,
-                                     unsigned iVSize,
-                                     const unsigned *iIndices,
-                                     unsigned iISize,
-                                     float **oVertices,
-                                     unsigned **oIndices);
-
   /** Cleans an indexed vertex array.
    *  (Identical to SortAndCompress except that we use here a hash table to create the new array.)
    *    iVertices

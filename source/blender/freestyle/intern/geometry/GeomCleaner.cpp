@@ -19,49 +19,6 @@ using namespace std;
 
 namespace Freestyle {
 
-void GeomCleaner::SortIndexedVertexArray(const float *iVertices,
-                                         unsigned iVSize,
-                                         const unsigned *iIndices,
-                                         unsigned iISize,
-                                         float **oVertices,
-                                         unsigned **oIndices)
-{
-  // First, we build a list of IndexVertex:
-  list<IndexedVertex> indexedVertices;
-  unsigned i;
-  for (i = 0; i < iVSize; i += 3) {
-    indexedVertices.emplace_back(Vec3f(iVertices[i], iVertices[i + 1], iVertices[i + 2]), i / 3);
-  }
-
-  // q-sort
-  indexedVertices.sort();
-
-  // build the indices mapping array:
-  unsigned *mapIndices = new unsigned[iVSize / 3];
-  *oVertices = new float[iVSize];
-  list<IndexedVertex>::iterator iv;
-  unsigned newIndex = 0;
-  unsigned vIndex = 0;
-  for (iv = indexedVertices.begin(); iv != indexedVertices.end(); iv++) {
-    // Build the final results:
-    (*oVertices)[vIndex] = iv->x();
-    (*oVertices)[vIndex + 1] = iv->y();
-    (*oVertices)[vIndex + 2] = iv->z();
-
-    mapIndices[iv->index()] = newIndex;
-    newIndex++;
-    vIndex += 3;
-  }
-
-  // Build the final index array:
-  *oIndices = new unsigned[iISize];
-  for (i = 0; i < iISize; i++) {
-    (*oIndices)[i] = 3 * mapIndices[iIndices[i] / 3];
-  }
-
-  delete[] mapIndices;
-}
-
 /** Defines a hash table used for searching the Cells */
 struct GeomCleanerHasher {
 #define _MUL 950706376UL
