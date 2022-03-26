@@ -301,10 +301,7 @@ int MaterialF0D::operator()(Interface0DIterator &iter)
   else {
     result = ((FEdgeSharp *)fe1)->bFrsMaterial();
   }
-#if 0
-  const SShape *sshape = getShapeF0D(iter);
-  return sshape->material();
-#endif
+
   return 0;
 }
 

@@ -53,9 +53,7 @@ class PythonInterpreter : public Interpreter {
     ReportList *reports = CTX_wm_reports(_context);
     BKE_reports_clear(reports);
     char *fn = const_cast<char *>(filename.c_str());
-#if 0
-    bool ok = BPY_run_filepath(_context, fn, reports);
-#else
+
     bool ok;
     Text *text = BKE_text_load(&_freestyle_bmain, fn, G_MAIN->filepath);
     if (text) {
@@ -66,7 +64,6 @@ class PythonInterpreter : public Interpreter {
       BKE_reportf(reports, RPT_ERROR, "Cannot open file: %s", fn);
       ok = false;
     }
-#endif
 
     if (ok == false) {
       cerr << "\nError executing Python script from PythonInterpreter::interpretFile" << endl;

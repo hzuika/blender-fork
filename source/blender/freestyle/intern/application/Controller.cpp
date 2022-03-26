@@ -61,15 +61,6 @@ Controller::Controller()
   _RootNode = new NodeGroup;
   _RootNode->addRef();
 
-#if 0
-  _SilhouetteNode = NULL;
-  _ProjectedSilhouette = NULL;
-  _VisibleProjectedSilhouette = NULL;
-
-  _DebugNode = new NodeGroup;
-  _DebugNode->addRef();
-#endif
-
   _winged_edge = nullptr;
 
   _pView = nullptr;
@@ -79,9 +70,7 @@ Controller::Controller()
 
   _ProgressBar = new ProgressBar;
   _SceneNumFaces = 0;
-#if 0
-  _minEdgeSize = DBL_MAX;
-#endif
+
   _EPSILON = 1.0e-6;
   _bboxDiag = 0;
 
@@ -117,22 +106,6 @@ Controller::~Controller()
       delete _RootNode;
     }
   }
-
-#if 0
-  if (NULL != _SilhouetteNode) {
-    int ref = _SilhouetteNode->destroy();
-    if (0 == ref) {
-      delete _SilhouetteNode;
-    }
-  }
-
-  if (NULL != _DebugNode) {
-    int ref = _DebugNode->destroy();
-    if (0 == ref) {
-      delete _DebugNode;
-    }
-  }
-#endif
 
   if (_winged_edge) {
     delete _winged_edge;
@@ -243,17 +216,6 @@ int Controller::LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph
   }
   _SceneNumFaces += loader.numFacesRead();
 
-#if 0
-  if (loader.minEdgeSize() < _minEdgeSize) {
-    _minEdgeSize = loader.minEdgeSize();
-  }
-#endif
-
-#if 0  // DEBUG
-  ScenePrettyPrinter spp;
-  blenderScene->accept(spp);
-#endif
-
   _RootNode->AddChild(blenderScene);
   _RootNode->UpdateBBox();  // FIXME: Correct that by making a Renderer to compute the bbox
 
@@ -309,23 +271,6 @@ int Controller::LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph
   if (G.debug & G_DEBUG_FREESTYLE) {
     printf("WEdge building   : %lf\n", duration);
   }
-
-#if 0
-  _pView->setDebug(_DebugNode);
-
-  // delete stuff
-  if (0 != ws_builder) {
-    delete ws_builder;
-    ws_builder = 0;
-  }
-
-  soc QFileInfo qfi(iFileName);
-  soc string basename((const char *)qfi.fileName().toAscii().data());
-  char cleaned[FILE_MAX];
-  BLI_strncpy(cleaned, iFileName, FILE_MAX);
-  BLI_path_normalize(NULL, cleaned);
-  string basename = string(cleaned);
-#endif
 
   _ListOfModels.emplace_back("Blender_models");
 
@@ -390,47 +335,10 @@ void Controller::DeleteWingedEdge()
   _Grid.clear();
   _Scene3dBBox.clear();
   _SceneNumFaces = 0;
-#if 0
-  _minEdgeSize = DBL_MAX;
-#endif
 }
 
 void Controller::DeleteViewMap(bool freeCache)
 {
-#if 0
-  _pView->DetachSilhouette();
-  if (NULL != _SilhouetteNode) {
-    int ref = _SilhouetteNode->destroy();
-    if (0 == ref) {
-      delete _SilhouetteNode;
-      _SilhouetteNode = NULL;
-    }
-  }
-
-  if (NULL != _ProjectedSilhouette) {
-    int ref = _ProjectedSilhouette->destroy();
-    if (0 == ref) {
-      delete _ProjectedSilhouette;
-      _ProjectedSilhouette = NULL;
-    }
-  }
-  if (NULL != _VisibleProjectedSilhouette) {
-    int ref = _VisibleProjectedSilhouette->destroy();
-    if (0 == ref) {
-      delete _VisibleProjectedSilhouette;
-      _VisibleProjectedSilhouette = NULL;
-    }
-  }
-
-  _pView->DetachDebug();
-  if (NULL != _DebugNode) {
-    int ref = _DebugNode->destroy();
-    if (0 == ref) {
-      _DebugNode->addRef();
-    }
-  }
-#endif
-
   if (nullptr != _ViewMap) {
     if (freeCache || !_EnableViewMapCache) {
       delete _ViewMap;
@@ -461,60 +369,24 @@ void Controller::ComputeViewMap()
   // 3D context is on.
   Vec3f vp(UNPACK3(g_freestyle.viewpoint));
 
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "mv" << endl;
-  }
-#endif
   real mv[4][4];
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       mv[i][j] = g_freestyle.mv[i][j];
-#if 0
-      if (G.debug & G_DEBUG_FREESTYLE) {
-        cout << mv[i][j] << " ";
-      }
-#endif
     }
-#if 0
-    if (G.debug & G_DEBUG_FREESTYLE) {
-      cout << endl;
-    }
-#endif
   }
 
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "\nproj" << endl;
-  }
-#endif
   real proj[4][4];
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       proj[i][j] = g_freestyle.proj[i][j];
-#if 0
-      if (G.debug & G_DEBUG_FREESTYLE) {
-        cout << proj[i][j] << " ";
-      }
-#endif
     }
-#if 0
-    if (G.debug & G_DEBUG_FREESTYLE) {
-      cout << endl;
-    }
-#endif
   }
 
   int viewport[4];
   for (int i = 0; i < 4; i++) {
     viewport[i] = g_freestyle.viewport[i];
   }
-
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "\nfocal:" << _pView->GetFocalLength() << endl << endl;
-  }
-#endif
 
   // Flag the WXEdge structure for silhouette edge detection:
   //----------------------------------------------------------
@@ -556,15 +428,6 @@ void Controller::ComputeViewMap()
   vmBuilder.setGrid(&_Grid);
   vmBuilder.setRenderMonitor(_pRenderMonitor);
 
-#if 0
-  // Builds a tessellated form of the silhouette for display purpose:
-  //---------------------------------------------------------------
-  ViewMapTesselator3D sTesselator3d;
-  ViewMapTesselator2D sTesselator2d;
-  sTesselator2d.setNature(_edgeTesselationNature);
-  sTesselator3d.setNature(_edgeTesselationNature);
-#endif
-
   if (G.debug & G_DEBUG_FREESTYLE) {
     cout << "\n===  Building the view map  ===" << endl;
   }
@@ -578,28 +441,10 @@ void Controller::ComputeViewMap()
     printf("ViewMap edge count : %i\n", _ViewMap->viewedges_size());
   }
 
-#if 0
-  // Tesselate the 3D edges:
-  _SilhouetteNode = sTesselator3d.Tesselate(_ViewMap);
-  _SilhouetteNode->addRef();
-
-  // Tesselate 2D edges
-  _ProjectedSilhouette = sTesselator2d.Tesselate(_ViewMap);
-  _ProjectedSilhouette->addRef();
-#endif
-
   duration = _Chrono.stop();
   if (G.debug & G_DEBUG_FREESTYLE) {
     printf("ViewMap building : %lf\n", duration);
   }
-
-#if 0
-  _pView->AddSilhouette(_SilhouetteNode);
-  _pView->AddSilhouette(_WRoot);
-  _pView->Add2DSilhouette(_ProjectedSilhouette);
-  _pView->Add2DVisibleSilhouette(_VisibleProjectedSilhouette);
-  _pView->AddDebug(_DebugNode);
-#endif
 
   // Draw the steerable density map:
   //--------------------------------
@@ -614,98 +459,6 @@ void Controller::ComputeViewMap()
 
 void Controller::ComputeSteerableViewMap()
 {
-#if 0  // soc
-  if ((!_Canvas) || (!_ViewMap)) {
-    return;
-  }
-
-  // Build 4 nodes containing the edges in the 4 directions
-  NodeGroup *ng[Canvas::NB_STEERABLE_VIEWMAP];
-  unsigned i;
-  real c =
-      32.0f /
-      255.0f;  // see SteerableViewMap::readSteerableViewMapPixel() for information about this 32.
-  for (i = 0; i < Canvas::NB_STEERABLE_VIEWMAP; ++i) {
-    ng[i] = new NodeGroup;
-  }
-  NodeShape *completeNS = new NodeShape;
-  completeNS->material().setDiffuse(c, c, c, 1);
-  ng[Canvas::NB_STEERABLE_VIEWMAP - 1]->AddChild(completeNS);
-  SteerableViewMap *svm = _Canvas->getSteerableViewMap();
-  svm->Reset();
-
-  ViewMap::fedges_container &fedges = _ViewMap->FEdges();
-  LineRep *fRep;
-  NodeShape *ns;
-  for (ViewMap::fedges_container::iterator f = fedges.begin(), fend = fedges.end(); f != fend;
-       ++f) {
-    if ((*f)->viewedge()->qi() != 0) {
-      continue;
-    }
-    fRep = new LineRep((*f)->vertexA()->point2d(), (*f)->vertexB()->point2d());
-    completeNS->AddRep(fRep);  // add to the complete map anyway
-    double *oweights = svm->AddFEdge(*f);
-    for (i = 0; i < (Canvas::NB_STEERABLE_VIEWMAP - 1); ++i) {
-      ns = new NodeShape;
-      double wc = oweights[i] * c;
-      if (oweights[i] == 0) {
-        continue;
-      }
-      ns->material().setDiffuse(wc, wc, wc, 1);
-      ns->AddRep(fRep);
-      ng[i]->AddChild(ns);
-    }
-  }
-
-  GrayImage *img[Canvas::NB_STEERABLE_VIEWMAP];
-  //#ifdef WIN32
-  QGLBasicWidget offscreenBuffer(_pView, "SteerableViewMap", _pView->width(), _pView->height());
-  QPixmap pm;
-  QImage qimg;
-  for (i = 0; i < Canvas::NB_STEERABLE_VIEWMAP; ++i) {
-    offscreenBuffer.AddNode(ng[i]);
-#  if 0
-    img[i] = new GrayImage(_pView->width(), _pView->height());
-    offscreenBuffer.readPixels(0,0,_pView->width(), _pView->height(), img[i]->getArray());
-#  endif
-    pm = offscreenBuffer.renderPixmap(_pView->width(), _pView->height());
-
-    if (pm.isNull()) {
-      if (G.debug & G_DEBUG_FREESTYLE) {
-        cout << "BuildViewMap Warning: couldn't render the steerable ViewMap" << endl;
-      }
-    }
-    //pm.save(QString("steerable") + QString::number(i) + QString(".bmp"), "BMP");
-    // FIXME!! Lost of time !
-    qimg = pm.toImage();
-    // FIXME !! again!
-    img[i] = new GrayImage(_pView->width(), _pView->height());
-    for (unsigned int y = 0; y < img[i]->height(); ++y) {
-      for (unsigned int x = 0; x < img[i]->width(); ++x) {
-        //img[i]->setPixel(x, y, (float)qGray(qimg.pixel(x, y)) / 255.0f);
-        img[i]->setPixel(x, y, (float)qGray(qimg.pixel(x, y)));
-        // float c = qGray(qimg.pixel(x, y));
-        //img[i]->setPixel(x, y, qGray(qimg.pixel(x, y)));
-      }
-    }
-    offscreenBuffer.DetachNode(ng[i]);
-    ng[i]->destroy();
-    delete ng[i];
-    // check
-#  if 0
-    qimg = QImage(_pView->width(), _pView->height(), 32);
-    for (unsigned int y = 0; y < img[i]->height(); ++y) {
-      for (unsigned int x = 0; x < img[i]->width(); ++x) {
-        float v = img[i]->pixel(x, y);
-        qimg.setPixel(x, y, qRgb(v, v, v));
-      }
-    }
-    qimg.save(QString("newsteerable") + QString::number(i) + QString(".bmp"), "BMP");
-#  endif
-  }
-
-  svm->buildImagesPyramids(img, false, 0, 1.0f);
-#endif
 }
 
 void Controller::saveSteerableViewMapImages()
@@ -1067,19 +820,6 @@ void Controller::displayDensityCurves(int x, int y)
       curvesDirection[i].push_back(Vec3r(j, svm->readSteerableViewMapPixel(j, i, x, y), 0));
     }
   }
-
-  // display the curves
-#if 0
-  for (i = 0; i < nbCurves; ++i) {
-    _pDensityCurvesWindow->setOrientationCurve(
-        i, Vec2d(0, 0), Vec2d(nbPoints, 1), curves[i], "scale", "density");
-  }
-  for (i = 1; i <= 8; ++i) {
-    _pDensityCurvesWindow->setLevelCurve(
-        i, Vec2d(0, 0), Vec2d(nbCurves, 1), curvesDirection[i], "orientation", "density");
-  }
-  _pDensityCurvesWindow->show();
-#endif
 }
 
 void Controller::init_options()

@@ -15,13 +15,6 @@ using namespace std;
 
 namespace Freestyle {
 
-#if 0
-ImagePyramid::ImagePyramid(const GrayImage &level0, unsigned nbLevels)
-{
-  BuildPyramid(level0, nbLevels);
-}
-#endif
-
 ImagePyramid::ImagePyramid(const ImagePyramid & /*iBrother*/)
 {
   if (!_levels.empty()) {

@@ -265,27 +265,6 @@ void SteerableViewMap::saveSteerableViewMap() const
       ibuf->ftype = IMB_FTYPE_PNG;
       IMB_saveiff(ibuf, const_cast<char *>(filename.str().c_str()), 0);
     }
-#if 0
-    QString base("SteerableViewMap");
-    for (unsigned j = 0; j < _imagesPyramids[i]->getNumberOfLevels(); ++j) {
-      GrayImage *img = _imagesPyramids[i]->getLevel(j);
-      int ow = img->width();
-      int oh = img->height();
-      float coeff = 1.0f;  // 100 * 255; // * pow(2, j);
-      QImage qtmp(ow, oh, 32);
-      for (unsigned int y = 0; y < oh; ++y) {
-        for (unsigned int x = 0; x < ow; ++x) {
-          int c = (int)(coeff * img->pixel(x, y));
-          if (c > 255) {
-            c = 255;
-          }
-          //int c = (int)(_imagesPyramids[i]->pixel(x, y, j));
-          qtmp.setPixel(x, y, qRgb(c, c, c));
-        }
-      }
-      qtmp.save(base + QString::number(i) + "-" + QString::number(j) + ".png", "PNG");
-    }
-#endif
   }
 }
 

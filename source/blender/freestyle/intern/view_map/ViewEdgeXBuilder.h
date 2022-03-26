@@ -11,16 +11,6 @@
 #include <utility>
 #include <vector>
 
-#if 0  // soc
-#  if defined(__GNUC__) && (__GNUC__ >= 3)
-/* hash_map is not part of the C++ standard anymore;
- * hash_map.h has been kept though for backward compatibility */
-#    include <hash_map.h>
-#  else
-#    include <hash_map>
-#  endif
-#endif
-
 #include "Interface1D.h"
 
 #include "../geometry/Geom.h"

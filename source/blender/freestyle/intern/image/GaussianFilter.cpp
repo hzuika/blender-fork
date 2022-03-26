@@ -73,11 +73,7 @@ void GaussianFilter::computeMask()
   _mask = new float[_storedMaskSize * _storedMaskSize * sizeof(float)];
   for (int i = 0; i < _storedMaskSize; ++i) {
     for (int j = 0; j < _storedMaskSize; ++j) {
-#if 0
-      _mask[i * _storedMaskSize + j] = exp(-(i * i + j * j) / (2.0 * _sigma * _sigma));
-#else
       _mask[i * _storedMaskSize + j] = invNorm * exp(-(i * i + j * j) / (2.0 * _sigma * _sigma));
-#endif
     }
   }
 }

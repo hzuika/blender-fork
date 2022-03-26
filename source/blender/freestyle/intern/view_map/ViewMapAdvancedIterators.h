@@ -76,14 +76,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   edge_pointers_container_iterator _tend;
   edge_pointers_container_iterator _tvertex_iter;
 
-#if 0
-  mutable value_type _tvertex_iter;
-  value_type _feA;
-  value_type _feB;
-  value_type _beA;
-  value_type _beB;
-#endif
-
   // Non TVertex attributes
   edges_container_iterator _begin;
   edges_container_iterator _end;
@@ -106,13 +98,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   {
     _Nature = iBrother._Nature;
     if (_Nature & Nature::T_VERTEX) {
-#if 0
-      _feA = iBrother._feA;
-      _feB = iBrother._feB;
-      _beA = iBrother._beA;
-      _beB = iBrother._beB;
-      _tvertex_iter = iBrother._tvertex_iter;
-#endif
       _tbegin = iBrother._tbegin;
       _tend = iBrother._tend;
       _tvertex_iter = iBrother._tvertex_iter;
@@ -129,13 +114,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
   {
     _Nature = iBrother._Nature;
     if (_Nature & Nature::T_VERTEX) {
-#if 0
-      _feA = iBrother._feA;
-      _feB = iBrother._feB;
-      _beA = iBrother._beA;
-      _beB = iBrother._beB;
-      _tvertex_iter = iBrother._tvertex_iter;
-#endif
       _tbegin = iBrother._tbegin;
       _tend = iBrother._tend;
       _tvertex_iter = iBrother._tvertex_iter;
@@ -153,20 +131,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
 
   // protected://FIXME
  public:
-#if 0
-  inline edge_iterator_base(
-      value_type ifeA, value_type ifeB, value_type ibeA, value_type ibeB, value_type iter)
-      : parent_class()
-  {
-    _Nature = Nature::T_VERTEX;
-    _feA = ifeA;
-    _feB = ifeB;
-    _beA = ibeA;
-    _beB = ibeB;
-    _tvertex_iter = iter;
-  }
-#endif
-
   inline edge_iterator_base(edge_pointers_container_iterator begin,
                             edge_pointers_container_iterator end,
                             edge_pointers_container_iterator iter)
@@ -272,64 +236,6 @@ class edge_iterator_base : public IteratorBase<Traits, InputIteratorTag_Traits> 
       if (tmp2.first == tmp.first) {
         ++_tvertex_iter;
       }
-#if 0
-      // Hack to deal with cusp. the result of a cusp is a TVertex having two identical viewedges.
-      // In order to iterate properly, we chose to skip these last ones.
-      if (_feB.first == _beA.first) {
-        if (_feA.first == _beB.first) {
-          _tvertex_iter.first = 0;
-          return;
-        }
-
-        if (_tvertex_iter.first == _feA.first) {
-          _tvertex_iter.first = _beB.first;
-        }
-        else if (_tvertex_iter.first == _beB.first) {
-          _tvertex_iter.first = 0;
-        }
-        else {
-          _tvertex_iter.first = _feA.first;
-        }
-        return;
-      }
-      if (_feA.first == _beB.first) {
-        if (_feB.first == _beA.first) {
-          _tvertex_iter.first = 0;
-          return;
-        }
-
-        if (_tvertex_iter.first == _feB.first) {
-          _tvertex_iter.first = _beA.first;
-        }
-        else if (_tvertex_iter.first == _beA.first) {
-          _tvertex_iter.first = 0;
-        }
-        else {
-          _tvertex_iter.first = _feB.first;
-        }
-        return;
-      }
-      // End of hack
-
-      if (_tvertex_iter.first == _feA.first) {
-        // we return bea or beb
-        // choose one of them
-        _tvertex_iter.first = _feB.first;
-        return;
-      }
-      if (_tvertex_iter.first == _feB.first) {
-        _tvertex_iter.first = _beA.first;
-        return;
-      }
-      if (_tvertex_iter.first == _beA.first) {
-        _tvertex_iter.first = _beB.first;
-        return;
-      }
-      if (_tvertex_iter.first == _beB.first) {
-        _tvertex_iter.first = 0;
-        return;
-      }
-#endif
     }
     else {
       ++_nontvertex_iter;
@@ -782,12 +688,6 @@ class vertex_iterator_base : public IteratorBase<Traits, BidirectionalIteratorTa
 
   virtual void decrement()
   {
-#if 0
-    if (!_SVertex) {
-      _SVertex = _PreviousFEdge->vertexB();
-      return;
-    }
-#endif
     if (!_PreviousFEdge) {
       _SVertex = NULL;
       return;

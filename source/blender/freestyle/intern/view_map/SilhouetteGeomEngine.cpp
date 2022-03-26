@@ -149,13 +149,7 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
   GeomUtils::fromWorldToCamera(Aw, Ac, _modelViewMatrix);
   GeomUtils::fromWorldToCamera(Bw, Bc, _modelViewMatrix);
   Vec3r ABc = Bc - Ac;
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "Ac " << Ac << endl;
-    cout << "Bc " << Bc << endl;
-    cout << "ABc " << ABc << endl;
-  }
-#endif
+
   Vec3r Ai = (fe)->vertexA()->point2D();
   Vec3r Bi = (fe)->vertexB()->point2D();
   Vec3r Ii = Ai + t * (Bi - Ai);  // the intersection point in the 2D image space
@@ -176,10 +170,7 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
       goto iter;
     }
     Ic[0] = -beta * (Ir[0] + m13) / denom;
-#if 0
-    Ic[1] = -(Ir[1] + m23) * (alpha * Ic[0] + beta) / m22;
-    Ic[2] = alpha * (Ic[0] - Ac[0]) + Ac[2];
-#endif
+
     T = (Ic[0] - Ac[0]) / ABc[0];
   }
   else if (fabs(ABc[1]) > 1.0e-6) {
@@ -190,10 +181,7 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
       goto iter;
     }
     Ic[1] = -beta * (Ir[1] + m23) / denom;
-#if 0
-    Ic[0] = -(Ir[0] + m13) * (alpha * Ic[1] + beta) / m11;
-    Ic[2] = alpha * (Ic[1] - Ac[1]) + Ac[2];
-#endif
+
     T = (Ic[1] - Ac[1]) / ABc[1];
   }
   else {
@@ -260,12 +248,6 @@ real SilhouetteGeomEngine::ImageToWorldParameter(FEdge *fe, real t)
         }
       }
     }
-#if 0
-    if (G.debug & G_DEBUG_FREESTYLE) {
-      cout << "SilhouetteGeomEngine::ImageToWorldParameter(): #iters = " << i
-           << ", dist = " << dist << "\n";
-    }
-#endif
     if (i == max_iters && G.debug & G_DEBUG_FREESTYLE) {
       cout << "SilhouetteGeomEngine::ImageToWorldParameter(): reached to max_iters (dist = "
            << dist << ")\n";

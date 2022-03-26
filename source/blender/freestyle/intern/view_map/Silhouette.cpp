@@ -52,13 +52,6 @@ float SVertex::shape_importance() const
   return shape()->importance();
 }
 
-#if 0
-Material SVertex::material() const
-{
-  return _Shape->material();
-}
-#endif
-
 Id SVertex::shape_id() const
 {
   return _Shape->getId();
@@ -215,13 +208,6 @@ int FEdge::viewedge_nature() const
   return _ViewEdge->getNature();
 }
 
-#if 0
-float FEdge::viewedge_length() const
-{
-  return _ViewEdge->viewedge_length();
-}
-#endif
-
 const SShape *FEdge::occluded_shape() const
 {
   ViewShape *aShape = _ViewEdge->aShape();
@@ -292,11 +278,6 @@ real FEdge::z_discontinuity() const
     // return bboxsize;
   }
 
-#if 0
-  real result;
-  z_discontinuity_functor<SVertex> _functor;
-  Evaluate<SVertex, z_discontinuity_functor<SVertex>>(&_functor, iCombination, result);
-#endif
   Vec3r middle((_VertexB->point3d() - _VertexA->point3d()));
   middle /= 2;
   Vec3r disc_vec(middle - _occludeeIntersection);
@@ -306,68 +287,6 @@ real FEdge::z_discontinuity() const
   // return fabs((middle.z() - _occludeeIntersection.z()));
 }
 
-#if 0
-float FEdge::local_average_depth(int iCombination) const
-{
-  float result;
-  local_average_depth_functor<SVertex> functor;
-  Evaluate(&functor, iCombination, result);
-
-  return result;
-}
-
-float FEdge::local_depth_variance(int iCombination) const
-{
-  float result;
-
-  local_depth_variance_functor<SVertex> functor;
-
-  Evaluate(&functor, iCombination, result);
-
-  return result;
-}
-
-real FEdge::local_average_density(float sigma, int iCombination) const
-{
-  float result;
-
-  density_functor<SVertex> functor(sigma);
-
-  Evaluate(&functor, iCombination, result);
-
-  return result;
-}
-
-Vec3r FEdge::normal(int &oException /* = Exception::NO_EXCEPTION */)
-{
-  Vec3r Na = _VertexA->normal(oException);
-  if (oException != Exception::NO_EXCEPTION) {
-    return Na;
-  }
-  Vec3r Nb = _VertexB->normal(oException);
-  if (oException != Exception::NO_EXCEPTION) {
-    return Nb;
-  }
-  return (Na + Nb) / 2.0;
-}
-
-Vec3r FEdge::curvature2d_as_vector(int iCombination) const
-{
-  Vec3r result;
-  curvature2d_as_vector_functor<SVertex> _functor;
-  Evaluate<Vec3r, curvature2d_as_vector_functor<SVertex>>(&_functor, iCombination, result);
-  return result;
-}
-
-real FEdge::curvature2d_as_angle(int iCombination) const
-{
-  real result;
-  curvature2d_as_angle_functor<SVertex> _functor;
-  Evaluate<real, curvature2d_as_angle_functor<SVertex>>(&_functor, iCombination, result);
-  return result;
-}
-#endif
-
 /**********************************/
 /*                                */
 /*                                */
@@ -375,13 +294,6 @@ real FEdge::curvature2d_as_angle(int iCombination) const
 /*                                */
 /*                                */
 /**********************************/
-
-#if 0
-Material FEdge::material() const
-{
-  return _VertexA->shape()->material();
-}
-#endif
 
 const FrsMaterial &FEdgeSharp::aFrsMaterial() const
 {

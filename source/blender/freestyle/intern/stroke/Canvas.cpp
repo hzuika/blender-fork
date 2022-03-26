@@ -314,15 +314,6 @@ void Canvas::loadMap(const char *iFileName,
   string filePath;
   filePath = iFileName;
 
-#if 0  // soc
-  QImage *qimg;
-  QImage newMap(filePath.c_str());
-  if (newMap.isNull()) {
-    cerr << "Could not load image file " << filePath << endl;
-    return;
-  }
-  qimg = &newMap;
-#endif
   /* OCIO_TODO: support different input color space */
   ImBuf *qimg = IMB_loadiffname(filePath.c_str(), 0, nullptr);
   if (qimg == nullptr) {
@@ -330,36 +321,11 @@ void Canvas::loadMap(const char *iFileName,
     return;
   }
 
-#if 0  // soc
-  // resize
-  QImage scaledImg;
-  if ((newMap.width() != width()) || (newMap.height() != height())) {
-    scaledImg = newMap.scaled(width(), height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    qimg = &scaledImg;
-  }
-#endif
   ImBuf *scaledImg;
   if ((qimg->x != width()) || (qimg->y != height())) {
     scaledImg = IMB_dupImBuf(qimg);
     IMB_scaleImBuf(scaledImg, width(), height());
   }
-
-  // deal with color image
-#if 0
-  if (newMap->depth() != 8) {
-    int w = newMap->width();
-    int h = newMap->height();
-    QImage *tmp = new QImage(w, h, 8);
-    for (unsigned int y = 0; y < h; ++y) {
-      for (unsigned int x = 0; x < w; ++x) {
-        int c = qGray(newMap->pixel(x, y));
-        tmp->setPixel(x, y, c);
-      }
-    }
-    delete newMap;
-    newMap = tmp;
-  }
-#endif
 
   int x, y;
   int w = qimg->x;
@@ -376,28 +342,12 @@ void Canvas::loadMap(const char *iFileName,
     }
   }
 
-#if 0
-  GrayImage blur(w, h);
-  GaussianFilter gf(4.0f);
-  //int bound = gf.getBound();
-  for (y = 0; y < h; ++y) {
-    for (x = 0; x < w; ++x) {
-      int c = gf.getSmoothedPixel<GrayImage>(&tmp, x, y);
-      blur.setPixel(x, y, c);
-    }
-  }
-#endif
-
   GaussianPyramid *pyramid = new GaussianPyramid(tmp, iNbLevels, iSigma);
   int ow = pyramid->width(0);
   int oh = pyramid->height(0);
   string base(iMapName);  // soc
   for (int i = 0; i < pyramid->getNumberOfLevels(); ++i) {
     // save each image:
-#if 0
-    w = pyramid.width(i);
-    h = pyramid.height(i);
-#endif
 
     // soc  QImage qtmp(ow, oh, QImage::Format_RGB32);
     ImBuf *qtmp = IMB_allocImBuf(ow, oh, 32, IB_rect);
@@ -418,18 +368,6 @@ void Canvas::loadMap(const char *iFileName,
     qtmp->ftype = IMB_FTYPE_BMP;
     IMB_saveiff(qtmp, const_cast<char *>(filename.str().c_str()), 0);
   }
-
-#if 0
-  QImage *qtmp = new QImage(w, h, 32);
-  for (y = 0; y < h; ++y) {
-    for (x = 0; x < w; ++x) {
-      int c = (int)blur.pixel(x, y);
-      qtmp->setPixel(x, y, qRgb(c, c, c));
-    }
-  }
-  delete newMap;
-  newMap = qtmp;
-#endif
 
   _maps[iMapName] = pyramid;
   // newMap->save("toto.bmp", "BMP");

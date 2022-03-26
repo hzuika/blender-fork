@@ -144,10 +144,7 @@ class SVertex : public Interface0D {
   vector<FEdge *> _FEdges;   // the edges containing this vertex
   SShape *_Shape;            // the shape to which belongs the vertex
   ViewVertex *_pViewVertex;  // The associated viewvertex, in case there is one.
-#if 0
-  real _curvatureFredo;
-  Vec2r _directionFredo;
-#endif
+
   CurvatureInfo *_curvature_info;
 
  public:
@@ -310,29 +307,6 @@ class SVertex : public Interface0D {
     return _curvature_info;
   }
 
-#if 0
-  /* Fredo's normal and curvature. */
-  void setCurvatureFredo(real c)
-  {
-    _curvatureFredo = c;
-  }
-
-  void setDirectionFredo(Vec2r d)
-  {
-    _directionFredo = d;
-  }
-
-  real curvatureFredo()
-  {
-    return _curvatureFredo;
-  }
-
-  const Vec2r directionFredo()
-  {
-    return _directionFredo;
-  }
-#endif
-
   /** Sets the Id */
   inline void setId(const Id &id)
   {
@@ -424,17 +398,6 @@ class SVertex : public Interface0D {
   const SShape *occluded_shape() const;
   bool occludee_empty() const;
   real z_discontinuity() const;
-#if 0
-  inline float local_average_depth() const;
-  inline float local_depth_variance() const;
-  inline real local_average_density(float sigma = 2.3f) const;
-  inline Vec3r shaded_color() const;
-  inline Vec3r orientation2d() const;
-  inline Vec3r orientation3d() const;
-  inline Vec3r curvature2d_as_vector() const;
-  /** angle in radians */
-  inline real curvature2d_as_angle() const;
-#endif
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:SVertex")
@@ -637,21 +600,7 @@ class FEdge : public Interface1D {
     return _VertexA->shape();
   }
 
-#if 0
-  inline int invisibility() const
-  {
-    return _Occluders.size();
-  }
-#endif
-
   int invisibility() const;
-
-#if 0
-  inline const vector<Polygon3r> &occluders() const
-  {
-    return _Occluders;
-  }
-#endif
 
   /** Returns a pointer to the ViewEdge to which this FEdge belongs to. */
   inline ViewEdge *viewedge() const
@@ -668,23 +617,6 @@ class FEdge : public Interface1D {
   {
     return Vec3r((_VertexA->point2D() + _VertexB->point2D()) / 2.0);
   }
-
-#if 0
-  inline bool hasVisibilityPoint() const
-  {
-    return _hasVisibilityPoint;
-  }
-
-  inline Vec3r visibilityPointA() const
-  {
-    return _VisibilityPointA;
-  }
-
-  inline Vec3r visibilityPointB() const
-  {
-    return _VisibilityPointB;
-  }
-#endif
 
   inline const Polygon3r &aFace() const
   {
@@ -754,35 +686,11 @@ class FEdge : public Interface1D {
     _Nature = iNature;
   }
 
-#if 0
-  inline void AddOccluder(Polygon3r &iPolygon)
-  {
-    _Occluders.push_back(iPolygon);
-  }
-#endif
-
   /** Sets the ViewEdge to which this FEdge belongs to. */
   inline void setViewEdge(ViewEdge *iViewEdge)
   {
     _ViewEdge = iViewEdge;
   }
-
-#if 0
-  inline void setHasVisibilityPoint(bool iBool)
-  {
-    _hasVisibilityPoint = iBool;
-  }
-
-  inline void setVisibilityPointA(const Vec3r &iPoint)
-  {
-    _VisibilityPointA = iPoint;
-  }
-
-  inline void setVisibilityPointB(const Vec3r &iPoint)
-  {
-    _VisibilityPointB = iPoint;
-  }
-#endif
 
   inline void setaFace(Polygon3r &iFace)
   {
@@ -885,24 +793,8 @@ class FEdge : public Interface1D {
 
   const SShape *occluded_shape() const;
 
-#if 0
-  inline const bool occludee_empty() const
-  {
-    return _occludeeEmpty;
-  }
-#endif
-
   bool occludee_empty() const;
   real z_discontinuity() const;
-
-#if 0
-  inline float local_average_depth(int iCombination = 0) const;
-  inline float local_depth_variance(int iCombination = 0) const;
-  inline real local_average_density(float sigma = 2.3f, int iCombination = 0) const;
-  inline Vec3r shaded_color(int iCombination = 0) const
-  {
-  }
-#endif
 
   int viewedge_nature() const;
 
@@ -917,18 +809,6 @@ class FEdge : public Interface1D {
   {
     return Vec3r(_VertexB->point3d() - _VertexA->point3d());
   }
-
-#if 0
-  inline real curvature2d() const
-  {
-    return viewedge()->curvature2d((_VertexA->point2d() + _VertexB->point2d()) / 2.0);
-  }
-
-  inline Vec3r curvature2d_as_vector(int iCombination = 0) const;
-
-  /* Angle in degrees. */
-  inline real curvature2d_as_angle(int iCombination = 0) const;
-#endif
 
   // Iterator access (Interface1D)
   /** Returns an iterator over the 2 (!) SVertex pointing to the first SVertex. */
@@ -1280,11 +1160,7 @@ class FEdgeSmooth : public FEdge {
  protected:
   Vec3r _Normal;
   unsigned _FrsMaterialIndex;
-#if 0
-  bool _hasVisibilityPoint;
-  Vec3r _VisibilityPointA;  // The edge on which the visibility will be computed represented
-  Vec3r _VisibilityPointB;  // using its 2 extremity points A and B
-#endif
+
   void *_Face;  // In case of exact silhouette, Face is the WFace crossed by Fedge
                 // NOT HANDLED BY THE COPY CONSTRUCTEUR
   bool _FaceMark;

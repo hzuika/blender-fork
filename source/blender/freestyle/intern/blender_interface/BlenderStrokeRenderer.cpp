@@ -559,13 +559,7 @@ int BlenderStrokeRenderer::get_stroke_count() const
 // Build a mesh object representing a group of stylized strokes
 void BlenderStrokeRenderer::GenerateStrokeMesh(StrokeGroup *group, bool hasTex)
 {
-#if 0
-  Object *object_mesh = BKE_object_add(
-      freestyle_bmain, (ViewLayer *)freestyle_scene->view_layers.first, OB_MESH);
-  DEG_relations_tag_update(freestyle_bmain);
-#else
   Object *object_mesh = NewMesh();
-#endif
   Mesh *mesh = (Mesh *)object_mesh->data;
 
   mesh->totvert = group->totvert;
@@ -801,13 +795,6 @@ void BlenderStrokeRenderer::GenerateStrokeMesh(StrokeGroup *group, bool hasTex)
 
   BKE_object_materials_test(freestyle_bmain, object_mesh, (ID *)mesh);
   BKE_mesh_normals_tag_dirty(mesh);
-
-#if 0  // XXX
-  BLI_assert(mesh->totvert == vertex_index);
-  BLI_assert(mesh->totedge == edge_index);
-  BLI_assert(mesh->totloop == loop_index);
-  BKE_mesh_validate(mesh, true, true);
-#endif
 }
 
 // A replacement of BKE_object_add() for better performance.
@@ -840,11 +827,6 @@ Render *BlenderStrokeRenderer::RenderScene(Render * /*re*/, bool render)
   if (camera->clip_end < _z) {
     camera->clip_end = _z + _z_delta * 100.0f;
   }
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "clip_start " << camera->clip_start << ", clip_end " << camera->clip_end << endl;
-  }
-#endif
 
   Render *freestyle_render = RE_NewSceneRender(freestyle_scene);
   DEG_graph_relations_update(freestyle_depsgraph);

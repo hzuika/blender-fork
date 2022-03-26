@@ -536,9 +536,6 @@ PyObject *Freestyle_Init(void)
     PyObject *py_modpath = PyUnicode_FromString(modpath);
     PyList_Append(sys_path, py_modpath);
     Py_DECREF(py_modpath);
-#if 0
-    printf("Adding Python path: %s\n", modpath);
-#endif
   }
   else {
     printf(

@@ -695,11 +695,6 @@ class WXFace : public WFace {
  **********************************/
 
 class WXShape : public WShape {
-#if 0
- public:
-  typedef WXShape type_name;
-#endif
-
  protected:
   bool _computeViewIndependent;  // flag to indicate whether the view independent stuff must be
                                  // computed or not

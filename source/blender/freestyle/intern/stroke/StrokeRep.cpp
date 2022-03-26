@@ -92,13 +92,6 @@ static bool notValid(Vec2r p)
          (fabs(p[1]) > HUGE_COORD) || (p[0] < -HUGE_COORD) || (p[1] < -HUGE_COORD);
 }
 
-#if 0
-static real crossP(const Vec2r &A, const Vec2r &B)
-{
-  return A[0] * B[1] - A[1] * B[0];
-}
-#endif
-
 void Strip::createStrip(const vector<StrokeVertex *> &iStrokeVertices)
 {
   // computeParameterization();
@@ -152,34 +145,6 @@ void Strip::createStrip(const vector<StrokeVertex *> &iStrokeVertices)
   const float *thickness = sv->attribute().getThickness();
   _vertices.push_back(new StrokeVertexRep(sv->getPoint() + thickness[1] * stripDir));
   _vertices.push_back(new StrokeVertexRep(sv->getPoint() - thickness[0] * stripDir));
-
-#if 0
-  Vec2r userDir = _stroke->getBeginningOrientation();
-  if (userDir != Vec2r(0, 0)) {
-    userDir.normalize();
-    real o1 = (orthDir * userDir);
-    real o2 = crossP(orthDir, userDir);
-    real orientation = o1 * o2;
-    if (orientation > 0) {
-      // then the vertex to move is v0
-      if (o1 > 0) {
-        _vertex[0] = _vertex[1] + userDir;
-      }
-      else {
-        _vertex[0] = _vertex[1] - userDir;
-      }
-    }
-    if (orientation < 0) {
-      // then we must move v1
-      if (o1 < 0) {
-        _vertex[1] = _vertex[0] + userDir;
-      }
-      else {
-        _vertex[1] = _vertex[0] - userDir;
-      }
-    }
-  }
-#endif
 
   int i = 2;  // 2 because we have already processed the first vertex
 
@@ -316,36 +281,6 @@ void Strip::createStrip(const vector<StrokeVertex *> &iStrokeVertices)
   ++i;
   _vertices.push_back(new StrokeVertexRep(sv->getPoint() - thicknessLast[0] * stripDirLast));
   ++i;
-
-#if 0
-  int n = i - 1;
-  // check whether the orientation of the extremity was user defined
-  userDir = _stroke->getEndingOrientation();
-  if (userDir != Vec2r(0, 0)) {
-    userDir.normalize();
-    real o1 = (orthDir * userDir);
-    real o2 = crossP(orthDir, userDir);
-    real orientation = o1 * o2;
-    if (orientation > 0) {
-      // then the vertex to move is vn
-      if (o1 < 0) {
-        _vertex[n] = _vertex[n - 1] + userDir;
-      }
-      else {
-        _vertex[n] = _vertex[n - 1] - userDir;
-      }
-    }
-    if (orientation < 0) {
-      // then we must move vn-1
-      if (o1 > 0) {
-        _vertex[n - 1] = _vertex[n] + userDir;
-      }
-      else {
-        _vertex[n - 1] = _vertex[n] - userDir;
-      }
-    }
-  }
-#endif
 
   _averageThickness /= float(iStrokeVertices.size() - 2);
   // I did not use the first and last vertex for the average
@@ -517,10 +452,6 @@ void Strip::setVertexColor(const vector<StrokeVertex *> &iStrokeVertices)
     _vertices[i]->setColor(Vec3r(sv->attribute().getColorRGB()));
     _vertices[i]->setAlpha(sv->attribute().getAlpha());
     i++;
-#if 0
-    cerr << "col=(" << sv->attribute().getColor()[0] << ", " << sv->attribute().getColor()[1]
-         << ", " << sv->attribute().getColor()[2] << ")" << endl;
-#endif
   }
 }
 
@@ -563,11 +494,6 @@ void Strip::computeTexCoordWithTips(const vector<StrokeVertex *> &iStrokeVertice
   l = (*v)->strokeLength() / spacedThickness;
   tiles = std::roundf(l);  // round to the nearest
   fact = (float(tiles) + 0.5) / l;
-
-#if 0
-  cerr << "l=" << l << "  tiles=" << tiles << "    _averageThicnkess=" << _averageThickness
-       << "    strokeLength=" << (*v)->strokeLength() << endl;
-#endif
 
   vector<StrokeVertexRep *>::iterator currentSV = _vertices.begin();
   StrokeVertexRep *svRep;
@@ -707,27 +633,6 @@ void Strip::computeTexCoordWithTips(const vector<StrokeVertex *> &iStrokeVertice
       ++currentSV;
     }
   }
-
-#if 0
-  cerr << "u=" << u << "    i=" << i << "/" << _sizeStrip << endl;
-
-  for (i = 0; i < _sizeStrip; i++) {
-    _alpha[i] = 1.0;
-  }
-
-  for (i = 0; i < _sizeStrip; i++) {
-    cerr << "(" << _texCoord[i][0] << ", " << _texCoord[i][1] << ") ";
-  }
-  cerr << endl;
-
-  Vec2r vec_tmp;
-  for (i = 0; i < _sizeStrip / 2; i++) {
-    vec_tmp = _vertex[2 * i] - _vertex[2 * i + 1];
-  }
-  if (vec_tmp.norm() > 4 * _averageThickness) {
-    cerr << "Warning (from Fredo): There is a pb in the texture coordinates computation" << endl;
-  }
-#endif
 }
 
 //
@@ -748,15 +653,6 @@ StrokeRep::StrokeRep()
   if (ptm) {
     _textureId = ptm->getDefaultTextureId();
   }
-#if 0
-  _averageTextureAlpha = 0.5;  //default value
-  if (_strokeType == OIL_STROKE) {
-    _averageTextureAlpha = 0.75;
-  }
-  if (_strokeType >= NO_BLEND_STROKE) {
-    _averageTextureAlpha = 1.0;
-  }
-#endif
 }
 
 StrokeRep::StrokeRep(Stroke *iStroke)
@@ -781,16 +677,6 @@ StrokeRep::StrokeRep(Stroke *iStroke)
       _textureId = ptm->getDefaultTextureId();
     }
   }
-
-#if 0
-  _averageTextureAlpha = 0.5;  //default value
-  if (_strokeType == OIL_STROKE) {
-    _averageTextureAlpha = 0.75;
-  }
-  if (_strokeType >= NO_BLEND_STROKE) {
-    _averageTextureAlpha = 1.0;
-  }
-#endif
   create();
 }
 

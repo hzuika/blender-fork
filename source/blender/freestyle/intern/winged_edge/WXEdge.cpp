@@ -150,13 +150,6 @@ WXSmoothEdge *WXFaceLayer::BuildSmoothEdge()
     else {
       // here it's not good, our edge is a single point -> skip that face
       ok = false;
-#if 0
-      // the order of the WOEdge index is good
-      woea = _pWXFace->GetOEdge((index - 1) % nedges);
-      woeb = _pWXFace->GetOEdge((index + 1) % nedges);
-      ta = 1.0f;
-      tb = 0.0f;
-#endif
     }
   }
   if (ok) {
@@ -176,60 +169,6 @@ WXSmoothEdge *WXFaceLayer::BuildSmoothEdge()
       }
     }
   }
-
-#if 0
-  // check bording edges to see if they have different dotp values in bording faces.
-  for (int i = 0; i < numberOfEdges(); i++) {
-    WSFace *bface = (WSFace *)GetBordingFace(i);
-    if (bface) {
-      if ((front()) ^
-          (bface->front())) {  // fA->front XOR fB->front (true if one is 0 and the other is 1)
-        // that means that the edge i of the face is a silhouette edge
-        // CHECK FIRST WHETHER THE EXACTSILHOUETTEEDGE HAS
-        // NOT YET BEEN BUILT ON THE OTHER FACE (1 is enough).
-        if (((WSExactFace *)bface)->exactSilhouetteEdge()) {
-          // that means that this silhouette edge has already been built
-          return ((WSExactFace *)bface)->exactSilhouetteEdge();
-        }
-        // Else we must build it
-        WOEdge *woea, *woeb;
-        float ta, tb;
-        if (!front()) {  // is it in the right order ?
-          // the order of the WOEdge index is wrong
-          woea = _OEdgeList[(i + 1) % numberOfEdges()];
-          if (0 == i) {
-            woeb = _OEdgeList[numberOfEdges() - 1];
-          }
-          else {
-            woeb = _OEdgeList[(i - 1)];
-          }
-          ta = 0.0f;
-          tb = 1.0f;
-        }
-        else {
-          // the order of the WOEdge index is good
-          if (0 == i) {
-            woea = _OEdgeList[numberOfEdges() - 1];
-          }
-          else {
-            woea = _OEdgeList[(i - 1)];
-          }
-          woeb = _OEdgeList[(i + 1) % numberOfEdges()];
-          ta = 1.0f;
-          tb = 0.0f;
-        }
-
-        _pSmoothEdge = new ExactSilhouetteEdge(ExactSilhouetteEdge::VERTEX_VERTEX);
-        _pSmoothEdge->setWOeA(woea);
-        _pSmoothEdge->setWOeA(woeb);
-        _pSmoothEdge->setTa(ta);
-        _pSmoothEdge->setTb(tb);
-
-        return _pSmoothEdge;
-      }
-    }
-  }
-#endif
   return _pSmoothEdge;
 }
 
@@ -284,17 +223,6 @@ WFace *WXShape::MakeFace(vector<WVertex *> &iVertexList,
 {
   WFace *face = WShape::MakeFace(
       iVertexList, iNormalsList, iTexCoordsList, iFaceEdgeMarksList, iMaterialIndex);
-
-#if 0
-  Vec3f center;
-  for (vector<WVertex *>::iterator wv = iVertexList.begin(), wvend = iVertexList.end();
-       wv != wvend;
-       ++wv) {
-    center += (*wv)->GetVertex();
-  }
-  center /= (float)iVertexList.size();
-  ((WXFace *)face)->setCenter(center);
-#endif
 
   return face;
 }

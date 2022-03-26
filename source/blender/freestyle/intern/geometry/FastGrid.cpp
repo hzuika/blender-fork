@@ -42,12 +42,6 @@ void FastGrid::configure(const Vec3r &orig, const Vec3r &size, unsigned nb)
 
 Cell *FastGrid::getCell(const Vec3u &p)
 {
-#if 0
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << _cells << " " << p << " " << _cells_nb[0] << "-" << _cells_nb[1] << "-" << _cells_nb[2]
-         << " " << _cells_size << endl;
-  }
-#endif
   BLI_assert_msg(_cells, "_cells is a null pointer");
   BLI_assert((_cells_nb[0] * (p[2] * _cells_nb[1] + p[1]) + p[0]) < _cells_size);
   BLI_assert(p[0] < _cells_nb[0]);

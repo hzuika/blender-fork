@@ -1439,9 +1439,6 @@ void ViewMapBuilder::ComputeEdgesVisibility(ViewMap *ioViewMap,
                                             visibility_algo iAlgo,
                                             real epsilon)
 {
-#if 0
-  iAlgo = ray_casting;  // for testing algorithms equivalence
-#endif
   switch (iAlgo) {
     case ray_casting:
       if (_global.debug & G_DEBUG_FREESTYLE) {
@@ -1794,17 +1791,6 @@ void ViewMapBuilder::ComputeFastRayCastingVisibility(ViewMap *ioViewMap, real ep
         WFace *wface = (WFace *)((*p)->userdata);
         ViewShape *vshape = ioViewMap->viewShape(wface->GetVertex(0)->shape()->GetId());
         ++p;
-#if 0
-        for (; p != pend; ++p) {
-          WFace *f = (WFace *)((*p)->userdata);
-          ViewShape *vs = ioViewMap->viewShape(f->GetVertex(0)->shape()->GetId());
-          if (vs != vshape) {
-            sameShape = false;
-            break;
-          }
-        }
-        if (sameShape)
-#endif
         {
           (*ve)->setaShape(vshape);
         }
@@ -2054,19 +2040,6 @@ int ViewMapBuilder::ComputeRayCastingVisibility(FEdge *fe,
     // return 0;
   }
 
-#if 0
-  Vec3r A(fe->vertexA()->point2d());
-  Vec3r B(fe->vertexB()->point2d());
-  int viewport[4];
-  SilhouetteGeomEngine::retrieveViewport(viewport);
-  if ((A.x() < viewport[0]) || (A.x() > viewport[2]) || (A.y() < viewport[1]) ||
-      (A.y() > viewport[3]) || (B.x() < viewport[0]) || (B.x() > viewport[2]) ||
-      (B.y() < viewport[1]) || (B.y() > viewport[3])) {
-    cerr << "Warning: point is out of the grid for fedge " << fe->getId() << endl;
-    //return 0;
-  }
-#endif
-
   Vec3r vp;
   if (_orthographicProjection) {
     vp = Vec3r(center.x(), center.y(), _viewpoint.z());
@@ -2077,13 +2050,6 @@ int ViewMapBuilder::ComputeRayCastingVisibility(FEdge *fe,
   Vec3r u(vp - center);
   real raylength = u.norm();
   u.normalize();
-#if 0
-  if (_global.debug & G_DEBUG_FREESTYLE) {
-    cout << "grid origin " << iGrid->getOrigin().x() << "," << iGrid->getOrigin().y() << ","
-         << iGrid->getOrigin().z() << endl;
-    cout << "center " << center.x() << "," << center.y() << "," << center.z() << endl;
-  }
-#endif
 
   iGrid->castRay(center, vp, occluders, timestamp);
 
@@ -2239,23 +2205,6 @@ void ViewMapBuilder::ComputeIntersections(ViewMap *ioViewMap,
     default:
       break;
   }
-#if 0
-  if (_global.debug & G_DEBUG_FREESTYLE) {
-    ViewMap::viewvertices_container &vvertices = ioViewMap->ViewVertices();
-    for (ViewMap::viewvertices_container::iterator vv = vvertices.begin(), vvend = vvertices.end();
-         vv != vvend;
-         ++vv) {
-      if ((*vv)->getNature() == Nature::T_VERTEX) {
-        TVertex *tvertex = (TVertex *)(*vv);
-        cout << "TVertex " << tvertex->getId() << " has :" << endl;
-        cout << "FrontEdgeA: " << tvertex->frontEdgeA().first << endl;
-        cout << "FrontEdgeB: " << tvertex->frontEdgeB().first << endl;
-        cout << "BackEdgeA: " << tvertex->backEdgeA().first << endl;
-        cout << "BackEdgeB: " << tvertex->backEdgeB().first << endl << endl;
-      }
-    }
-  }
-#endif
 }
 
 struct less_SVertex2D {
@@ -2328,16 +2277,7 @@ void ViewMapBuilder::ComputeSweepLineIntersections(ViewMap *ioViewMap, real epsi
   bool progressBarDisplay = false;
   unsigned sVerticesSize = svertices.size();
   unsigned fEdgesSize = ioViewMap->FEdges().size();
-#if 0
-  if (_global.debug & G_DEBUG_FREESTYLE) {
-    ViewMap::fedges_container &fedges = ioViewMap->FEdges();
-    for (ViewMap::fedges_container::const_iterator f = fedges.begin(), end = fedges.end();
-         f != end;
-         ++f) {
-      cout << (*f)->aMaterialIndex() << "-" << (*f)->bMaterialIndex() << endl;
-    }
-  }
-#endif
+
   unsigned progressBarStep = 0;
 
   if (_pProgressBar != nullptr && fEdgesSize > gProgressBarMinSize) {
@@ -2463,27 +2403,6 @@ void ViewMapBuilder::ComputeSweepLineIntersections(ViewMap *ioViewMap, real epsi
       cerr << "Warning: 3D intersection out of range for edge " << fB->vertexA()->getId() << " - "
            << fB->vertexB()->getId() << endl;
     }
-
-#if 0
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      if ((Ta < -epsilon) || (Ta > 1 + epsilon) || (Tb < -epsilon) || (Tb > 1 + epsilon)) {
-        printf("ta %.12e\n", ta);
-        printf("tb %.12e\n", tb);
-        printf("a1 %e, %e -- a2 %e, %e\n", a1[0], a1[1], a2[0], a2[1]);
-        printf("b1 %e, %e -- b2 %e, %e\n", b1[0], b1[1], b2[0], b2[1]);
-        //printf("line([%e, %e], [%e, %e]);\n", a1[0], a2[0], a1[1], a2[1]);
-        //printf("line([%e, %e], [%e, %e]);\n", b1[0], b2[0], b1[1], b2[1]);
-        if ((Ta < -epsilon) || (Ta > 1 + epsilon)) {
-          printf("Ta %.12e\n", Ta);
-        }
-        if ((Tb < -epsilon) || (Tb > 1 + epsilon)) {
-          printf("Tb %.12e\n", Tb);
-        }
-        printf("A1 %e, %e, %e -- A2 %e, %e, %e\n", A1[0], A1[1], A1[2], A2[0], A2[1], A2[2]);
-        printf("B1 %e, %e, %e -- B2 %e, %e, %e\n", B1[0], B1[1], B1[2], B2[0], B2[1], B2[2]);
-      }
-    }
-#endif
 
     TVertex *tvertex = ioViewMap->CreateTVertex(Vec3r(A1 + Ta * (A2 - A1)),
                                                 Vec3r(a1 + ta * (a2 - a1)),

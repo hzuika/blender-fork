@@ -68,13 +68,8 @@ PyDoc_STRVAR(ViewVertex_edges_end_doc,
 
 static PyObject *ViewVertex_edges_end(BPy_ViewVertex * /*self*/)
 {
-#if 0
-  ViewVertexInternal::orientedViewEdgeIterator ove_it(self->vv->edgesEnd());
-  return BPy_orientedViewEdgeIterator_from_orientedViewEdgeIterator(ove_it, 1);
-#else
   PyErr_SetString(PyExc_NotImplementedError, "edges_end method currently disabled");
   return nullptr;
-#endif
 }
 
 PyDoc_STRVAR(ViewVertex_edges_iterator_doc,

@@ -212,13 +212,6 @@ class Canvas {
   void ReplaceStyleModule(unsigned index, StyleModule *iStyleModule);
   void setVisible(unsigned index, bool iVisible);
 
-#if 0
-  inline void setDensityMap(InformationMap<RGBImage> *iMap)
-  {
-    _DensityMap = iMap;
-  }
-#endif
-
   inline void AddLayer(StrokeLayer *iLayer)
   {
     _Layers.push_back(iLayer);

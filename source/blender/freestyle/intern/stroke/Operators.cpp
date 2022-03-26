@@ -207,111 +207,6 @@ error:
   return -1;
 }
 
-#if 0
-void Operators::bidirectionalChain(ViewEdgeIterator &it,
-                                   UnaryPredicate1D &pred,
-                                   UnaryFunction1D_void &modifier)
-{
-  if (_current_view_edges_set.empty()) {
-    return;
-  }
-
-  unsigned id = 0;
-  ViewEdge *edge;
-  Chain *new_chain;
-
-  for (I1DContainer::iterator it_edge = _current_view_edges_set.begin();
-       it_edge != _current_view_edges_set.end();
-       ++it_edge) {
-    if (pred(**it_edge)) {
-      continue;
-    }
-
-    edge = dynamic_cast<ViewEdge *>(*it_edge);
-    it.setBegin(edge);
-    it.setCurrentEdge(edge);
-
-    Chain *new_chain = new Chain(id);
-    ++id;
-#  if 0  // FIXME
-    ViewEdgeIterator it_back(it);
-    --it_back;
-#  endif
-    do {
-      new_chain->push_viewedge_back(*it, it.getOrientation());
-      modifier(**it);
-      ++it;
-    } while (!it.isEnd() && !pred(**it));
-    it.setBegin(edge);
-    it.setCurrentEdge(edge);
-    --it;
-    while (!it.isEnd() && !pred(**it)) {
-      new_chain->push_viewedge_front(*it, it.getOrientation());
-      modifier(**it);
-      --it;
-    }
-
-    _current_chains_set.push_back(new_chain);
-  }
-
-  if (!_current_chains_set.empty()) {
-    _current_set = &_current_chains_set;
-  }
-}
-
-void Operators::bidirectionalChain(ViewEdgeIterator &it, UnaryPredicate1D &pred)
-{
-  if (_current_view_edges_set.empty()) {
-    return;
-  }
-
-  unsigned id = 0;
-  Functions1D::IncrementChainingTimeStampF1D ts;
-  Predicates1D::EqualToChainingTimeStampUP1D pred_ts(TimeStamp::instance()->getTimeStamp() + 1);
-
-  ViewEdge *edge;
-  Chain *new_chain;
-
-  for (I1DContainer::iterator it_edge = _current_view_edges_set.begin();
-       it_edge != _current_view_edges_set.end();
-       ++it_edge) {
-    if (pred(**it_edge) || pred_ts(**it_edge)) {
-      continue;
-    }
-
-    edge = dynamic_cast<ViewEdge *>(*it_edge);
-    it.setBegin(edge);
-    it.setCurrentEdge(edge);
-
-    Chain *new_chain = new Chain(id);
-    ++id;
-#  if 0  // FIXME
-    ViewEdgeIterator it_back(it);
-    --it_back;
-#  endif
-    do {
-      new_chain->push_viewedge_back(*it, it.getOrientation());
-      ts(**it);
-      ++it;
-    } while (!it.isEnd() && !pred(**it) && !pred_ts(**it));
-    it.setBegin(edge);
-    it.setCurrentEdge(edge);
-    --it;
-    while (!it.isEnd() && !pred(**it) && !pred_ts(**it)) {
-      new_chain->push_viewedge_front(*it, it.getOrientation());
-      ts(**it);
-      --it;
-    }
-
-    _current_chains_set.push_back(new_chain);
-  }
-
-  if (!_current_chains_set.empty()) {
-    _current_set = &_current_chains_set;
-  }
-}
-#endif
-
 int Operators::bidirectionalChain(ChainingIterator &it, UnaryPredicate1D &pred)
 {
   if (_current_view_edges_set.empty()) {
@@ -351,10 +246,7 @@ int Operators::bidirectionalChain(ChainingIterator &it, UnaryPredicate1D &pred)
 
     Chain *new_chain = new Chain(id);
     ++id;
-#if 0  // FIXME
-    ViewEdgeIterator it_back(it);
-    --it_back;
-#endif
+
     while (true) {
       new_chain->push_viewedge_back(*it, it.getOrientation());
       ts(**it);
@@ -448,10 +340,7 @@ int Operators::bidirectionalChain(ChainingIterator &it)
 
     Chain *new_chain = new Chain(id);
     ++id;
-#if 0  // FIXME
-    ViewEdgeIterator it_back(it);
-    --it_back;
-#endif
+
     do {
       new_chain->push_viewedge_back(*it, it.getOrientation());
       ts(**it);
@@ -549,9 +438,7 @@ int Operators::sequentialSplit(UnaryPredicate0D &pred, float sampling)
     delete (*cit);
   }
   _current_chains_set.clear();
-#if 0
-  _current_chains_set = splitted_chains;
-#else
+
   for (cit = splitted_chains.begin(), citend = splitted_chains.end(); cit != citend; ++cit) {
     if ((*cit)->getLength2D() < M_EPSILON) {
       delete (*cit);
@@ -559,7 +446,6 @@ int Operators::sequentialSplit(UnaryPredicate0D &pred, float sampling)
     }
     _current_chains_set.push_back(*cit);
   }
-#endif
   splitted_chains.clear();
 
   if (!_current_chains_set.empty()) {
@@ -651,9 +537,7 @@ int Operators::sequentialSplit(UnaryPredicate0D &startingPred,
     delete (*cit);
   }
   _current_chains_set.clear();
-#if 0
-  _current_chains_set = splitted_chains;
-#else
+
   for (cit = splitted_chains.begin(), citend = splitted_chains.end(); cit != citend; ++cit) {
     if ((*cit)->getLength2D() < M_EPSILON) {
       delete (*cit);
@@ -661,7 +545,6 @@ int Operators::sequentialSplit(UnaryPredicate0D &startingPred,
     }
     _current_chains_set.push_back(*cit);
   }
-#endif
   splitted_chains.clear();
 
   if (!_current_chains_set.empty()) {
@@ -825,9 +708,7 @@ int Operators::recursiveSplit(UnaryFunction0D<double> &func,
   }
 
   _current_chains_set.clear();
-#if 0
-  _current_chains_set = newChains;
-#else
+
   for (cit = newChains.begin(), citend = newChains.end(); cit != citend; ++cit) {
     if ((*cit)->getLength2D() < M_EPSILON) {
       delete (*cit);
@@ -835,7 +716,6 @@ int Operators::recursiveSplit(UnaryFunction0D<double> &func,
     }
     _current_chains_set.push_back(*cit);
   }
-#endif
   newChains.clear();
 
   if (!_current_chains_set.empty()) {
@@ -865,10 +745,7 @@ static int __recursiveSplit(Chain *_curve,
   CurveInternal::CurvePointIterator it = second;
   CurveInternal::CurvePointIterator split = second;
   Interface0DIterator it0d = it.castToInterface0DIterator();
-#if 0
-  real _min = func(it0d);
-  ++it;
-#endif
+
   real _min = FLT_MAX;
   ++it;
   // real mean = 0.0f;
@@ -1009,9 +886,7 @@ int Operators::recursiveSplit(UnaryFunction0D<double> &func,
   }
 
   _current_chains_set.clear();
-#if 0
-  _current_chains_set = newChains;
-#else
+
   for (cit = newChains.begin(), citend = newChains.end(); cit != citend; ++cit) {
     if ((*cit)->getLength2D() < M_EPSILON) {
       delete (*cit);
@@ -1019,7 +894,7 @@ int Operators::recursiveSplit(UnaryFunction0D<double> &func,
     }
     _current_chains_set.push_back(*cit);
   }
-#endif
+
   newChains.clear();
 
   if (!_current_chains_set.empty()) {

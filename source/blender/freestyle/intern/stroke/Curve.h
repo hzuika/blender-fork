@@ -249,13 +249,6 @@ class CurvePoint : public Interface0D {
     return _t2d;
   }
 
-#if 0
-  inline const float t3d() const
-  {
-    return _t3d;
-  }
-#endif
-
   /* modifiers */
   /** Sets the first SVertex upon which to build the CurvePoint. */
   inline void setA(SVertex *iA)
@@ -274,13 +267,6 @@ class CurvePoint : public Interface0D {
   {
     _t2d = t;
   }
-
-#if 0
-  inline void SetT3d(float t)
-  {
-    _t3d = t;
-  }
-#endif
 
   /* Information access interface */
 
@@ -311,26 +297,6 @@ class CurvePoint : public Interface0D {
   const SShape *occluded_shape() const;
   bool occludee_empty() const;
   real z_discontinuity() const;
-#if 0
-  float local_average_depth() const;
-  float local_depth_variance() const;
-  real local_average_density(float sigma = 2.3f) const;
-  Vec3r shaded_color() const;
-  Vec3r orientation2d() const;
-  Vec3r orientation3d() const;
-
-  real curvature2d() const
-  {
-    return viewedge()->curvature2d((_VertexA->point2d() + _VertexB->point2d()) / 2.0);
-  }
-
-  Vec3r curvature2d_as_vector() const;
-  /** angle in radians */
-  real curvature2d_as_angle() const;
-
-  real curvatureFredo() const;
-  Vec2d directionFredo() const;
-#endif
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:CurvePoint")
@@ -416,11 +382,6 @@ class Curve : public Interface1D {
     return "Curve";
   }
 
-#if 0
-  /* fredo's curvature storage */
-  void computeCurvatureAndOrientation();
-#endif
-
   /** Adds a single vertex (CurvePoint) at the end of the Curve */
   inline void push_vertex_back(Vertex *iVertex)
   {
@@ -499,45 +460,6 @@ class Curve : public Interface1D {
   }
 
   /* Information access interface */
-
-#if 0
-  inline Vec3r shaded_color(int iCombination = 0) const;
-  inline Vec3r orientation2d(point_iterator it) const;
-  Vec3r orientation2d(int iCombination = 0) const;
-  Vec3r orientation3d(point_iterator it) const;
-  Vec3r orientation3d(int iCombination = 0) const;
-
-  real curvature2d(point_iterator it) const
-  {
-    return (*it)->curvature2d();
-  }
-
-  real curvature2d(int iCombination = 0) const;
-  FrsMaterial material() const;
-  int qi() const;
-  occluder_container::const_iterator occluders_begin() const;
-  occluder_container::const_iterator occluders_end() const;
-  int occluders_size() const;
-  bool occluders_empty() const;
-
-  const Polygon3r &occludee() const
-  {
-    return *(_FEdgeA->aFace());
-  }
-
-  const SShape *occluded_shape() const;
-  bool occludee_empty() const;
-  real z_discontinuity(int iCombination = 0) const;
-  int shape_id() const;
-  const SShape *shape() const;
-  float shape_importance(int iCombination = 0) const;
-  float local_average_depth(int iCombination = 0) const;
-  float local_depth_variance(int iCombination = 0) const;
-  real local_average_density(float sigma = 2.3f, int iCombination = 0) const;
-  Vec3r curvature2d_as_vector(int iCombination = 0) const;
-  /** angle in radians */
-  real curvature2d_as_angle(int iCombination = 0) const;
-#endif
 
   /* advanced iterators access */
   point_iterator points_begin(float step = 0);

@@ -154,21 +154,7 @@ NodeGroup *ViewMapTesselator::Tesselate(ViewEdgesIterator begin, ViewEdgesIterat
   // for (vector<ViewEdge*>::const_iterator c = viewedges.begin(), cend = viewedges.end(); c !=
   // cend; c++)
   for (ViewEdgesIterator c = begin, cend = end; c != cend; c++) {
-#if 0
-    if ((*c)->qi() > 0) {
-      continue;
-    }
-    if (!((*c)->nature() & (_nature))) {
-      continue;
-    }
-#endif
     firstEdge = (*c)->fedgeA();
-
-#if 0
-    if (firstEdge->invisibility() > 0) {
-      continue;
-    }
-#endif
 
     line = new OrientedLineRep();
     if (_overloadFrsMaterial) {

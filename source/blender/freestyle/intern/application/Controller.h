@@ -78,25 +78,6 @@ class Controller {
   NodeGroup *BuildRep(vector<ViewEdge *>::iterator vedges_begin,
                       vector<ViewEdge *>::iterator vedges_end);
 
-#if 0
-  NodeGroup *debugNode()
-  {
-    return _DebugNode;
-  }
-  AppView *view()
-  {
-    return _pView;
-  }
-  NodeGroup *debugScene()
-  {
-    return _DebugNode;
-  }
-  Grid &grid()
-  {
-    return _Grid;
-  }
-#endif
-
   void toggleVisibilityAlgo();
   void setVisibilityAlgo(int algo);
   int getVisibilityAlgo();
@@ -172,12 +153,6 @@ class Controller {
   // 3D
   AppView *_pView;
 
-  // 2D
-#if 0
-  Viewer2DWindow *_pView2DWindow;
-  Viewer2D *_pView2D;
-#endif
-
   RenderMonitor *_pRenderMonitor;
 
   // Model
@@ -186,20 +161,6 @@ class Controller {
 
   // Winged-Edge structure
   WingedEdge *_winged_edge;
-
-#if 0
-  // Silhouette structure:
-  std::vector<SShape *> _SShapes;
-  NodeGroup *_SRoot;
-
-  // Silhouette
-  NodeGroup *_SilhouetteNode;
-  NodeGroup *_ProjectedSilhouette;
-  NodeGroup *_VisibleProjectedSilhouette;
-
-  // more Debug info
-  NodeGroup *_DebugNode;
-#endif
 
   // debug
   // NodeUser<ViewMap> *_ViewMapNode; // FIXME
@@ -218,9 +179,7 @@ class Controller {
 
   BBox<Vec3r> _Scene3dBBox;
   unsigned int _SceneNumFaces;
-#if 0
-  real _minEdgeSize;
-#endif
+
   real _EPSILON;
   real _bboxDiag;
 

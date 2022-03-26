@@ -72,10 +72,7 @@ real PseudoNoise::smoothNoise(real x)
   real y1 = LanczosWindowed(-t);
   real y2 = LanczosWindowed(1 - t);
   real y3 = LanczosWindowed(2 - t);
-#if 0
-  cerr << "x0=" << x0 << "  x1=" << x1 << "  x2=" << x2 << "  x3=" << x3 << endl;
-  cerr << "y0=" << y0 << "  y1=" << y1 << "  y2=" << y2 << "  y3=" << y3 << "  :" << endl;
-#endif
+
   return (x0 * y0 + x1 * y1 + x2 * y2 + x3 * y3) / (y0 + y1 + y2 + y3);
 }
 
