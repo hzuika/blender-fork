@@ -283,12 +283,8 @@ class CurvePoint : public Interface0D {
   }
 
   Vec3r normal() const;
-  // FrsMaterial material() const;
-  // Id shape_id() const;
   const SShape *shape() const;
-  // float shape_importance() const;
 
-  // const unsigned qi() const;
   occluder_container::const_iterator occluders_begin() const;
   occluder_container::const_iterator occluders_end() const;
   bool occluders_empty() const;

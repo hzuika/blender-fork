@@ -384,8 +384,6 @@ class SVertex : public Interface0D {
     return *(_Normals.begin());
   }
 
-  // Material material() const ;
-  Id shape_id() const;
   const SShape *shape() const;
   float shape_importance() const;
 
@@ -771,8 +769,6 @@ class FEdge : public Interface1D {
 
   /* Information access interface */
 
-  // Material material() const;
-  Id shape_id() const;
   const SShape *shape() const;
   float shape_importance() const;
 
@@ -795,10 +791,6 @@ class FEdge : public Interface1D {
 
   bool occludee_empty() const;
   real z_discontinuity() const;
-
-  int viewedge_nature() const;
-
-  // float viewedge_length() const;
 
   inline Vec3r orientation2d() const
   {

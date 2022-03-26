@@ -171,24 +171,6 @@ unsigned SteerableViewMap::getSVMNumber(unsigned id)
   return _nbOrientations + 1;
 }
 
-void SteerableViewMap::buildImagesPyramids(GrayImage **steerableBases,
-                                           bool copy,
-                                           unsigned iNbLevels,
-                                           float iSigma)
-{
-  for (unsigned int i = 0; i <= _nbOrientations; ++i) {
-    ImagePyramid *svm = (_imagesPyramids)[i];
-    delete svm;
-    if (copy) {
-      svm = new GaussianPyramid(*(steerableBases[i]), iNbLevels, iSigma);
-    }
-    else {
-      svm = new GaussianPyramid(steerableBases[i], iNbLevels, iSigma);
-    }
-    _imagesPyramids[i] = svm;
-  }
-}
-
 float SteerableViewMap::readSteerableViewMapPixel(unsigned iOrientation, int iLevel, int x, int y)
 {
   ImagePyramid *pyramid = _imagesPyramids[iOrientation];

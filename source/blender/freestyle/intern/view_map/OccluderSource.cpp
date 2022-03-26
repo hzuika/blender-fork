@@ -95,22 +95,6 @@ Polygon3r &OccluderSource::getGridSpacePolygon()
   return cachedPolygon;
 }
 
-void OccluderSource::getOccluderProscenium(real proscenium[4])
-{
-  begin();
-  const Vec3r &initialPoint = cachedPolygon.getVertices()[0];
-  proscenium[0] = proscenium[1] = initialPoint[0];
-  proscenium[2] = proscenium[3] = initialPoint[1];
-  while (isValid()) {
-    GridHelpers::expandProscenium(proscenium, cachedPolygon);
-    next();
-  }
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    cout << "Proscenium: (" << proscenium[0] << ", " << proscenium[1] << ", " << proscenium[2]
-         << ", " << proscenium[3] << ")" << endl;
-  }
-}
-
 real OccluderSource::averageOccluderArea()
 {
   real area = 0.0;

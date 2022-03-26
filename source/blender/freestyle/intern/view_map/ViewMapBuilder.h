@@ -149,11 +149,6 @@ class ViewMapBuilder {
                         const BBox<Vec3r> &bbox,
                         unsigned int sceneNumFaces);
 
-  void CullViewEdges(ViewMap *ioViewMap,
-                     real viewProscenium[4],
-                     real occluderProscenium[4],
-                     bool extensiveFEdgeSearch = true);
-
   /** computes the intersection between all 2D feature edges of the scene.
    *    ioViewMap
    *      The view map. It is modified by the method.

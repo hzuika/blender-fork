@@ -217,25 +217,6 @@ void getOccludeeF1D(Interface1D &inter, set<ViewShape *> &oShapes)
   }
 }
 
-void getOccludersF1D(Interface1D &inter, set<ViewShape *> &oShapes)
-{
-  ViewEdge *ve = dynamic_cast<ViewEdge *>(&inter);
-  if (ve) {
-    vector<ViewShape *> &occluders = ve->occluders();
-    oShapes.insert<vector<ViewShape *>::iterator>(occluders.begin(), occluders.end());
-  }
-  else {
-    Interface0DIterator it = inter.verticesBegin(), itend = inter.verticesEnd();
-    for (; it != itend; ++it) {
-      set<ViewShape *> shapes;
-      Functions0D::getOccludersF0D(it, shapes);
-      for (set<ViewShape *>::iterator s = shapes.begin(), send = shapes.end(); s != send; ++s) {
-        oShapes.insert(*s);
-      }
-    }
-  }
-}
-
 void getShapeF1D(Interface1D &inter, set<ViewShape *> &oShapes)
 {
   ViewEdge *ve = dynamic_cast<ViewEdge *>(&inter);
