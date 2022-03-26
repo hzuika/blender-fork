@@ -929,7 +929,6 @@ void ViewMapBuilder::computeInitialViewEdges(WingedEdge &we)
 
 void ViewMapBuilder::computeCusps(ViewMap *ioViewMap)
 {
-  vector<ViewVertex *> newVVertices;
   vector<ViewEdge *> newVEdges;
   ViewMap::viewedges_container &vedges = ioViewMap->ViewEdges();
   ViewMap::viewedges_container::iterator ve = vedges.begin(), veend = vedges.end();
@@ -1585,8 +1584,6 @@ void ViewMapBuilder::FindOccludee(FEdge *fe,
 void ViewMapBuilder::FindOccludee(
     FEdge *fe, Grid *iGrid, real epsilon, Polygon3r **oaPolygon, unsigned timestamp)
 {
-  OccludersSet occluders;
-
   Vec3r A;
   Vec3r edgeDir;
   Vec3r origin;
