@@ -1154,7 +1154,6 @@ int Operators::create(UnaryPredicate1D &pred, vector<StrokeShader *> shaders)
         delete stroke;
         goto error;
       }
-      // canvas->RenderStroke(stroke);
       new_strokes_set.push_back(stroke);
     }
   }

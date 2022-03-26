@@ -92,8 +92,6 @@ class Canvas {
   virtual void Render(const StrokeRenderer *iRenderer);
   /* Basic Renders the created strokes */
   virtual void RenderBasic(const StrokeRenderer *iRenderer);
-  /* Renders a stroke */
-  virtual void RenderStroke(Stroke *iStroke) = 0;
 
   /* init the canvas */
   virtual void init() = 0;

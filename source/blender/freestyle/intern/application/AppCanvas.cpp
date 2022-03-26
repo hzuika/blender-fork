@@ -161,16 +161,6 @@ void AppCanvas::readDepthPixels(int x, int y, int w, int h, GrayImage &oImage) c
   oImage.setArray(z, xsch, ysch, w, h, x, y, false);
 }
 
-void AppCanvas::RenderStroke(Stroke *iStroke)
-{
-  if (_basic) {
-    iStroke->RenderBasic(_Renderer);
-  }
-  else {
-    iStroke->Render(_Renderer);
-  }
-}
-
 void AppCanvas::update()
 {
 }

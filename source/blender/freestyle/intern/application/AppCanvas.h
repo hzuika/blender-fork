@@ -38,7 +38,6 @@ class AppCanvas : public Canvas {
   virtual BBox<Vec3r> scene3DBBox() const;
 
   /* abstract */
-  virtual void RenderStroke(Stroke *);
   virtual void update();
 
   /** accessors */
