@@ -203,7 +203,6 @@ class Canvas {
   }
 
   /** inserts a shader at pos index+1 */
-  void PushBackStyleModule(StyleModule *iStyleModule);
   void InsertStyleModule(unsigned index, StyleModule *iStyleModule);
   void RemoveStyleModule(unsigned index);
   void SwapStyleModules(unsigned i1, unsigned i2);
