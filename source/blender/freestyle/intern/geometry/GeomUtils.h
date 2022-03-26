@@ -61,12 +61,6 @@ typedef enum {
   COINCIDENT,
 } intersection_test;
 
-intersection_test intersect2dSeg2dSeg(const Vec2r &p1,
-                                      const Vec2r &p2,  // first segment
-                                      const Vec2r &p3,
-                                      const Vec2r &p4,  // second segment
-                                      Vec2r &res);      // found intersection point
-
 intersection_test intersect2dLine2dLine(const Vec2r &p1,
                                         const Vec2r &p2,  // first segment
                                         const Vec2r &p3,
@@ -125,9 +119,6 @@ bool intersectRayBBox(const Vec3r &orig,
                       real &tmin,  // Imin = orig + tmin * dir is the first intersection
                       real &tmax,  // Imax = orig + tmax * dir is the second intersection
                       real epsilon = M_EPSILON);  // the epsilon to use
-
-/** Checks whether 3D point P lies inside or outside of the triangle ABC */
-bool includePointTriangle(const Vec3r &P, const Vec3r &A, const Vec3r &B, const Vec3r &C);
 
 void transformVertex(const Vec3r &vert, const Matrix44r &matrix, Vec3r &res);
 
@@ -218,33 +209,6 @@ void fromRetinaToImage(const Vec3r &p, Vec3r &q, const int viewport[4]);
  *    The viewport: x,y coordinates followed by width and height (OpenGL like viewport).
  */
 void fromImageToRetina(const Vec3r &p, Vec3r &q, const int viewport[4]);
-
-/** computes the coordinates of q in the camera coordinates system,
- *  using the known z coordinates of the 3D point.
- *  That means that this method does not inverse any matrices,
- *  it only computes X and Y from x,y and Z)
- *  p
- *    point's coordinates expressed in retina system
- *  q
- *    vector in which the result will be stored
- *  projection_matrix
- *    The projection matrix expressed in line major order (OpenGL
- *    matrices are column major ordered)
- */
-void fromRetinaToCamera(const Vec3r &p, Vec3r &q, real focal, const real projection_matrix[4][4]);
-
-/** Projects from camera coordinates to world coordinates
- *  Returns the point's coordinates expressed in the world's
- *  coordinates system.
- *  p
- *    point's coordinates expressed in the camera coordinates system
- *  q
- *    vector in which the result will be stored
- *  model_view_matrix
- *    The model view matrix expressed in line major order (OpenGL
- *    matrices are column major ordered)
- */
-void fromCameraToWorld(const Vec3r &p, Vec3r &q, const real model_view_matrix[4][4]);
 
 }  // end of namespace GeomUtils
 

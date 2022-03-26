@@ -121,41 +121,6 @@ void GeomCleaner::CompressIndexedVertexArray(const float *iVertices,
   delete[] mapVertex;
 }
 
-void GeomCleaner::SortAndCompressIndexedVertexArray(const float *iVertices,
-                                                    unsigned iVSize,
-                                                    const unsigned *iIndices,
-                                                    unsigned iISize,
-                                                    float **oVertices,
-                                                    unsigned *oVSize,
-                                                    unsigned **oIndices)
-{
-  // tmp arrays used to store the sorted data:
-  float *tmpVertices;
-  unsigned *tmpIndices;
-
-  Chronometer chrono;
-  // Sort data
-  chrono.start();
-  GeomCleaner::SortIndexedVertexArray(
-      iVertices, iVSize, iIndices, iISize, &tmpVertices, &tmpIndices);
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    printf("Sorting: %lf sec.\n", chrono.stop());
-  }
-
-  // compress data
-  chrono.start();
-  GeomCleaner::CompressIndexedVertexArray(
-      tmpVertices, iVSize, tmpIndices, iISize, oVertices, oVSize, oIndices);
-  real duration = chrono.stop();
-  if (G.debug & G_DEBUG_FREESTYLE) {
-    printf("Merging: %lf sec.\n", duration);
-  }
-
-  // deallocates memory:
-  delete[] tmpVertices;
-  delete[] tmpIndices;
-}
-
 /** Defines a hash table used for searching the Cells */
 struct GeomCleanerHasher {
 #define _MUL 950706376UL
