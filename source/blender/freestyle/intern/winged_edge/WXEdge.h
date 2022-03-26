@@ -616,8 +616,6 @@ class WXFace : public WFace {
     _center = iCenter;
   }
 
-  void ComputeCenter();
-
   inline void setZ(float z)
   {
     _Z = z;
