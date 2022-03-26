@@ -31,8 +31,6 @@ namespace Freestyle {
 // XXX Grmll... G is used as template's typename parameter :/
 static const Global &_global = G;
 
-#define LOGGING 0
-
 using namespace std;
 
 template<typename G, typename I>
@@ -65,12 +63,6 @@ static void findOccludee(FEdge *fe,
     real mint = FLT_MAX;
 
     for (occluders.initAfterTarget(); occluders.validAfterTarget(); occluders.nextOccludee()) {
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\t\tEvaluating intersection for occludee " << occluders.getWFace() << " and ray "
-             << A << " * " << u << endl;
-      }
-#endif
       oface = occluders.getWFace();
       Polygon3r *p = occluders.getCameraSpacePolygon();
       real d = -((p->getVertices())[0] * p->getNormal());
@@ -120,23 +112,11 @@ static void findOccludee(FEdge *fe,
         // first let us compute the plane equation.
         if (GeomUtils::COINCIDENT ==
             GeomUtils::intersectRayPlane(origin, edgeDir, p->getNormal(), d, t, epsilon)) {
-#if LOGGING
-          if (_global.debug & G_DEBUG_FREESTYLE) {
-            cout << "\t\tRejecting occluder for target coincidence." << endl;
-          }
-#endif
           continue;
         }
       }
 
       if (p->rayIntersect(A, v, t, t_u, t_v)) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\t\tRay " << A << " * " << v << " intersects at time " << t << endl;
-          cout << "\t\t(v * normal) == " << (v * p->getNormal()) << " for normal "
-               << p->getNormal() << endl;
-        }
-#endif
         if (fabs(v * p->getNormal()) > 0.0001) {
           if ((t > 0.0) /* && (t<1.0) */) {
             if (t < mint) {
@@ -144,11 +124,6 @@ static void findOccludee(FEdge *fe,
               mint = t;
               noIntersection = false;
               fe->setOccludeeIntersection(Vec3r(A + t * v));
-#if LOGGING
-              if (_global.debug & G_DEBUG_FREESTYLE) {
-                cout << "\t\tIs occludee" << endl;
-              }
-#endif
             }
           }
         }
@@ -256,53 +231,13 @@ static int computeVisibility(ViewMap *viewMap,
     oface = occluders.getWFace();
     Polygon3r *p = occluders.getCameraSpacePolygon();
     real t, t_u, t_v;
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\t\tEvaluating intersection for occluder " << (p->getVertices())[0]
-           << (p->getVertices())[1] << (p->getVertices())[2] << endl
-           << "\t\t\tand ray " << vp << " * " << u << " (center " << center << ")" << endl;
-    }
-#endif
 
-#if LOGGING
-    Vec3r v(vp - center);
-    real rl = v.norm();
-    v.normalize();
-    vector<Vec3r> points;
-    // Iterate over vertices, storing projections in points
-    for (vector<WOEdge *>::const_iterator woe = oface->getEdgeList().begin(),
-                                          woend = oface->getEdgeList().end();
-         woe != woend;
-         woe++) {
-      points.push_back(Vec3r((*woe)->GetaVertex()->GetVertex()));
-    }
-    Polygon3r p1(points, oface->GetNormal());
-    Vec3r v1((p1.getVertices())[0]);
-    real d = -(v1 * p->getNormal());
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\t\tp:  " << (p->getVertices())[0] << (p->getVertices())[1] << (p->getVertices())[2]
-           << ", norm: " << p->getNormal() << endl;
-      cout << "\t\tp1: " << (p1.getVertices())[0] << (p1.getVertices())[1] << (p1.getVertices())[2]
-           << ", norm: " << p1.getNormal() << endl;
-    }
-#else
     real d = -((p->getVertices())[0] * p->getNormal());
-#endif
 
     if (face) {
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\t\tDetermining face adjacency...";
-      }
-#endif
       skipFace = false;
 
       if (face == oface) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "  Rejecting occluder for face concurrency." << endl;
-        }
-#endif
         continue;
       }
 
@@ -333,11 +268,6 @@ static int computeVisibility(ViewMap *viewMap,
         }
       }
       if (skipFace) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "  Rejecting occluder for face adjacency." << endl;
-        }
-#endif
         continue;
       }
     }
@@ -347,45 +277,13 @@ static int computeVisibility(ViewMap *viewMap,
       // first let us compute the plane equation.
       if (GeomUtils::COINCIDENT ==
           GeomUtils::intersectRayPlane(origin, edgeDir, p->getNormal(), d, t, epsilon)) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\t\tRejecting occluder for target coincidence." << endl;
-        }
-#endif
         continue;
       }
     }
 
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      real x;
-      if (p1.rayIntersect(center, v, x, t_u, t_v)) {
-        cout << "\t\tRay should intersect at time " << (rl - x) << ". Center: " << center
-             << ", V: " << v << ", RL: " << rl << ", T:" << x << endl;
-      }
-      else {
-        cout << "\t\tRay should not intersect. Center: " << center << ", V: " << v
-             << ", RL: " << rl << endl;
-      }
-    }
-#endif
-
     if (p->rayIntersect(center, u, t, t_u, t_v)) {
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\t\tRay " << center << " * " << u << " intersects at time " << t
-             << " (raylength is " << raylength << ")" << endl;
-        cout << "\t\t(u * normal) == " << (u * p->getNormal()) << " for normal " << p->getNormal()
-             << endl;
-      }
-#endif
       if (fabs(u * p->getNormal()) > 0.0001) {
         if ((t > 0.0) && (t < raylength)) {
-#if LOGGING
-          if (_global.debug & G_DEBUG_FREESTYLE) {
-            cout << "\t\tIs occluder" << endl;
-          }
-#endif
           if (foundOccluders != nullptr) {
             ViewShape *vshape = viewMap->viewShape(oface->GetVertex(0)->shape()->GetId());
             foundOccluders->insert(vshape);
@@ -449,21 +347,11 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
       }
       count++;
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "Processing ViewEdge " << (*ve)->getId() << endl;
-    }
-#endif
     // Find an edge to test
     if (!(*ve)->isInImage()) {
       // This view edge has been proscenium culled
       (*ve)->setQI(255);
       (*ve)->setaShape(nullptr);
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\tCulled." << endl;
-      }
-#endif
       continue;
     }
 
@@ -494,12 +382,6 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
     ++qiMajority;
     qiMajority >>= 1;
 
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tqiMajority: " << qiMajority << endl;
-    }
-#endif
-
     tmpQI = 0;
     maxIndex = 0;
     maxCard = 0;
@@ -517,11 +399,6 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
         // ARB: change &wFace to wFace and use reference in called function
         tmpQI = computeVisibility<G, I>(
             ioViewMap, fe, grid, epsilon, *ve, &wFace, &foundOccluders);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: visibility " << tmpQI << endl;
-        }
-#endif
 
         // ARB: This is an error condition, not an alert condition.
         // Some sort of recovery or abort is necessary.
@@ -540,12 +417,6 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
         // ARB: FindOccludee is redundant if ComputeRayCastingVisibility has been called
         // ARB: change &wFace to wFace and use reference in called function
         findOccludee<G, I>(fe, grid, epsilon, *ve, &wFace);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: occludee only (" << (wFace != NULL ? "found" : "not found") << ")"
-               << endl;
-        }
-#endif
       }
 
       // Store test results
@@ -559,11 +430,6 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
         fe->setaFace(poly);
         wFaces.push_back(wFace);
         fe->setOccludeeEmpty(false);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFound occludee" << endl;
-        }
-#endif
       }
       else {
         fe->setOccludeeEmpty(true);
@@ -572,12 +438,6 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
       ++nSamples;
       fe = fe->nextEdge();
     } while ((maxCard < qiMajority) && (fe) && (fe != festart));
-
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tFinished with " << nSamples << " samples, maxCard = " << maxCard << endl;
-    }
-#endif
 
     // ViewEdge
     // qi --
@@ -597,14 +457,7 @@ static void computeCumulativeVisibility(ViewMap *ioViewMap,
          ++o) {
       (*ve)->AddOccluder((*o));
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tConclusion: QI = " << maxIndex << ", " << (*ve)->occluders_size() << " occluders."
-           << endl;
-    }
-#else
     (void)maxIndex;
-#endif
     // occludee --
     if (!wFaces.empty()) {
       if (wFaces.size() <= (float)nSamples / 2.0f) {
@@ -647,21 +500,11 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
     if (iRenderMonitor && iRenderMonitor->testBreak()) {
       break;
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "Processing ViewEdge " << (*ve)->getId() << endl;
-    }
-#endif
     // Find an edge to test
     if (!(*ve)->isInImage()) {
       // This view edge has been proscenium culled
       (*ve)->setQI(255);
       (*ve)->setaShape(nullptr);
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\tCulled." << endl;
-      }
-#endif
       continue;
     }
 
@@ -692,12 +535,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
     ++qiMajority;
     qiMajority >>= 1;
 
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tqiMajority: " << qiMajority << endl;
-    }
-#endif
-
     tmpQI = 0;
     maxIndex = 0;
     maxCard = 0;
@@ -715,11 +552,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
         // ARB: change &wFace to wFace and use reference in called function
         tmpQI = computeVisibility<G, I>(
             ioViewMap, fe, grid, epsilon, *ve, &wFace, &foundOccluders);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: visibility " << tmpQI << endl;
-        }
-#endif
 
         // ARB: This is an error condition, not an alert condition.
         // Some sort of recovery or abort is necessary.
@@ -738,12 +570,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
         // ARB: FindOccludee is redundant if ComputeRayCastingVisibility has been called
         // ARB: change &wFace to wFace and use reference in called function
         findOccludee<G, I>(fe, grid, epsilon, *ve, &wFace);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: occludee only (" << (wFace != NULL ? "found" : "not found") << ")"
-               << endl;
-        }
-#endif
       }
 
       // Store test results
@@ -757,11 +583,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
         fe->setaFace(poly);
         wFaces.push_back(wFace);
         fe->setOccludeeEmpty(false);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFound occludee" << endl;
-        }
-#endif
       }
       else {
         fe->setOccludeeEmpty(true);
@@ -770,12 +591,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
       ++nSamples;
       fe = fe->nextEdge();
     } while ((maxCard < qiMajority) && (fe) && (fe != festart));
-
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tFinished with " << nSamples << " samples, maxCard = " << maxCard << endl;
-    }
-#endif
 
     // ViewEdge
     // qi --
@@ -788,12 +603,6 @@ static void computeDetailedVisibility(ViewMap *ioViewMap,
          ++o) {
       (*ve)->AddOccluder((*o));
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tConclusion: QI = " << maxIndex << ", " << (*ve)->occluders_size() << " occluders."
-           << endl;
-    }
-#endif
     // occludee --
     if (!wFaces.empty()) {
       if (wFaces.size() <= (float)nSamples / 2.0f) {
@@ -1563,11 +1372,6 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
     if (_pRenderMonitor && _pRenderMonitor->testBreak()) {
       break;
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "Processing ViewEdge " << (*ve)->getId() << endl;
-    }
-#endif
     festart = (*ve)->fedgeA();
     fe = (*ve)->fedgeA();
     qiMajority = 1;
@@ -1576,11 +1380,6 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
       fe = fe->nextEdge();
     } while (fe && fe != festart);
     qiMajority >>= 1;
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tqiMajority: " << qiMajority << endl;
-    }
-#endif
 
     tmpQI = 0;
     maxIndex = 0;
@@ -1593,11 +1392,6 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
       if (maxCard < qiMajority) {
         tmpQI = ComputeRayCastingVisibility(fe, _Grid, epsilon, occluders, &aFace, timestamp++);
 
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: visibility " << tmpQI << endl;
-        }
-#endif
         // ARB: This is an error condition, not an alert condition.
         // Some sort of recovery or abort is necessary.
         if (tmpQI >= 256) {
@@ -1614,23 +1408,12 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
       else {
         // ARB: FindOccludee is redundant if ComputeRayCastingVisibility has been called
         FindOccludee(fe, _Grid, epsilon, &aFace, timestamp++);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFEdge: occludee only (" << (aFace != NULL ? "found" : "not found") << ")"
-               << endl;
-        }
-#endif
       }
 
       if (aFace) {
         fe->setaFace(*aFace);
         aFaces.push_back(aFace);
         fe->setOccludeeEmpty(false);
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\tFound occludee" << endl;
-        }
-#endif
       }
       else {
         // ARB: We are arbitrarily using the last observed value for occludee (almost always the
@@ -1643,11 +1426,6 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
       ++nSamples;
       fe = fe->nextEdge();
     } while ((maxCard < qiMajority) && (fe) && (fe != festart));
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tFinished with " << nSamples << " samples, maxCard = " << maxCard << endl;
-    }
-#endif
 
     // ViewEdge
     // qi --
@@ -1657,12 +1435,6 @@ void ViewMapBuilder::ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilo
          ++o) {
       (*ve)->AddOccluder((*o));
     }
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\tConclusion: QI = " << maxIndex << ", " << (*ve)->occluders_size() << " occluders."
-           << endl;
-    }
-#endif
     // occludee --
     if (!aFaces.empty()) {
       if (aFaces.size() <= (float)nSamples / 2.0f) {
@@ -2074,39 +1846,16 @@ int ViewMapBuilder::ComputeRayCastingVisibility(FEdge *fe,
     // face containing this edge).
     //-----------
     oface = (WFace *)(*p)->userdata;
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\t\tEvaluating intersection for occluder " << ((*p)->getVertices())[0]
-           << ((*p)->getVertices())[1] << ((*p)->getVertices())[2] << endl
-           << "\t\t\tand ray " << vp << " * " << u << " (center " << center << ")" << endl;
-    }
-#endif
+
     Vec3r v1(((*p)->getVertices())[0]);
     Vec3r normal((*p)->getNormal());
     real d = -(v1 * normal);
     real t, t_u, t_v;
 
-#if LOGGING
-    if (_global.debug & G_DEBUG_FREESTYLE) {
-      cout << "\t\tp:  " << ((*p)->getVertices())[0] << ((*p)->getVertices())[1]
-           << ((*p)->getVertices())[2] << ", norm: " << (*p)->getNormal() << endl;
-    }
-#endif
-
     if (face) {
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\t\tDetermining face adjacency...";
-      }
-#endif
       skipFace = false;
 
       if (face == oface) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "  Rejecting occluder for face concurrency." << endl;
-        }
-#endif
         continue;
       }
 
@@ -2137,11 +1886,6 @@ int ViewMapBuilder::ComputeRayCastingVisibility(FEdge *fe,
         }
       }
       if (skipFace) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "  Rejecting occluder for face adjacency." << endl;
-        }
-#endif
         continue;
       }
     }
@@ -2152,30 +1896,13 @@ int ViewMapBuilder::ComputeRayCastingVisibility(FEdge *fe,
 
       if (GeomUtils::COINCIDENT ==
           GeomUtils::intersectRayPlane(origin, edgeDir, normal, d, t, epsilon)) {
-#if LOGGING
-        if (_global.debug & G_DEBUG_FREESTYLE) {
-          cout << "\t\tRejecting occluder for target coincidence." << endl;
-        }
-#endif
         continue;
       }
     }
 
     if ((*p)->rayIntersect(center, u, t, t_u, t_v)) {
-#if LOGGING
-      if (_global.debug & G_DEBUG_FREESTYLE) {
-        cout << "\t\tRay " << vp << " * " << u << " intersects at time " << t << " (raylength is "
-             << raylength << ")" << endl;
-        cout << "\t\t(u * normal) == " << (u * normal) << " for normal " << normal << endl;
-      }
-#endif
       if (fabs(u * normal) > 0.0001) {
         if ((t > 0.0) && (t < raylength)) {
-#if LOGGING
-          if (_global.debug & G_DEBUG_FREESTYLE) {
-            cout << "\t\tIs occluder" << endl;
-          }
-#endif
           WFace *f = (WFace *)((*p)->userdata);
           ViewShape *vshape = _ViewMap->viewShape(f->GetVertex(0)->shape()->GetId());
           oOccluders.insert(vshape);
