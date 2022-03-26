@@ -36,11 +36,6 @@ ImagePyramid::~ImagePyramid()
   }
 }
 
-GrayImage *ImagePyramid::getLevel(int l)
-{
-  return _levels[l];
-}
-
 float ImagePyramid::pixel(int x, int y, int level)
 {
   GrayImage *img = _levels[level];
