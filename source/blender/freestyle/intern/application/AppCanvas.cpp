@@ -20,7 +20,6 @@ namespace Freestyle {
 AppCanvas::AppCanvas()
 {
   _pViewer = nullptr;
-  _MapsPath = Config::Path::getInstance()->getMapsDir().c_str();
 }
 
 AppCanvas::AppCanvas(AppView *iViewer)

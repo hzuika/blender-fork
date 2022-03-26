@@ -56,14 +56,6 @@ class TextureManager {
     return _defaultTextureId;
   }
 
-  struct Options {
-    static void setPatternsPath(const string &path);
-    static string getPatternsPath();
-
-    static void setBrushesPath(const string &path);
-    static string getBrushesPath();
-  };
-
  protected:
   virtual void loadStandardBrushes() = 0;
   virtual unsigned loadBrush(string fileName, Stroke::MediumType = Stroke::OPAQUE_MEDIUM) = 0;
@@ -86,8 +78,6 @@ class TextureManager {
   static TextureManager *_pInstance;
   bool _hasLoadedTextures;
   brushesMap _brushesMap;
-  static string _patterns_path;
-  static string _brushes_path;
   unsigned int _defaultTextureId;
 
 #ifdef WITH_CXX_GUARDEDALLOC

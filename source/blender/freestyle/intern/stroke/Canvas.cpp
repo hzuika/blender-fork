@@ -36,8 +36,6 @@ namespace Freestyle {
 
 Canvas *Canvas::_pInstance = nullptr;
 
-const char *Canvas::_MapsPath = nullptr;
-
 Canvas::Canvas()
 {
   _SelectedFEdge = nullptr;
@@ -315,13 +313,7 @@ void Canvas::loadMap(const char *iFileName,
   }
 
   string filePath;
-  if (_MapsPath) {
-    filePath = _MapsPath;
-    filePath += iFileName;
-  }
-  else {
-    filePath = iFileName;
-  }
+  filePath = iFileName;
 
 #if 0  // soc
   QImage *qimg;

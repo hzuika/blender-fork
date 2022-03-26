@@ -59,13 +59,6 @@ namespace Freestyle {
 
 Controller::Controller()
 {
-  const string sep(Config::DIR_SEP);
-#if 0
-  const string filename = Config::Path::getInstance()->getHomeDir() + sep + Config::OPTIONS_DIR +
-                          sep + Config::OPTIONS_CURRENT_DIRS_FILE;
-  _current_dirs = new ConfigIO(filename, Config::APPLICATION_NAME + "CurrentDirs", true);
-#endif
-
   _RootNode = new NodeGroup;
   _RootNode->addRef();
 
@@ -1094,12 +1087,6 @@ void Controller::init_options()
 {
   // from AppOptionsWindow.cpp
   // Default init options
-
-  Config::Path *cpath = Config::Path::getInstance();
-
-  // Directories
-  TextureManager::Options::setPatternsPath(cpath->getPatternsPath());
-  TextureManager::Options::setBrushesPath(cpath->getModelsPath());
 
   // ViewMap Format
   setComputeSteerableViewMapFlag(false);

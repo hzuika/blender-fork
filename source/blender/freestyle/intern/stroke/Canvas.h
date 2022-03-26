@@ -69,7 +69,6 @@ class Canvas {
   StrokeRenderer *_Renderer;
   StyleModule *_current_sm;
   mapsMap _maps;
-  static const char *_MapsPath;
   SteerableViewMap *_steerableViewMap;
   bool _basic;
   int stroke_count;
