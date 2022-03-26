@@ -62,65 +62,6 @@ void GeomCleaner::SortIndexedVertexArray(const float *iVertices,
   delete[] mapIndices;
 }
 
-void GeomCleaner::CompressIndexedVertexArray(const float *iVertices,
-                                             unsigned iVSize,
-                                             const unsigned *iIndices,
-                                             unsigned iISize,
-                                             float **oVertices,
-                                             unsigned *oVSize,
-                                             unsigned **oIndices)
-{
-  // First, we build a list of IndexVertex:
-  vector<Vec3f> vertices;
-  unsigned i;
-  for (i = 0; i < iVSize; i += 3) {
-    vertices.emplace_back(iVertices[i], iVertices[i + 1], iVertices[i + 2]);
-  }
-
-  unsigned *mapVertex = new unsigned[iVSize];
-  vector<Vec3f>::iterator v = vertices.begin();
-
-  vector<Vec3f> compressedVertices;
-  Vec3f previous = *v;
-  mapVertex[0] = 0;
-  compressedVertices.push_back(vertices.front());
-
-  v++;
-  Vec3f current;
-  i = 1;
-  for (; v != vertices.end(); v++) {
-    current = *v;
-    if (current == previous) {
-      mapVertex[i] = compressedVertices.size() - 1;
-    }
-    else {
-      compressedVertices.push_back(current);
-      mapVertex[i] = compressedVertices.size() - 1;
-    }
-    previous = current;
-    i++;
-  }
-
-  // Builds the resulting vertex array:
-  *oVSize = 3 * compressedVertices.size();
-  *oVertices = new float[*oVSize];
-  i = 0;
-  for (v = compressedVertices.begin(); v != compressedVertices.end(); v++) {
-    (*oVertices)[i] = (*v)[0];
-    (*oVertices)[i + 1] = (*v)[1];
-    (*oVertices)[i + 2] = (*v)[2];
-    i += 3;
-  }
-
-  // Map the index array:
-  *oIndices = new unsigned[iISize];
-  for (i = 0; i < iISize; i++) {
-    (*oIndices)[i] = 3 * mapVertex[iIndices[i] / 3];
-  }
-
-  delete[] mapVertex;
-}
-
 /** Defines a hash table used for searching the Cells */
 struct GeomCleanerHasher {
 #define _MUL 950706376UL

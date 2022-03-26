@@ -34,13 +34,6 @@ class NodeTransform : public NodeGroup {
   /** Overloads the Node::AddBBox in order to take care about the transformation */
   virtual void AddBBox(const BBox<Vec3r> &iBBox);
 
-  /** Checks whether a matrix contains a scale factor or not.
-   *  Returns true if yes.
-   *    M
-   *      The matrix to check
-   */
-  bool isScaled(const Matrix44r &M);
-
   /** accessors */
   inline const Matrix44r &matrix() const
   {

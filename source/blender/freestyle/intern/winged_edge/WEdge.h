@@ -894,9 +894,6 @@ class WFace {
    */
   bool getOppositeEdge(const WVertex *v, WOEdge *&e);
 
-  /** compute the area of the face */
-  float getArea();
-
   WShape *getShape();
   virtual void ResetUserData()
   {

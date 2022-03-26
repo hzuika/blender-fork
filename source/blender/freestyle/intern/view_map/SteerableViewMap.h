@@ -98,17 +98,11 @@ class SteerableViewMap {
    */
   float readCompleteViewMapPixel(int iLevel, int x, int y);
 
-  /** Returns the number of levels in the pyramids */
-  unsigned int getNumberOfPyramidLevels() const;
-
   /** Returns the number of orientations */
   unsigned int getNumberOfOrientations() const
   {
     return _nbOrientations;
   }
-
-  /** for debug purposes */
-  void saveSteerableViewMap() const;
 
  protected:
   void Clear();

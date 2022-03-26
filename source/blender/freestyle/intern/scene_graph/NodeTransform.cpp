@@ -65,19 +65,4 @@ void NodeTransform::AddBBox(const BBox<Vec3r> &iBBox)
   Node::AddBBox(transformBox);
 }
 
-bool NodeTransform::isScaled(const Matrix44r &M)
-{
-  for (unsigned int j = 0; j < 3; j++) {
-    real norm = 0;
-    for (unsigned int i = 0; i < 3; i++) {
-      norm += M(i, j) * M(i, j);
-    }
-    if ((norm > 1.01) || (norm < 0.99)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 } /* namespace Freestyle */

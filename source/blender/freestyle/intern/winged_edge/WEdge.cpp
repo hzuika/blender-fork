@@ -378,20 +378,6 @@ bool WFace::getOppositeEdge(const WVertex *v, WOEdge *&e)
   return true;
 }
 
-float WFace::getArea()
-{
-  vector<WOEdge *>::iterator it;
-  Vec3f origin = (*(_OEdgeList.begin()))->GetaVertex()->GetVertex();
-  it = _OEdgeList.begin();
-  float a = 0;
-  for (it = it++; it != _OEdgeList.end(); it++) {
-    Vec3f v1 = Vec3f((*it)->GetaVertex()->GetVertex() - origin);
-    Vec3f v2 = Vec3f((*it)->GetbVertex()->GetVertex() - origin);
-    a += (v1 ^ v2).norm() / 2.0f;
-  }
-  return a;
-}
-
 WOEdge *WFace::GetPrevOEdge(WOEdge *iOEdge)
 {
   vector<WOEdge *>::iterator woe, woend, woefirst;

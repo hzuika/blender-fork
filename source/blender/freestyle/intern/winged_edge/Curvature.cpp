@@ -36,17 +36,6 @@ static bool angle_obtuse(WVertex *v, WFace *f)
   return ((vec1 * vec2) < 0);
 }
 
-// FIXME
-// WVvertex is useless but kept for history reasons
-static bool triangle_obtuse(WVertex *UNUSED(v), WFace *f)
-{
-  bool b = false;
-  for (int i = 0; i < 3; i++) {
-    b = b || ((f->getEdgeList()[i]->GetVec() * f->getEdgeList()[(i + 1) % 3]->GetVec()) < 0);
-  }
-  return b;
-}
-
 static real cotan(WVertex *vo, WVertex *v1, WVertex *v2)
 {
   /* cf. Appendix B of [Meyer et al 2002] */
@@ -97,29 +86,6 @@ void gts_vertex_principal_curvatures(real Kh, real Kg, real *K1, real *K2)
   temp = sqrt(temp);
   *K1 = Kh + temp;
   *K2 = Kh - temp;
-}
-
-/* from Maple */
-static void linsolve(real m11, real m12, real b1, real m21, real m22, real b2, real *x1, real *x2)
-{
-  real temp;
-
-  temp = 1.0 / (m21 * m12 - m11 * m22);
-  *x1 = (m12 * b2 - m22 * b1) * temp;
-  *x2 = (m11 * b2 - m21 * b1) * temp;
-}
-
-/* from Maple - largest eigenvector of [a b; b c] */
-static void eigenvector(real a, real b, real c, Vec3r e)
-{
-  if (b == 0.0) {
-    e[0] = 0.0;
-  }
-  else {
-    e[0] = -(c - a - sqrt(c * c - 2 * a * c + a * a + 4 * b * b)) / (2 * b);
-  }
-  e[1] = 1.0;
-  e[2] = 0.0;
 }
 
 namespace OGF {
