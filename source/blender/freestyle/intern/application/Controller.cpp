@@ -461,29 +461,6 @@ void Controller::ComputeSteerableViewMap()
 {
 }
 
-void Controller::saveSteerableViewMapImages()
-{
-  SteerableViewMap *svm = _Canvas->getSteerableViewMap();
-  if (!svm) {
-    cerr << "the Steerable ViewMap has not been computed yet" << endl;
-    return;
-  }
-  svm->saveSteerableViewMap();
-}
-
-void Controller::toggleVisibilityAlgo()
-{
-  if (_VisibilityAlgo == ViewMapBuilder::ray_casting) {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting_fast;
-  }
-  else if (_VisibilityAlgo == ViewMapBuilder::ray_casting_fast) {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting_very_fast;
-  }
-  else {
-    _VisibilityAlgo = ViewMapBuilder::ray_casting;
-  }
-}
-
 void Controller::setVisibilityAlgo(int algo)
 {
   switch (algo) {
@@ -511,48 +488,14 @@ void Controller::setVisibilityAlgo(int algo)
   }
 }
 
-int Controller::getVisibilityAlgo()
-{
-  switch (_VisibilityAlgo) {
-    case ViewMapBuilder::ray_casting:
-      return FREESTYLE_ALGO_REGULAR;
-    case ViewMapBuilder::ray_casting_fast:
-      return FREESTYLE_ALGO_FAST;
-    case ViewMapBuilder::ray_casting_very_fast:
-      return FREESTYLE_ALGO_VERYFAST;
-    case ViewMapBuilder::ray_casting_culled_adaptive_traditional:
-      return FREESTYLE_ALGO_CULLED_ADAPTIVE_TRADITIONAL;
-    case ViewMapBuilder::ray_casting_adaptive_traditional:
-      return FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL;
-    case ViewMapBuilder::ray_casting_culled_adaptive_cumulative:
-      return FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE;
-    case ViewMapBuilder::ray_casting_adaptive_cumulative:
-      return FREESTYLE_ALGO_ADAPTIVE_CUMULATIVE;
-  }
-
-  // ray_casting_adaptive_traditional is the most exact replacement
-  // for legacy code
-  return FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL;
-}
-
 void Controller::setViewMapCache(bool iBool)
 {
   _EnableViewMapCache = iBool;
 }
 
-bool Controller::getViewMapCache() const
-{
-  return _EnableViewMapCache;
-}
-
 void Controller::setQuantitativeInvisibility(bool iBool)
 {
   _EnableQI = iBool;
-}
-
-bool Controller::getQuantitativeInvisibility() const
-{
-  return _EnableQI;
 }
 
 void Controller::setFaceSmoothness(bool iBool)
@@ -598,11 +541,6 @@ bool Controller::getComputeMaterialBoundariesFlag() const
 void Controller::setComputeSteerableViewMapFlag(bool iBool)
 {
   _ComputeSteerableViewMap = iBool;
-}
-
-bool Controller::getComputeSteerableViewMapFlag() const
-{
-  return _ComputeSteerableViewMap;
 }
 
 int Controller::DrawStrokes()
@@ -687,11 +625,6 @@ void Controller::InsertStyleModule(unsigned index, const char *iName, struct Tex
   _Canvas->InsertStyleModule(index, sm);
 }
 
-void Controller::AddStyleModule(const char * /*iFileName*/)
-{
-  //_pStyleWindow->Add(iFileName);
-}
-
 void Controller::RemoveStyleModule(unsigned index)
 {
   _Canvas->RemoveStyleModule(index);
@@ -700,12 +633,6 @@ void Controller::RemoveStyleModule(unsigned index)
 void Controller::Clear()
 {
   _Canvas->Clear();
-}
-
-void Controller::ReloadStyleModule(unsigned index, const char *iFileName)
-{
-  StyleModule *sm = new StyleModule(iFileName, _inter);
-  _Canvas->ReplaceStyleModule(index, sm);
 }
 
 void Controller::SwapStyleModules(unsigned i1, unsigned i2)
@@ -739,87 +666,6 @@ void Controller::resetModified(bool iMod)
 {
   //_pStyleWindow->resetModified(iMod);
   _Canvas->resetModified(iMod);
-}
-
-NodeGroup *Controller::BuildRep(vector<ViewEdge *>::iterator vedges_begin,
-                                vector<ViewEdge *>::iterator vedges_end)
-{
-  ViewMapTesselator2D tesselator2D;
-  FrsMaterial mat;
-  mat.setDiffuse(1, 1, 0.3, 1);
-  tesselator2D.setFrsMaterial(mat);
-
-  return (tesselator2D.Tesselate(vedges_begin, vedges_end));
-}
-
-void Controller::toggleEdgeTesselationNature(Nature::EdgeNature iNature)
-{
-  _edgeTesselationNature ^= (iNature);
-  ComputeViewMap();
-}
-
-void Controller::setModelsDir(const string & /*dir*/)
-{
-  //_current_dirs->setValue("models/dir", dir);
-}
-
-string Controller::getModelsDir() const
-{
-  string dir = ".";
-  //_current_dirs->getValue("models/dir", dir);
-  return dir;
-}
-
-void Controller::setModulesDir(const string & /*dir*/)
-{
-  //_current_dirs->setValue("modules/dir", dir);
-}
-
-string Controller::getModulesDir() const
-{
-  string dir = ".";
-  //_current_dirs->getValue("modules/dir", dir);
-  return dir;
-}
-
-void Controller::resetInterpreter()
-{
-  if (_inter) {
-    _inter->reset();
-  }
-}
-
-void Controller::displayDensityCurves(int x, int y)
-{
-  SteerableViewMap *svm = _Canvas->getSteerableViewMap();
-  if (!svm) {
-    return;
-  }
-
-  unsigned int i, j;
-  using densityCurve = vector<Vec3r>;
-  vector<densityCurve> curves(svm->getNumberOfOrientations() + 1);
-  vector<densityCurve> curvesDirection(svm->getNumberOfPyramidLevels());
-
-  // collect the curves values
-  unsigned nbCurves = svm->getNumberOfOrientations() + 1;
-  unsigned nbPoints = svm->getNumberOfPyramidLevels();
-  if (!nbPoints) {
-    return;
-  }
-
-  // build the density/nbLevels curves for each orientation
-  for (i = 0; i < nbCurves; ++i) {
-    for (j = 0; j < nbPoints; ++j) {
-      curves[i].push_back(Vec3r(j, svm->readSteerableViewMapPixel(i, j, x, y), 0));
-    }
-  }
-  // build the density/nbOrientations curves for each level
-  for (i = 0; i < nbPoints; ++i) {
-    for (j = 0; j < nbCurves; ++j) {
-      curvesDirection[i].push_back(Vec3r(j, svm->readSteerableViewMapPixel(j, i, x, y), 0));
-    }
-  }
 }
 
 void Controller::init_options()

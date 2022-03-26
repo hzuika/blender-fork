@@ -51,8 +51,6 @@ class Controller {
   void CloseFile();
   void ComputeViewMap();
   void ComputeSteerableViewMap();
-  void saveSteerableViewMapImages();
-  void toggleEdgeTesselationNature(Nature::EdgeNature iNature);
   int DrawStrokes();
   void ResetRenderCount();
   Render *RenderStrokes(Render *re, bool render);
@@ -60,9 +58,7 @@ class Controller {
   void InsertStyleModule(unsigned index, const char *iFileName);
   void InsertStyleModule(unsigned index, const char *iName, const char *iBuffer);
   void InsertStyleModule(unsigned index, const char *iName, struct Text *iText);
-  void AddStyleModule(const char *iFileName);
   void RemoveStyleModule(unsigned index);
-  void ReloadStyleModule(unsigned index, const char *iFileName);
   void Clear();
   void ClearRootNode();
   void DeleteWingedEdge();
@@ -71,21 +67,14 @@ class Controller {
   void setModified(unsigned index, bool iMod);
   void resetModified(bool iMod = false);
   void updateCausalStyleModules(unsigned index);
-  void displayDensityCurves(int x, int y);
 
   ViewEdge *SelectViewEdge(real x, real y);
   FEdge *SelectFEdge(real x, real y);
-  NodeGroup *BuildRep(vector<ViewEdge *>::iterator vedges_begin,
-                      vector<ViewEdge *>::iterator vedges_end);
 
-  void toggleVisibilityAlgo();
   void setVisibilityAlgo(int algo);
-  int getVisibilityAlgo();
 
   void setViewMapCache(bool iBool);
-  bool getViewMapCache() const;
   void setQuantitativeInvisibility(bool iBool);  // if true, we compute quantitativeInvisibility
-  bool getQuantitativeInvisibility() const;
   void setFaceSmoothness(bool iBool);
   bool getFaceSmoothness() const;
 
@@ -97,7 +86,6 @@ class Controller {
   bool getComputeMaterialBoundariesFlag() const;
 
   void setComputeSteerableViewMapFlag(bool iBool);
-  bool getComputeSteerableViewMapFlag() const;
   void setCreaseAngle(float angle)
   {
     _creaseAngle = angle;
@@ -123,14 +111,7 @@ class Controller {
     return _suggestiveContourKrDerivativeEpsilon;
   }
 
-  void setModelsDir(const string &dir);
-  string getModelsDir() const;
-  void setModulesDir(const string &dir);
-  string getModulesDir() const;
-
   bool hitViewMapCache();
-
-  void resetInterpreter();
 
  public:
   // Viewmap data structure
