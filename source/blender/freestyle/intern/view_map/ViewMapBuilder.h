@@ -92,11 +92,6 @@ class ViewMapBuilder {
   /** Compute Cusps */
   void computeCusps(ViewMap *ioViewMap);
 
-  /** Detects cusps (for a single ViewEdge) among SVertices and builds a ViewVertex on top of each
-   * cusp SVertex We use a hysteresis approach to avoid noise.
-   */
-  void DetectCusps(ViewEdge *ioEdge);
-
   /** Sets the current viewpoint */
   inline void setViewpoint(const Vec3r &ivp)
   {
@@ -171,11 +166,6 @@ class ViewMapBuilder {
   /** accessors */
 
   /** Modifiers */
-  inline void setProgressBar(ProgressBar *iProgressBar)
-  {
-    _pProgressBar = iProgressBar;
-  }
-
   inline void setRenderMonitor(RenderMonitor *iRenderMonitor)
   {
     _pRenderMonitor = iRenderMonitor;
@@ -196,20 +186,6 @@ class ViewMapBuilder {
                                    real epsilon,
                                    bool cull,
                                    GridDensityProviderFactory &factory);
-
-  // FIXME
-  void FindOccludee(
-      FEdge *fe, Grid *iGrid, real epsilon, Polygon3r **oaPolygon, unsigned timestamp);
-  void FindOccludee(FEdge *fe,
-                    Grid *iGrid,
-                    real epsilon,
-                    Polygon3r **oaPolygon,
-                    unsigned timestamp,
-                    Vec3r &u,
-                    Vec3r &A,
-                    Vec3r &origin,
-                    Vec3r &edgeDir,
-                    vector<WVertex *> &faceVertices);
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:ViewMapBuilder")
