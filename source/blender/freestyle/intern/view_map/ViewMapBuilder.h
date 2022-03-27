@@ -86,10 +86,6 @@ class ViewMapBuilder {
     }
   }
 
-  /* Build Grid for ray casting */
-  /** Build non-culled Grid in camera space for ray casting */
-  void BuildGrid(WingedEdge &we, const BBox<Vec3r> &bbox, unsigned int sceneNumFaces);
-
   /** Compute Shapes from a WingedEdge containing a list of WShapes */
   void computeInitialViewEdges(WingedEdge &);
 
