@@ -279,35 +279,6 @@ class Grid {
     _occluders.push_back(occluder);
   }
 
-  /** Casts a ray between a starting point and an ending point
-   *  Returns the list of occluders contained in the cells intersected by this ray
-   *  Starts with a call to InitRay.
-   */
-  void castRay(const Vec3r &orig, const Vec3r &end, OccludersSet &occluders, unsigned timestamp);
-
-  // Prepares to cast ray without generating OccludersSet
-  void initAcceleratedRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp);
-
-  /** Casts an infinite ray (still finishing at the end of the grid) from a starting point and in a
-   * given direction. Returns the list of occluders contained in the cells intersected by this ray
-   *  Starts with a call to InitRay.
-   */
-  void castInfiniteRay(const Vec3r &orig,
-                       const Vec3r &dir,
-                       OccludersSet &occluders,
-                       unsigned timestamp);
-
-  // Prepares to cast ray without generating OccludersSet.
-  bool initAcceleratedInfiniteRay(const Vec3r &orig, const Vec3r &dir, unsigned timestamp);
-
-  /** Init all structures and values for computing the cells intersected by this new ray */
-  void initRay(const Vec3r &orig, const Vec3r &end, unsigned timestamp);
-
-  /** Init all structures and values for computing the cells intersected by this infinite ray.
-   * Returns false if the ray doesn't intersect the grid.
-   */
-  bool initInfiniteRay(const Vec3r &orig, const Vec3r &dir, unsigned timestamp);
-
   /** Accessors */
   inline const Vec3r &getOrigin() const
   {
@@ -339,30 +310,6 @@ class Grid {
   }
 
  protected:
-  /** Core of castRay and castInfiniteRay, find occluders along the given ray */
-  inline void castRayInternal(GridVisitor &visitor)
-  {
-    Cell *current_cell = NULL;
-    do {
-      current_cell = getCell(_current_cell);
-      if (current_cell) {
-        visitor.discoverCell(current_cell);
-        OccludersSet &occluders =
-            current_cell->getOccluders();  // FIXME: I had forgotten the ref &
-        for (OccludersSet::iterator it = occluders.begin(); it != occluders.end(); it++) {
-          if (POINTER_AS_UINT((*it)->userdata2) != _timestamp) {
-            (*it)->userdata2 = POINTER_FROM_UINT(_timestamp);
-            visitor.examineOccluder(*it);
-          }
-        }
-        visitor.finishCell(current_cell);
-      }
-    } while ((!visitor.stop()) && (nextRayCell(_current_cell, _current_cell)));
-  }
-
-  /** returns the  cell next to the cell passed as argument. */
-  bool nextRayCell(Vec3u &current_cell, Vec3u &next_cell);
-
   unsigned int _timestamp;
 
   Vec3u _cells_nb;   // number of cells for x,y,z axis
