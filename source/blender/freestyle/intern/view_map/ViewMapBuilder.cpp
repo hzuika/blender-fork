@@ -506,27 +506,6 @@ ViewMap *ViewMapBuilder::BuildViewMap(WingedEdge &we,
   return _ViewMap;
 }
 
-static inline real distance2D(const Vec3r &point, const real origin[2])
-{
-  return ::hypot((point[0] - origin[0]), (point[1] - origin[1]));
-}
-
-static inline bool crossesProscenium(real proscenium[4], FEdge *fe)
-{
-  Vec2r min(proscenium[0], proscenium[2]);
-  Vec2r max(proscenium[1], proscenium[3]);
-  Vec2r A(fe->vertexA()->getProjectedX(), fe->vertexA()->getProjectedY());
-  Vec2r B(fe->vertexB()->getProjectedX(), fe->vertexB()->getProjectedY());
-
-  return GeomUtils::intersect2dSeg2dArea(min, max, A, B);
-}
-
-static inline bool insideProscenium(const real proscenium[4], const Vec3r &point)
-{
-  return !(point[0] < proscenium[0] || point[0] > proscenium[1] || point[1] < proscenium[2] ||
-           point[1] > proscenium[3]);
-}
-
 void ViewMapBuilder::computeInitialViewEdges(WingedEdge &we)
 {
   vector<WShape *> wshapes = we.getWShapes();
