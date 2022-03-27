@@ -22,8 +22,6 @@
 #include "../geometry/GeomUtils.h"
 #include "../geometry/GridHelpers.h"
 
-#include "../winged_edge/WFillGrid.h"
-
 #include "BKE_global.h"
 
 namespace Freestyle {

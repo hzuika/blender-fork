@@ -512,10 +512,6 @@ set(SRC
   intern/winged_edge/Nature.h
   intern/winged_edge/WEdge.cpp
   intern/winged_edge/WEdge.h
-  intern/winged_edge/WFillGrid.cpp
-  intern/winged_edge/WFillGrid.h
-  intern/winged_edge/WSFillGrid.cpp
-  intern/winged_edge/WSFillGrid.h
   intern/winged_edge/WXEdge.cpp
   intern/winged_edge/WXEdge.h
   intern/winged_edge/WXEdgeBuilder.cpp
