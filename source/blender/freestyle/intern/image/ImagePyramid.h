@@ -84,14 +84,6 @@ class GaussianPyramid : public ImagePyramid {
 
   virtual void BuildPyramid(const GrayImage &level0, unsigned nbLevels);
   virtual void BuildPyramid(GrayImage *level0, unsigned nbLevels);
-
-  /* accessors */
-  inline float getSigma() const
-  {
-    return _sigma;
-  }
-
-  /* modifiers */
 };
 
 } /* namespace Freestyle */

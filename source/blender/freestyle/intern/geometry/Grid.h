@@ -80,10 +80,6 @@ class GridVisitor {
   {
   }
 
-  virtual void examineOccluder(Polygon3r * /*occ*/)
-  {
-  }
-
   virtual void finishCell(Cell * /*cell*/)
   {
   }
@@ -104,8 +100,6 @@ class allOccludersGridVisitor : public GridVisitor {
   allOccludersGridVisitor(OccludersSet &occluders) : GridVisitor(), occluders_(occluders)
   {
   }
-
-  virtual void examineOccluder(Polygon3r *occ);
 
   OccludersSet &occluders()
   {
@@ -156,8 +150,6 @@ class firstIntersectionGridVisitor : public GridVisitor {
   {
     current_cell_ = cell;
   }
-
-  virtual void examineOccluder(Polygon3r *occ);
 
   virtual bool stop();
 

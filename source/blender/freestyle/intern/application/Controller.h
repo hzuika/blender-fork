@@ -47,7 +47,6 @@ class Controller {
   void init_options();
 
   int LoadMesh(Render *re, ViewLayer *view_layer, Depsgraph *depsgraph);
-  int Load3DSFile(const char *iFileName);
   void CloseFile();
   void ComputeViewMap();
   int DrawStrokes();

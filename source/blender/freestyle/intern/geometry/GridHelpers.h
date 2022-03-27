@@ -24,60 +24,6 @@ namespace Freestyle {
 
 namespace GridHelpers {
 
-/** Computes the distance from a point P to a segment AB */
-template<class T> T closestPointToSegment(const T &P, const T &A, const T &B, real &distance)
-{
-  T AB, AP, BP;
-  AB = B - A;
-  AP = P - A;
-  BP = P - B;
-
-  real c1(AB * AP);
-  if (c1 <= 0) {
-    distance = AP.norm();
-    return A;  // A is closest point
-  }
-
-  real c2(AB * AB);
-  if (c2 <= c1) {
-    distance = BP.norm();
-    return B;  // B is closest point
-  }
-
-  real b = c1 / c2;
-  T Pb, PPb;
-  Pb = A + b * AB;
-  PPb = P - Pb;
-
-  distance = PPb.norm();
-  return Pb;  // closest point lies on AB
-}
-
-inline Vec3r closestPointOnPolygon(const Vec3r &point, const Polygon3r &poly)
-{
-  // First cast a ray from the point onto the polygon plane
-  // If the ray intersects the polygon, then the intersection point
-  // is the closest point on the polygon
-  real t, u, v;
-  if (poly.rayIntersect(point, poly.getNormal(), t, u, v)) {
-    return point + poly.getNormal() * t;
-  }
-
-  // Otherwise, get the nearest point on each edge, and take the closest
-  real distance;
-  Vec3r closest = closestPointToSegment(
-      point, poly.getVertices()[2], poly.getVertices()[0], distance);
-  for (unsigned int i = 0; i < 2; ++i) {
-    real t;
-    Vec3r p = closestPointToSegment(point, poly.getVertices()[i], poly.getVertices()[i + 1], t);
-    if (t < distance) {
-      distance = t;
-      closest = p;
-    }
-  }
-  return closest;
-}
-
 inline real distancePointToPolygon(const Vec3r &point, const Polygon3r &poly)
 {
   // First cast a ray from the point onto the polygon plane
