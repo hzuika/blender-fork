@@ -442,7 +442,6 @@ set(SRC
   intern/system/BaseIterator.h
   intern/system/BaseObject.cpp
   intern/system/BaseObject.h
-  intern/system/Cast.h
   intern/system/Exception.cpp
   intern/system/Exception.h
   intern/system/Id.h
