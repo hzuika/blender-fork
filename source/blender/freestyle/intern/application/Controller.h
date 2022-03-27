@@ -50,7 +50,6 @@ class Controller {
   int Load3DSFile(const char *iFileName);
   void CloseFile();
   void ComputeViewMap();
-  void ComputeSteerableViewMap();
   int DrawStrokes();
   void ResetRenderCount();
   Render *RenderStrokes(Render *re, bool render);
@@ -85,7 +84,6 @@ class Controller {
   void setComputeMaterialBoundariesFlag(bool b);
   bool getComputeMaterialBoundariesFlag() const;
 
-  void setComputeSteerableViewMapFlag(bool iBool);
   void setCreaseAngle(float angle)
   {
     _creaseAngle = angle;
@@ -187,8 +185,6 @@ class Controller {
   float _creaseAngle;
   float _sphereRadius;
   float _suggestiveContourKrDerivativeEpsilon;
-
-  bool _ComputeSteerableViewMap;
 
   FEdgeXDetector edgeDetector;
 
