@@ -105,21 +105,6 @@ intersection_test intersectRayPlane(const Vec3r &orig,
                                     real &t,                          // I = orig + t * dir
                                     const real epsilon = M_EPSILON);  // the epsilon to use
 
-/** Intersection Ray-Bounding box (axis aligned).
- *  Adapted from Williams et al, "An Efficient Robust Ray-Box Intersection Algorithm", JGT 10:1
- * (2005), pp. 49-54.
- */
-bool intersectRayBBox(const Vec3r &orig,
-                      const Vec3r &dir,  // ray origin and direction
-                      const Vec3r &boxMin,
-                      const Vec3r &boxMax,  // the bbox
-                      // the interval in which at least on of the intersections must happen
-                      real t0,
-                      real t1,
-                      real &tmin,  // Imin = orig + tmin * dir is the first intersection
-                      real &tmax,  // Imax = orig + tmax * dir is the second intersection
-                      real epsilon = M_EPSILON);  // the epsilon to use
-
 void transformVertex(const Vec3r &vert, const Matrix44r &matrix, Vec3r &res);
 
 void transformVertices(const vector<Vec3r> &vertices, const Matrix44r &trans, vector<Vec3r> &res);

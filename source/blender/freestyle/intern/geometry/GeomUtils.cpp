@@ -469,54 +469,6 @@ intersection_test intersectRayPlane(const Vec3r &orig,
   return DO_INTERSECT;
 }
 
-bool intersectRayBBox(const Vec3r &orig,
-                      const Vec3r &dir,  // ray origin and direction
-                      const Vec3r &boxMin,
-                      const Vec3r &boxMax,  // the bbox
-                      real t0,
-                      real t1,
-                      real &tmin,  // I0 = orig + tmin * dir is the first intersection
-                      real &tmax,  // I1 = orig + tmax * dir is the second intersection
-                      real /*epsilon*/)
-{
-  float tymin, tymax, tzmin, tzmax;
-  Vec3r inv_direction(1.0 / dir[0], 1.0 / dir[1], 1.0 / dir[2]);
-  int sign[3];
-  sign[0] = (inv_direction.x() < 0);
-  sign[1] = (inv_direction.y() < 0);
-  sign[2] = (inv_direction.z() < 0);
-
-  Vec3r bounds[2];
-  bounds[0] = boxMin;
-  bounds[1] = boxMax;
-
-  tmin = (bounds[sign[0]].x() - orig.x()) * inv_direction.x();
-  tmax = (bounds[1 - sign[0]].x() - orig.x()) * inv_direction.x();
-  tymin = (bounds[sign[1]].y() - orig.y()) * inv_direction.y();
-  tymax = (bounds[1 - sign[1]].y() - orig.y()) * inv_direction.y();
-  if ((tmin > tymax) || (tymin > tmax)) {
-    return false;
-  }
-  if (tymin > tmin) {
-    tmin = tymin;
-  }
-  if (tymax < tmax) {
-    tmax = tymax;
-  }
-  tzmin = (bounds[sign[2]].z() - orig.z()) * inv_direction.z();
-  tzmax = (bounds[1 - sign[2]].z() - orig.z()) * inv_direction.z();
-  if ((tmin > tzmax) || (tzmin > tmax)) {
-    return false;
-  }
-  if (tzmin > tmin) {
-    tmin = tzmin;
-  }
-  if (tzmax < tmax) {
-    tmax = tzmax;
-  }
-  return ((tmin < t1) && (tmax > t0));
-}
-
 void transformVertex(const Vec3r &vert, const Matrix44r &matrix, Vec3r &res)
 {
   HVec3r hvert(vert), res_tmp;
