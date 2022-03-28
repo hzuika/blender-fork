@@ -24,7 +24,6 @@ extern "C" {
 #include "../scene_graph/NodeViewLayer.h"
 #include "../scene_graph/VertexRep.h"
 
-#include "../stroke/PSStrokeRenderer.h"
 #include "../stroke/StrokeTesselator.h"
 #include "../stroke/StyleModule.h"
 #include "../stroke/TextStrokeRenderer.h"

@@ -409,8 +409,6 @@ set(SRC
   intern/stroke/Module.h
   intern/stroke/Operators.cpp
   intern/stroke/Operators.h
-  intern/stroke/PSStrokeRenderer.cpp
-  intern/stroke/PSStrokeRenderer.h
   intern/stroke/Predicates0D.cpp
   intern/stroke/Predicates0D.h
   intern/stroke/Predicates1D.cpp
