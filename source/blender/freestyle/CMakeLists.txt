@@ -376,13 +376,11 @@ set(SRC
   intern/scene_graph/NodeViewLayer.h
   intern/scene_graph/OrientedLineRep.cpp
   intern/scene_graph/OrientedLineRep.h
-  intern/scene_graph/Rep.cpp
   intern/scene_graph/Rep.h
   intern/scene_graph/SceneHash.cpp
   intern/scene_graph/SceneHash.h
   intern/scene_graph/ScenePrettyPrinter.cpp
   intern/scene_graph/ScenePrettyPrinter.h
-  intern/scene_graph/SceneVisitor.cpp
   intern/scene_graph/SceneVisitor.h
   intern/scene_graph/TriangleRep.cpp
   intern/scene_graph/TriangleRep.h
@@ -440,20 +438,17 @@ set(SRC
   intern/stroke/TextStrokeRenderer.cpp
   intern/stroke/TextStrokeRenderer.h
   intern/system/BaseIterator.h
-  intern/system/BaseObject.cpp
   intern/system/BaseObject.h
   intern/system/Exception.cpp
   intern/system/Exception.h
   intern/system/Id.h
   intern/system/Interpreter.h
-  intern/system/Iterator.cpp
   intern/system/Iterator.h
   intern/system/PointerSequence.h
   intern/system/Precision.h
   intern/system/ProgressBar.h
   intern/system/PseudoNoise.cpp
   intern/system/PseudoNoise.h
-  intern/system/PythonInterpreter.cpp
   intern/system/PythonInterpreter.h
   intern/system/RandGen.cpp
   intern/system/RandGen.h
