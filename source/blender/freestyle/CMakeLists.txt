@@ -429,8 +429,6 @@ set(SRC
   intern/stroke/StrokeShader.cpp
   intern/stroke/StrokeShader.h
   intern/stroke/StyleModule.h
-  intern/stroke/TextStrokeRenderer.cpp
-  intern/stroke/TextStrokeRenderer.h
   intern/system/BaseIterator.h
   intern/system/BaseObject.h
   intern/system/Exception.cpp

@@ -25,7 +25,6 @@ extern "C" {
 #include "../scene_graph/VertexRep.h"
 
 #include "../stroke/StyleModule.h"
-#include "../stroke/TextStrokeRenderer.h"
 
 #include "../system/PythonInterpreter.h"
 #include "../system/StringUtils.h"
