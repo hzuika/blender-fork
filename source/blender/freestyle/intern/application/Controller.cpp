@@ -78,8 +78,7 @@ Controller::Controller()
 
   _Canvas = nullptr;
 
-  _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_traditional;
-  //_VisibilityAlgo = ViewMapBuilder::ray_casting;
+  _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_cumulative;
 
   _Canvas = new AppCanvas;
 
@@ -454,21 +453,6 @@ void Controller::ComputeViewMap()
 void Controller::setVisibilityAlgo(int algo)
 {
   switch (algo) {
-    case FREESTYLE_ALGO_REGULAR:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting;
-      break;
-    case FREESTYLE_ALGO_FAST:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_fast;
-      break;
-    case FREESTYLE_ALGO_VERYFAST:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_very_fast;
-      break;
-    case FREESTYLE_ALGO_CULLED_ADAPTIVE_TRADITIONAL:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_traditional;
-      break;
-    case FREESTYLE_ALGO_ADAPTIVE_TRADITIONAL:
-      _VisibilityAlgo = ViewMapBuilder::ray_casting_adaptive_traditional;
-      break;
     case FREESTYLE_ALGO_CULLED_ADAPTIVE_CUMULATIVE:
       _VisibilityAlgo = ViewMapBuilder::ray_casting_culled_adaptive_cumulative;
       break;

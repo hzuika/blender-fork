@@ -62,11 +62,6 @@ class ViewMapBuilder {
   } intersection_algo;
 
   typedef enum {
-    ray_casting,
-    ray_casting_fast,
-    ray_casting_very_fast,
-    ray_casting_culled_adaptive_traditional,
-    ray_casting_adaptive_traditional,
     ray_casting_culled_adaptive_cumulative,
     ray_casting_adaptive_cumulative,
   } visibility_algo;
@@ -169,7 +164,7 @@ class ViewMapBuilder {
                               WingedEdge &we,
                               const BBox<Vec3r> &bbox,
                               unsigned int sceneNumFaces,
-                              visibility_algo iAlgo = ray_casting,
+                              visibility_algo iAlgo,
                               real epsilon = 1.0e-6);
 
   void setGrid(Grid *iGrid)
@@ -199,50 +194,13 @@ class ViewMapBuilder {
   /** Computes intersections on all edges of the scene using a sweep line algorithm */
   void ComputeSweepLineIntersections(ViewMap *ioViewMap, real epsilon = 1.0e-6);
 
-  /** Computes the 2D scene silhouette edges visibility using a ray casting. On each edge, a ray is
-   * cast to check its quantitative invisibility. The list of occluders are each time stored in the
-   * tested edge. ioViewMap The view map. The 2D scene silhouette edges as FEdges. These edges have
-   * already been splitted at their intersections points. Thus, these edges do not intersect
-   * anymore. The visibility corresponding to each edge of ioScene is set is this edge.
-   */
-  void ComputeRayCastingVisibility(ViewMap *ioViewMap, real epsilon = 1.0e-6);
-  void ComputeFastRayCastingVisibility(ViewMap *ioViewMap, real epsilon = 1.0e-6);
-  void ComputeVeryFastRayCastingVisibility(ViewMap *ioViewMap, real epsilon = 1.0e-6);
-
   void ComputeCumulativeVisibility(ViewMap *ioViewMap,
                                    WingedEdge &we,
                                    const BBox<Vec3r> &bbox,
                                    real epsilon,
                                    bool cull,
                                    GridDensityProviderFactory &factory);
-  void ComputeDetailedVisibility(ViewMap *ioViewMap,
-                                 WingedEdge &we,
-                                 const BBox<Vec3r> &bbox,
-                                 real epsilon,
-                                 bool cull,
-                                 GridDensityProviderFactory &factory);
 
-  /** Compute the visibility for the FEdge fe.
-   *  The occluders are added to fe occluders list.
-   *    fe
-   *      The FEdge
-   *    iGrid
-   *      The grid used to compute the ray casting visibility
-   *    epsilon
-   *      The epsilon used for computation
-   *    oShapeId
-   *      fe is the border (in 2D) between 2 2D spaces.
-   *      if fe is a silhouette, One of these 2D spaces is occupied by the shape to which fe
-   * belongs (on its left) and the other one is either occupied by another shape or empty or
-   * occupied by the same shape. We use this ray casting operation to determine which shape lies on
-   * fe's right. The result is the shape id stored in oShapeId
-   */
-  int ComputeRayCastingVisibility(FEdge *fe,
-                                  Grid *iGrid,
-                                  real epsilon,
-                                  set<ViewShape *> &oOccluders,
-                                  Polygon3r **oaPolygon,
-                                  unsigned timestamp);
   // FIXME
   void FindOccludee(
       FEdge *fe, Grid *iGrid, real epsilon, Polygon3r **oaPolygon, unsigned timestamp);
