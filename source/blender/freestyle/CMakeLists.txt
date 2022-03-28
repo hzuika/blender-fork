@@ -428,8 +428,6 @@ set(SRC
   intern/stroke/StrokeRep.h
   intern/stroke/StrokeShader.cpp
   intern/stroke/StrokeShader.h
-  intern/stroke/StrokeTesselator.cpp
-  intern/stroke/StrokeTesselator.h
   intern/stroke/StyleModule.h
   intern/stroke/TextStrokeRenderer.cpp
   intern/stroke/TextStrokeRenderer.h
