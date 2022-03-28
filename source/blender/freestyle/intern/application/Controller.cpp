@@ -22,7 +22,6 @@ extern "C" {
 #include "../scene_graph/NodeShape.h"
 #include "../scene_graph/NodeTransform.h"
 #include "../scene_graph/NodeViewLayer.h"
-#include "../scene_graph/ScenePrettyPrinter.h"
 #include "../scene_graph/VertexRep.h"
 
 #include "../stroke/PSStrokeRenderer.h"

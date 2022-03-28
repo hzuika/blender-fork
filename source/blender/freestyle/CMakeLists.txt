@@ -379,8 +379,6 @@ set(SRC
   intern/scene_graph/Rep.h
   intern/scene_graph/SceneHash.cpp
   intern/scene_graph/SceneHash.h
-  intern/scene_graph/ScenePrettyPrinter.cpp
-  intern/scene_graph/ScenePrettyPrinter.h
   intern/scene_graph/SceneVisitor.h
   intern/scene_graph/TriangleRep.cpp
   intern/scene_graph/TriangleRep.h
