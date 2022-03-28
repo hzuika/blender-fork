@@ -491,8 +491,6 @@ set(SRC
   intern/view_map/ViewMapBuilder.cpp
   intern/view_map/ViewMapBuilder.h
   intern/view_map/ViewMapIterators.h
-  intern/view_map/ViewMapTesselator.cpp
-  intern/view_map/ViewMapTesselator.h
   intern/winged_edge/Curvature.cpp
   intern/winged_edge/Curvature.h
   intern/winged_edge/Nature.h

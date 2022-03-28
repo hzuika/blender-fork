@@ -31,7 +31,6 @@ extern "C" {
 
 #include "../view_map/SteerableViewMap.h"
 #include "../view_map/ViewMap.h"
-#include "../view_map/ViewMapTesselator.h"
 
 #include "../winged_edge/Curvature.h"
 #include "../winged_edge/WEdge.h"
