@@ -3491,27 +3491,40 @@ static int text_insert_invoke(bContext *C, wmOperator *op, const wmEvent *event)
   /* NOTE: the "text" property is always set from key-map,
    * so we can't use #RNA_struct_property_is_set, check the length instead. */
   if (!RNA_string_length(op->ptr, "text")) {
-    /* if alt/ctrl/super are pressed pass through except for utf8 character event
-     * (when input method are used for utf8 inputs, the user may assign key event
-     * including alt/ctrl/super like ctrl+m to commit utf8 string.  in such case,
-     * the modifiers in the utf8 character event make no sense.) */
-    if ((event->modifier & (KM_CTRL | KM_OSKEY)) && !event->utf8_buf[0]) {
-      return OPERATOR_PASS_THROUGH;
-    }
-
-    char str[BLI_UTF8_MAX + 1];
-    size_t len;
-
-    if (event->utf8_buf[0]) {
-      len = BLI_str_utf8_size_safe(event->utf8_buf);
-      memcpy(str, event->utf8_buf, len);
+#ifdef WITH_INPUT_IME
+    if (event->type == WM_IME_COMPOSITE_EVENT) {
+      wmWindow *win = CTX_wm_window(C);
+      wmIMEData *ime_data = win->ime_data;
+      if (ime_data && ime_data->result_len > 0) {
+        RNA_string_set(op->ptr, "text", ime_data->str_result);
+      }
     }
     else {
-      /* in theory, ghost can set value to extended ascii here */
-      len = BLI_str_utf8_from_unicode(event->ascii, str, sizeof(str) - 1);
+#endif
+      /* if alt/ctrl/super are pressed pass through except for utf8 character event
+      * (when input method are used for utf8 inputs, the user may assign key event
+      * including alt/ctrl/super like ctrl+m to commit utf8 string.  in such case,
+      * the modifiers in the utf8 character event make no sense.) */
+      if ((event->modifier & (KM_CTRL | KM_OSKEY)) && !event->utf8_buf[0]) {
+        return OPERATOR_PASS_THROUGH;
+      }
+
+      char str[BLI_UTF8_MAX + 1];
+      size_t len;
+
+      if (event->utf8_buf[0]) {
+        len = BLI_str_utf8_size_safe(event->utf8_buf);
+        memcpy(str, event->utf8_buf, len);
+      }
+      else {
+        /* in theory, ghost can set value to extended ascii here */
+        len = BLI_str_utf8_from_unicode(event->ascii, str, sizeof(str) - 1);
+      }
+      str[len] = '\0';
+      RNA_string_set(op->ptr, "text", str);
+#ifdef WITH_INPUT_IME
     }
-    str[len] = '\0';
-    RNA_string_set(op->ptr, "text", str);
+#endif
   }
 
   ret = text_insert_exec(C, op);

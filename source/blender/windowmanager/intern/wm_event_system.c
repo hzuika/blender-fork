@@ -2066,6 +2066,12 @@ static bool wm_eventmatch(const wmEvent *winevent, const wmKeyMapItem *kmi)
       if (ISKEYBOARD(winevent->type) && (winevent->ascii || winevent->utf8_buf[0])) {
         return true;
       }
+
+#ifdef WITH_INPUT_IME
+      if (ELEM(winevent->type, WM_IME_COMPOSITE_START, WM_IME_COMPOSITE_EVENT, WM_IME_COMPOSITE_END)) {
+        return true;
+      }
+#endif
     }
   }
 
