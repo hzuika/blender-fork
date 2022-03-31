@@ -3806,6 +3806,34 @@ void wm_event_do_handlers(bContext *C)
         /* NOTE: setting sub-window active should be done here,
          * after modal handlers have been done. */
         if (event->type == MOUSEMOVE) {
+#ifdef WITH_INPUT_IME
+          ScrArea *check_area = area_event_inside(C, event->xy);
+          if (check_area != NULL) {
+            switch (check_area->spacetype) {
+              case SPACE_VIEW3D: {
+                ViewLayer *check_view_layer = WM_window_get_active_view_layer(win);
+                Object *check_object = OBEDIT_FROM_VIEW_LAYER(check_view_layer);
+                if (check_object == NULL || check_object->type != OB_FONT) {
+                  break;
+                }
+              }
+              case SPACE_TEXT:
+              case SPACE_CONSOLE:
+                wm_window_IME_begin(win, 0, 0, 0, 0, true);
+                break;
+              default:
+                if (win->ime_data) {
+                  wm_window_IME_end(win);
+                }
+                break;
+            }
+          }
+          else {
+            if (win->ime_data) {
+              wm_window_IME_end(win);
+            }
+          }
+#endif
           /* State variables in screen, cursors.
            * Also used in `wm_draw.c`, fails for modal handlers though. */
           ED_screen_set_active_region(C, win, event->xy);
