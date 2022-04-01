@@ -3492,11 +3492,14 @@ static int text_insert_invoke(bContext *C, wmOperator *op, const wmEvent *event)
    * so we can't use #RNA_struct_property_is_set, check the length instead. */
   if (!RNA_string_length(op->ptr, "text")) {
 #ifdef WITH_INPUT_IME
-    if (event->type == WM_IME_COMPOSITE_EVENT) {
+    if (ELEM(event->type, WM_IME_COMPOSITE_EVENT, WM_IME_COMPOSITE_START, WM_IME_COMPOSITE_END)) {
       wmWindow *win = CTX_wm_window(C);
       wmIMEData *ime_data = win->ime_data;
       if (ime_data && ime_data->result_len > 0) {
         RNA_string_set(op->ptr, "text", ime_data->str_result);
+      }
+      else {
+        return OPERATOR_PASS_THROUGH;
       }
     }
     else {
