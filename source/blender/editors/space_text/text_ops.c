@@ -32,6 +32,9 @@
 #include "ED_curve.h"
 #include "ED_screen.h"
 #include "ED_text.h"
+#ifdef WITH_INPUT_IME
+#  include "ED_undo.h"
+#endif
 #include "UI_interface.h"
 #include "UI_resources.h"
 
@@ -3484,6 +3487,27 @@ static int text_insert_exec(bContext *C, wmOperator *op)
   return OPERATOR_FINISHED;
 }
 
+#ifdef WITH_INPUT_IME
+static int text_insert_modal(bContext *C, wmOperator *op, const wmEvent *event)
+{
+  if (event->type == WM_IME_COMPOSITE_END) {
+    return OPERATOR_FINISHED;
+  }
+
+  if (event->type == WM_IME_COMPOSITE_EVENT) {
+    wmWindow *win = CTX_wm_window(C);
+    wmIMEData *ime_data = win->ime_data;
+    if (ime_data && ime_data->result_len > 0) {
+      RNA_string_set(op->ptr, "text", ime_data->str_result);
+      text_insert_exec(C, op);
+      ED_undo_push_op(C, op);
+    }
+  }
+
+  return OPERATOR_RUNNING_MODAL;
+}
+#endif
+
 static int text_insert_invoke(bContext *C, wmOperator *op, const wmEvent *event)
 {
   int ret;
@@ -3492,18 +3516,9 @@ static int text_insert_invoke(bContext *C, wmOperator *op, const wmEvent *event)
    * so we can't use #RNA_struct_property_is_set, check the length instead. */
   if (!RNA_string_length(op->ptr, "text")) {
 #ifdef WITH_INPUT_IME
-    wmWindow *win = CTX_wm_window(C);
-    wmIMEData *ime_data = win->ime_data;
-    if (event->type == WM_IME_COMPOSITE_EVENT) {
-      if (ime_data && ime_data->result_len > 0) {
-        RNA_string_set(op->ptr, "text", ime_data->str_result);
-      }
-      else {
-        return OPERATOR_PASS_THROUGH;
-      }
-    }
-    else if (ELEM(event->type, WM_IME_COMPOSITE_START, WM_IME_COMPOSITE_END)) {
-      return OPERATOR_PASS_THROUGH;
+    if (event->type == WM_IME_COMPOSITE_START) {
+      WM_event_add_modal_handler(C, op);
+      return text_insert_modal(C, op, event);
     }
     else {
 #endif
@@ -3555,6 +3570,9 @@ void TEXT_OT_insert(wmOperatorType *ot)
   /* api callbacks */
   ot->exec = text_insert_exec;
   ot->invoke = text_insert_invoke;
+#ifdef WITH_INPUT_IME
+  ot->modal = text_insert_modal;
+#endif
   ot->poll = text_edit_poll;
 
   /* flags */
