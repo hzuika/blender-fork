@@ -83,9 +83,7 @@ static void freeData(ModifierData *md)
   }
 }
 
-static bool dependsOnTime(struct Scene *UNUSED(scene),
-                          ModifierData *UNUSED(md),
-                          const int UNUSED(dag_eval_mode))
+static bool dependsOnTime(struct Scene *UNUSED(scene), ModifierData *UNUSED(md))
 {
   return true;
 }
@@ -131,7 +129,6 @@ static void deformVerts(ModifierData *md,
     MVert *x, *v;
 
     BKE_mesh_vert_coords_apply(surmd->mesh, vertexCos);
-    BKE_mesh_calc_normals(surmd->mesh);
 
     mesh_verts_num = surmd->mesh->totvert;
 

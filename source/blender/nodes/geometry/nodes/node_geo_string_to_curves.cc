@@ -97,12 +97,8 @@ static void node_update(bNodeTree *ntree, bNode *node)
       ntree, socket_remainder, overflow == GEO_NODE_STRING_TO_CURVES_MODE_TRUNCATE);
 
   bNodeSocket *height_socket = (bNodeSocket *)node->inputs.last;
-  bNodeSocket *width_socket = height_socket->prev;
   nodeSetSocketAvailability(
       ntree, height_socket, overflow != GEO_NODE_STRING_TO_CURVES_MODE_OVERFLOW);
-  node_sock_label(width_socket,
-                  overflow == GEO_NODE_STRING_TO_CURVES_MODE_OVERFLOW ? N_("Max Width") :
-                                                                        N_("Text Box Width"));
 }
 
 static float3 get_pivot_point(GeoNodeExecParams &params, CurveEval &curve)
@@ -186,7 +182,7 @@ static TextLayout get_text_layout(GeoNodeExecParams &params)
                               params.extract_input<float>("Text Box Height");
   VFont *vfont = (VFont *)params.node().id;
 
-  Curve cu = {{nullptr}};
+  Curve cu = dna::shallow_zero_initialize();
   cu.type = OB_FONT;
   /* Set defaults */
   cu.resolu = 12;
@@ -278,7 +274,7 @@ static Map<int, int> create_curve_instances(GeoNodeExecParams &params,
     if (handles.contains(layout.char_codes[i])) {
       continue;
     }
-    Curve cu = {{nullptr}};
+    Curve cu = dna::shallow_zero_initialize();
     cu.type = OB_FONT;
     cu.resolu = 12;
     cu.vfont = vfont;

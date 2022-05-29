@@ -11,15 +11,12 @@
 extern "C" {
 #endif
 
+struct Editing;
 struct ListBase;
 struct Scene;
 struct SeqCollection;
 struct Sequence;
 
-int SEQ_transform_get_left_handle_frame(struct Sequence *seq);
-int SEQ_transform_get_right_handle_frame(struct Sequence *seq);
-void SEQ_transform_set_left_handle_frame(struct Sequence *seq, int val);
-void SEQ_transform_set_right_handle_frame(struct Sequence *seq, int val);
 /**
  * Use to impose limits when dragging/extending - so impossible situations don't happen.
  * Can't use the #SEQ_LEFTSEL and #SEQ_LEFTSEL directly because the strip may be in a meta-strip.
@@ -50,6 +47,11 @@ bool SEQ_transform_seqbase_shuffle_time(struct SeqCollection *strips_to_shuffle,
                                         struct Scene *evil_scene,
                                         struct ListBase *markers,
                                         bool use_sync_markers);
+
+void SEQ_transform_handle_overlap(struct Scene *scene,
+                                  struct ListBase *seqbasep,
+                                  struct SeqCollection *transformed_strips,
+                                  bool use_sync_markers);
 /**
  * Check if the selected seq's reference unselected seq's.
  */
@@ -66,6 +68,12 @@ void SEQ_transform_offset_after_frame(struct Scene *scene,
                                       struct ListBase *seqbase,
                                       int delta,
                                       int timeline_frame);
+
+/**
+ * Check if `seq` can be moved.
+ * This function also checks `SeqTimelineChannel` flag.
+ */
+bool SEQ_transform_is_locked(struct ListBase *channels, struct Sequence *seq);
 
 /* Image transformation. */
 
@@ -111,6 +119,22 @@ void SEQ_image_preview_unit_to_px(const struct Scene *scene,
 void SEQ_image_preview_unit_from_px(const struct Scene *scene,
                                     const float co_src[2],
                                     float co_dst[2]);
+
+/**
+ * Get viewport axis aligned bounding box from a collection of sequences.
+ * The collection must have one or more strips
+ *
+ * \param scene: Scene in which strips are located
+ * \param strips: Collection of strips to get the bounding box from
+ * \param apply_rotation: Include sequence rotation transform in the bounding box calculation
+ * \param r_min: Minimum x and y values
+ * \param r_max: Maximum x and y values
+ */
+void SEQ_image_transform_bounding_box_from_collection(struct Scene *scene,
+                                                      struct SeqCollection *strips,
+                                                      bool apply_rotation,
+                                                      float r_min[2],
+                                                      float r_max[2]);
 
 #ifdef __cplusplus
 }

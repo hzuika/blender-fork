@@ -30,8 +30,10 @@ extern GHOST_SystemHandle GHOST_CreateSystem(void);
 
 /**
  * Specifies whether debug messages are to be enabled for the specific system handle.
+ * \param systemhandle: The handle to the system.
+ * \param debug: Flag for systems to debug.
  */
-extern void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled);
+extern void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, GHOST_Debug debug);
 
 /**
  * Disposes the one and only system.
@@ -412,7 +414,7 @@ extern GHOST_TSuccess GHOST_SetCursorPosition(GHOST_SystemHandle systemhandle,
  */
 extern GHOST_TSuccess GHOST_SetCursorGrab(GHOST_WindowHandle windowhandle,
                                           GHOST_TGrabCursorMode mode,
-                                          GHOST_TAxisFlag warp_axis,
+                                          GHOST_TAxisFlag wrap_axis,
                                           int bounds[4],
                                           const int mouse_ungrab_xy[2]);
 
@@ -725,7 +727,7 @@ extern unsigned int GHOST_GetContextDefaultOpenGLFramebuffer(GHOST_ContextHandle
 /**
  * Get the OpenGL frame-buffer handle that serves as a default frame-buffer.
  */
-extern unsigned int GHOST_GetDefaultOpenGLFramebuffer(GHOST_WindowHandle windwHandle);
+extern unsigned int GHOST_GetDefaultOpenGLFramebuffer(GHOST_WindowHandle windowhandle);
 
 /**
  * Set which tablet API to use. Only affects Windows, other platforms have a single API.

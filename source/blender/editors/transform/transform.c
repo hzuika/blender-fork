@@ -704,17 +704,78 @@ wmKeyMap *transform_modal_keymap(wmKeyConfig *keyconf)
   /* Default modal map values:
    *
    * \code{.c}
-   * WM_modalkeymap_add_item(keymap, EVT_RETKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_CONFIRM);
-   * WM_modalkeymap_add_item(keymap, EVT_ESCKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_CANCEL);
-   * WM_modalkeymap_add_item(keymap, EVT_PAGEUPKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_AUTOIK_LEN_INC);
-   * WM_modalkeymap_add_item(
-   *     keymap, EVT_PAGEDOWNKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_AUTOIK_LEN_DEC);
-   * WM_modalkeymap_add_item(keymap, EVT_GKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_TRANSLATE);
-   * WM_modalkeymap_add_item(keymap, EVT_RKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_ROTATE);
-   * WM_modalkeymap_add_item(keymap, EVT_SKEY, KM_PRESS, KM_ANY, 0, TFM_MODAL_RESIZE);
-   * WM_modalkeymap_add_item(keymap, MIDDLEMOUSE, KM_PRESS, KM_ANY, 0, TFM_MODAL_AUTOCONSTRAINT);
-   * WM_modalkeymap_add_item(
-   *     keymap, MIDDLEMOUSE, KM_PRESS, KM_SHIFT, 0, TFM_MODAL_AUTOCONSTRAINTPLANE);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_RETKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_CONFIRM);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_ESCKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_CANCEL);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_PAGEUPKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_AUTOIK_LEN_INC);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_PAGEDOWNKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_AUTOIK_LEN_DEC);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_GKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_TRANSLATE);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_RKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_ROTATE);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = EVT_SKEY,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_RESIZE);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = MIDDLEMOUSE,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_ANY,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_AUTOCONSTRAINT);
+   * WM_modalkeymap_add_item(keymap,
+   *                         &(const KeyMapItem_Params){
+   *                             .type = MIDDLEMOUSE,
+   *                             .value = KM_PRESS,
+   *                             .modifier = KM_SHIFT,
+   *                             .direction = KM_ANY,
+   *                         },
+   *                         TFM_MODAL_AUTOCONSTRAINTPLANE);
    * \endcode
    */
 
@@ -1111,12 +1172,20 @@ int transformEvent(TransInfo *t, const wmEvent *event)
                                   MOD_CONSTRAINT_SELECT_PLANE;
               if (t->con.mode & CON_APPLY) {
                 stopConstraint(t);
-              }
+                initSelectConstraint(t);
 
-              initSelectConstraint(t);
-              /* Use #TREDRAW_SOFT so that #selectConstraint is only called on the next event.
-               * This allows us to "deselect" the constraint. */
-              t->redraw = TREDRAW_SOFT;
+                /* In this case we might just want to remove the constraint,
+                 * so set #TREDRAW_SOFT to only select the constraint on the next mouse move event.
+                 * This way we can kind of "cancel" due to confirmation without constraint. */
+                t->redraw = TREDRAW_SOFT;
+              }
+              else {
+                initSelectConstraint(t);
+
+                /* When first called, set #TREDRAW_HARD to select constraint immediately in
+                 * #selectConstraint. */
+                BLI_assert(t->redraw == TREDRAW_HARD);
+              }
             }
           }
           handled = true;

@@ -2103,9 +2103,9 @@ typedef struct DataTransferModifierData {
   char _pad1[4];
 
   /** DT_MULTILAYER_INDEX_MAX; See DT_FROMLAYERS_ enum in ED_object.h. */
-  int layers_select_src[4];
+  int layers_select_src[5];
   /** DT_MULTILAYER_INDEX_MAX; See DT_TOLAYERS_ enum in ED_object.h. */
-  int layers_select_dst[4];
+  int layers_select_dst[5];
 
   /** See CDT_MIX_ enum in BKE_customdata.h. */
   int mix_mode;
@@ -2222,13 +2222,19 @@ typedef struct SurfaceDeformModifierData {
   struct Object *target;
   /** Vertex bind data. */
   SDefVert *verts;
+  void *_pad1;
   float falloff;
-  unsigned int mesh_verts_num, bind_verts_num, polys_num;
+  /* Number of of vertices on the deformed mesh upon the bind process. */
+  unsigned int mesh_verts_num;
+  /* Number of vertices in the `verts` array of this modifier. */
+  unsigned int bind_verts_num;
+  /* Number of vertices and polygons on the target mesh upon bind process. */
+  unsigned int target_verts_num, target_polys_num;
   int flags;
   float mat[4][4];
   float strength;
   char defgrp_name[64];
-  void *_pad1;
+  int _pad2;
 } SurfaceDeformModifierData;
 
 /** Surface Deform modifier flags. */

@@ -204,6 +204,7 @@ bool BKE_mesh_material_index_used(struct Mesh *me, short index);
 void BKE_mesh_material_index_clear(struct Mesh *me);
 void BKE_mesh_material_remap(struct Mesh *me, const unsigned int *remap, unsigned int remap_len);
 void BKE_mesh_smooth_flag_set(struct Mesh *me, bool use_smooth);
+void BKE_mesh_auto_smooth_flag_set(struct Mesh *me, bool use_auto_smooth, float auto_smooth_angle);
 
 /**
  * Needed after converting a mesh with subsurf optimal display to mesh.
@@ -317,8 +318,6 @@ void BKE_mesh_vert_coords_apply_with_mat4(struct Mesh *mesh,
                                           const float (*vert_coords)[3],
                                           const float mat[4][4]);
 void BKE_mesh_vert_coords_apply(struct Mesh *mesh, const float (*vert_coords)[3]);
-
-void BKE_mesh_anonymous_attributes_remove(struct Mesh *mesh);
 
 /* *** mesh_tessellate.c *** */
 
@@ -895,6 +894,14 @@ struct Mesh *BKE_mesh_merge_verts(struct Mesh *mesh,
                                   int tot_vtargetmap,
                                   int merge_mode);
 
+/**
+ * Account for custom-data such as UV's becoming detached because of of imprecision
+ * in custom-data interpolation.
+ * Without running this operation subdivision surface can cause UV's to be disconnected,
+ * see: T81065.
+ */
+void BKE_mesh_merge_customdata_for_apply_modifier(struct Mesh *me);
+
 /* Flush flags. */
 
 /**
@@ -925,13 +932,6 @@ void BKE_mesh_flush_select_from_polys_ex(struct MVert *mvert,
                                          const struct MPoly *mpoly,
                                          int totpoly);
 void BKE_mesh_flush_select_from_polys(struct Mesh *me);
-void BKE_mesh_flush_select_from_verts_ex(const struct MVert *mvert,
-                                         int totvert,
-                                         const struct MLoop *mloop,
-                                         struct MEdge *medge,
-                                         int totedge,
-                                         struct MPoly *mpoly,
-                                         int totpoly);
 void BKE_mesh_flush_select_from_verts(struct Mesh *me);
 
 /* spatial evaluation */
@@ -1067,6 +1067,7 @@ extern void (*BKE_mesh_batch_cache_dirty_tag_cb)(struct Mesh *me, eMeshBatchDirt
 extern void (*BKE_mesh_batch_cache_free_cb)(struct Mesh *me);
 
 /* mesh_debug.c */
+
 #ifndef NDEBUG
 char *BKE_mesh_debug_info(const struct Mesh *me)
     ATTR_NONNULL(1) ATTR_MALLOC ATTR_WARN_UNUSED_RESULT;

@@ -10,6 +10,8 @@
 #include "BKE_main.h"
 #include "BKE_node.h"
 
+#include "IMB_colormanagement.h"
+
 #include "BLI_fileops.h"
 #include "BLI_linklist.h"
 #include "BLI_listbase.h"
@@ -255,8 +257,8 @@ void create_input(pxr::UsdShadeShader &shader, const InputSpec &spec, const void
 
 /* Find the UVMAP node input to the given texture image node and convert it
  * to a USD primvar reader shader. If no UVMAP node is found, create a primvar
- * reader for the given default uv set.  The primvar reader will be attached to
- * the 'st' input of the given USD texture shader.  */
+ * reader for the given default uv set. The primvar reader will be attached to
+ * the 'st' input of the given USD texture shader. */
 static void create_uvmap_shader(const USDExporterContext &usd_export_context,
                                 bNode *tex_node,
                                 pxr::UsdShadeMaterial &usd_material,
@@ -359,7 +361,7 @@ static void export_in_memory_texture(Image *ima,
     BLI_split_file_part(image_abs_path, file_name, FILE_MAX);
   }
   else {
-    /* Use the image name for the file name.  */
+    /* Use the image name for the file name. */
     strcpy(file_name, ima->id.name + 2);
   }
 
@@ -414,13 +416,10 @@ static pxr::TfToken get_node_tex_image_color_space(bNode *node)
 
   Image *ima = reinterpret_cast<Image *>(node->id);
 
-  if (strcmp(ima->colorspace_settings.name, "Raw") == 0) {
+  if (IMB_colormanagement_space_name_is_data(ima->colorspace_settings.name)) {
     return usdtokens::raw;
   }
-  if (strcmp(ima->colorspace_settings.name, "Non-Color") == 0) {
-    return usdtokens::raw;
-  }
-  if (strcmp(ima->colorspace_settings.name, "sRGB") == 0) {
+  if (IMB_colormanagement_space_name_is_srgb(ima->colorspace_settings.name)) {
     return usdtokens::sRGB;
   }
 
@@ -452,7 +451,7 @@ static bNode *traverse_channel(bNodeSocket *input, const short target_type)
 }
 
 /* Returns the first occurrence of a principled BSDF or a diffuse BSDF node found in the given
- * material's node tree.  Returns null if no instance of either type was found.*/
+ * material's node tree.  Returns null if no instance of either type was found. */
 static bNode *find_bsdf_node(Material *material)
 {
   LISTBASE_FOREACH (bNode *, node, &material->nodetree->nodes) {
@@ -576,7 +575,7 @@ static std::string get_tex_image_asset_path(bNode *node,
     char file_path[FILE_MAX];
     BLI_split_file_part(path.c_str(), file_path, FILE_MAX);
 
-    if (export_params.relative_texture_paths) {
+    if (export_params.relative_paths) {
       BLI_path_join(exp_path, FILE_MAX, ".", "textures", file_path, nullptr);
     }
     else {
@@ -594,7 +593,7 @@ static std::string get_tex_image_asset_path(bNode *node,
     return exp_path;
   }
 
-  if (export_params.relative_texture_paths) {
+  if (export_params.relative_paths) {
     /* Get the path relative to the USD. */
     pxr::SdfLayerHandle layer = stage->GetRootLayer();
     std::string stage_path = layer->GetRealPath();
@@ -606,11 +605,7 @@ static std::string get_tex_image_asset_path(bNode *node,
     strcpy(rel_path, path.c_str());
 
     BLI_path_rel(rel_path, stage_path.c_str());
-
-    /* BLI_path_rel adds '//' as a prefix to the path, if
-     * generating the relative path was successful. */
-    if (rel_path[0] != '/' || rel_path[1] != '/') {
-      /* No relative path generated. */
+    if (!BLI_path_is_rel(rel_path)) {
       return path;
     }
 

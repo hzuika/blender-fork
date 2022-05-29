@@ -14,6 +14,7 @@
 
 #include "BKE_attribute.h"
 
+#include "draw_attributes.h"
 #include "draw_subdivision.h"
 #include "extract_mesh.h"
 
@@ -159,17 +160,6 @@ static void init_vbo_for_attribute(const MeshRenderData *mr,
   GPU_vertformat_deinterleave(&format);
   GPU_vertformat_attr_add(&format, attr_name, comp_type, comp_size, fetch_mode);
 
-  /* Ensure Sculpt Vertex Colors are properly aliased. */
-  if (request.cd_type == CD_PROP_COLOR && request.domain == ATTR_DOMAIN_POINT) {
-    CustomData *cd_vdata = get_custom_data_for_domain(mr, ATTR_DOMAIN_POINT);
-    if (request.layer_index == CustomData_get_render_layer(cd_vdata, CD_PROP_COLOR)) {
-      GPU_vertformat_alias_add(&format, "c");
-    }
-    if (request.layer_index == CustomData_get_active_layer(cd_vdata, CD_PROP_COLOR)) {
-      GPU_vertformat_alias_add(&format, "ac");
-    }
-  }
-
   if (build_on_device) {
     GPU_vertbuf_init_build_on_device(vbo, &format, len);
   }
@@ -191,7 +181,7 @@ static void fill_vertbuf_with_attribute(const MeshRenderData *mr,
   const MPoly *mpoly = mr->mpoly;
   const MLoop *mloop = mr->mloop;
 
-  const AttributeType *attr_data = static_cast<AttributeType *>(
+  const AttributeType *attr_data = static_cast<const AttributeType *>(
       CustomData_get_layer_n(custom_data, request.cd_type, layer_index));
 
   using converter = attribute_type_converter<AttributeType, VBOType>;
@@ -295,7 +285,7 @@ static void extract_attr_init(const MeshRenderData *mr,
                               void *UNUSED(tls_data),
                               int index)
 {
-  const DRW_MeshAttributes *attrs_used = &cache->attr_used;
+  const DRW_Attributes *attrs_used = &cache->attr_used;
   const DRW_AttributeRequest &request = attrs_used->requests[index];
 
   GPUVertBuf *vbo = static_cast<GPUVertBuf *>(buf);
@@ -348,7 +338,7 @@ static void extract_attr_init_subdiv(const DRWSubdivCache *subdiv_cache,
                                      void *UNUSED(tls_data),
                                      int index)
 {
-  const DRW_MeshAttributes *attrs_used = &cache->attr_used;
+  const DRW_Attributes *attrs_used = &cache->attr_used;
   const DRW_AttributeRequest &request = attrs_used->requests[index];
 
   Mesh *coarse_mesh = subdiv_cache->mesh;
@@ -357,7 +347,7 @@ static void extract_attr_init_subdiv(const DRWSubdivCache *subdiv_cache,
 
   /* Prepare VBO for coarse data. The compute shader only expects floats. */
   GPUVertBuf *src_data = GPU_vertbuf_calloc();
-  static GPUVertFormat coarse_format = {0};
+  GPUVertFormat coarse_format = {0};
   GPU_vertformat_attr_add(&coarse_format, "data", GPU_COMP_F32, dimensions, GPU_FETCH_FLOAT);
   GPU_vertbuf_init_with_format_ex(src_data, &coarse_format, GPU_USAGE_STATIC);
   GPU_vertbuf_data_alloc(src_data, static_cast<uint32_t>(coarse_mesh->totloop));
