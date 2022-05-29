@@ -1854,6 +1854,8 @@ static void rna_def_linestyle(BlenderRNA *brna)
       {0, NULL, 0, NULL, NULL},
   };
 
+  // コメント: ラインスタイルのDNA構造体 FreestyleLineStyle とRNAの紐づけ
+  // https://github.com/hzuika/blender-fork/blob/5dad5eef42d6939a329599cde9325dbeb8960bee/source/blender/makesdna/DNA_linestyle_types.h#L609
   srna = RNA_def_struct(brna, "FreestyleLineStyle", "ID");
   RNA_def_struct_ui_text(
       srna, "Freestyle Line Style", "Freestyle line style, reusable by multiple line sets");
@@ -1876,6 +1878,11 @@ static void rna_def_linestyle(BlenderRNA *brna)
   RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
   RNA_def_property_ui_text(prop, "Panel", "Select the property panel to be shown");
 
+  /* コメント: 
+   * ラインスタイルに対して設定できる色
+   * UI上では，Freestyle Color > LineSet > LineStyle > Base Color
+   * https://docs.blender.org/api/3.0/bpy.types.FreestyleLineStyle.html#bpy.types.FreestyleLineStyle.color
+   */ 
   prop = RNA_def_property(srna, "color", PROP_FLOAT, PROP_COLOR);
   RNA_def_property_float_sdna(prop, NULL, "r");
   RNA_def_property_array(prop, 3);
