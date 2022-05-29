@@ -848,10 +848,6 @@ class DupliOffsetFromCursor(Operator):
     bl_label = "Set Offset from Cursor"
     bl_options = {'INTERNAL', 'UNDO'}
 
-    @classmethod
-    def poll(cls, context):
-        return (context.active_object is not None)
-
     def execute(self, context):
         scene = context.scene
         collection = context.collection
@@ -937,7 +933,7 @@ class LoadReferenceImage(LoadImageAsEmpty, Operator):
 
 class OBJECT_OT_assign_property_defaults(Operator):
     """Assign the current values of custom properties as their defaults, """ \
-    """for use as part of the rest pose state in NLA track mixing"""
+        """for use as part of the rest pose state in NLA track mixing"""
     bl_idname = "object.assign_property_defaults"
     bl_label = "Assign Custom Property Values as Default"
     bl_options = {'UNDO', 'REGISTER'}

@@ -79,7 +79,7 @@ typedef struct CameraParams {
 void BKE_camera_params_init(CameraParams *params);
 void BKE_camera_params_from_object(CameraParams *params, const struct Object *cam_ob);
 void BKE_camera_params_from_view3d(CameraParams *params,
-                                   struct Depsgraph *depsgraph,
+                                   const struct Depsgraph *depsgraph,
                                    const struct View3D *v3d,
                                    const struct RegionView3D *rv3d);
 
@@ -114,7 +114,9 @@ bool BKE_camera_view_frame_fit_to_scene(struct Depsgraph *depsgraph,
                                         const struct Scene *scene,
                                         struct Object *camera_ob,
                                         float r_co[3],
-                                        float *r_scale);
+                                        float *r_scale,
+                                        float *r_clip_start,
+                                        float *r_clip_end);
 bool BKE_camera_view_frame_fit_to_coords(const struct Depsgraph *depsgraph,
                                          const float (*cos)[3],
                                          int num_cos,

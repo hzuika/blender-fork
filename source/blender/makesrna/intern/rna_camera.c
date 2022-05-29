@@ -117,7 +117,7 @@ static void rna_Camera_dof_update(Main *bmain, Scene *scene, PointerRNA *UNUSED(
   WM_main_add_notifier(NC_SCENE | ND_SEQUENCER, scene);
 }
 
-char *rna_CameraDOFSettings_path(PointerRNA *ptr)
+char *rna_CameraDOFSettings_path(const PointerRNA *ptr)
 {
   /* if there is ID-data, resolve the path using the index instead of by name,
    * since the name used is the name of the texture assigned, but the texture
@@ -481,7 +481,7 @@ void RNA_def_camera(BlenderRNA *brna)
       {0, NULL, 0, NULL, NULL},
   };
   static const EnumPropertyItem prop_lens_unit_items[] = {
-      {0, "MILLIMETERS", 0, "Millimeters", "Specify the lens in millimeters"},
+      {0, "MILLIMETERS", 0, "Millimeters", "Specify focal length of the lens in millimeters"},
       {CAM_ANGLETOGGLE,
        "FOV",
        0,
@@ -564,7 +564,8 @@ void RNA_def_camera(BlenderRNA *brna)
   RNA_def_property_float_sdna(prop, NULL, "lens");
   RNA_def_property_range(prop, 1.0f, FLT_MAX);
   RNA_def_property_ui_range(prop, 1.0f, 5000.0f, 100, 4);
-  RNA_def_property_ui_text(prop, "Focal Length", "Perspective Camera lens value in millimeters");
+  RNA_def_property_ui_text(
+      prop, "Focal Length", "Perspective Camera focal length value in millimeters");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_update");
 
   prop = RNA_def_property(srna, "sensor_width", PROP_FLOAT, PROP_DISTANCE_CAMERA);

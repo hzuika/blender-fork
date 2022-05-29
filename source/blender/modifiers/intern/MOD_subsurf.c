@@ -205,6 +205,7 @@ static void subdiv_cache_cpu_evaluation_settings(const ModifierEvalContext *ctx,
   me->runtime.subsurf_apply_render = (ctx->flag & MOD_APPLY_RENDER) != 0;
   me->runtime.subsurf_resolution = mesh_settings.resolution;
   me->runtime.subsurf_use_optimal_display = mesh_settings.use_optimal_display;
+  me->runtime.subsurf_session_uuid = smd->modifier.session_uuid;
 }
 
 /* Modifier itself. */
@@ -235,8 +236,7 @@ static Mesh *modifyMesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh *
      * assigned at this stage of modifier stack evaluation. */
     const bool is_editmode = (mesh->edit_mesh != NULL);
     const int required_mode = BKE_subsurf_modifier_eval_required_mode(is_render_mode, is_editmode);
-    if (BKE_subsurf_modifier_can_do_gpu_subdiv_ex(
-            scene, ctx->object, mesh, smd, required_mode, false)) {
+    if (BKE_subsurf_modifier_can_do_gpu_subdiv(scene, ctx->object, mesh, smd, required_mode)) {
       subdiv_cache_cpu_evaluation_settings(ctx, mesh, smd);
       return result;
     }

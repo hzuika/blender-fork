@@ -284,7 +284,7 @@ option(WITH_IMAGE_TIFF          "Enable LibTIFF Support" ON)
 option(WITH_IMAGE_DDS           "Enable DDS Image Support" ON)
 option(WITH_IMAGE_CINEON        "Enable CINEON and DPX Image Support" ON)
 option(WITH_IMAGE_HDR           "Enable HDR Image Support" ON)
-option(WITH_IMAGE_WEBP          "Enable WebP Image Support" OFF)
+option(WITH_IMAGE_WEBP          "Enable WebP Image Support" ON)
 
 # Audio/Video format support
 option(WITH_CODEC_AVI           "Enable Blenders own AVI file support (raw/jpeg)" ON)
@@ -302,7 +302,7 @@ option(WITH_USD                 "Enable Universal Scene Description (USD) Suppor
 option(WITH_OPENCOLLADA   "Enable OpenCollada Support (http://www.opencollada.org)" ON)
 
 # Sound output
-option(WITH_SDL           "Enable SDL for sound and joystick support" ON)
+option(WITH_SDL           "Enable SDL for sound" ON)
 option(WITH_OPENAL        "Enable OpenAL Support (http://www.openal.org)" ON)
 if(APPLE)
   option(WITH_COREAUDIO    "Enable CoreAudio for audio support on macOS" ON)
@@ -439,14 +439,9 @@ endif()
 
 # AMD HIP
 if(NOT APPLE)
-  if(WIN32)
-    option(WITH_CYCLES_DEVICE_HIP        "Enable Cycles AMD HIP support" ON)
-  else()
-    option(WITH_CYCLES_DEVICE_HIP        "Enable Cycles AMD HIP support" OFF)
-  endif()
-
+  option(WITH_CYCLES_DEVICE_HIP        "Enable Cycles AMD HIP support" ON)
   option(WITH_CYCLES_HIP_BINARIES      "Build Cycles AMD HIP binaries" OFF)
-  set(CYCLES_HIP_BINARIES_ARCH gfx900 gfx906 gfx1010 gfx1011 gfx1012 gfx1030 gfx1031 gfx1032 gfx1034 CACHE STRING "AMD HIP architectures to build binaries for")
+  set(CYCLES_HIP_BINARIES_ARCH gfx1010 gfx1011 gfx1012 gfx1030 gfx1031 gfx1032 gfx1034 gfx1035 CACHE STRING "AMD HIP architectures to build binaries for")
   mark_as_advanced(WITH_CYCLES_DEVICE_HIP)
   mark_as_advanced(CYCLES_HIP_BINARIES_ARCH)
 endif()
@@ -491,7 +486,7 @@ if((UNIX AND NOT APPLE) OR (CMAKE_GENERATOR MATCHES "^Visual Studio.+"))
 endif()
 
 option(WITH_BOOST "Enable features depending on boost" ON)
-option(WITH_TBB   "Enable features depending on TBB (OpenVDB, OpenImageDenoise, sculpt multithreading)" ON)
+option(WITH_TBB   "Enable multithreading. TBB is also required for features such as Cycles, OpenVDB and USD" ON)
 
 # TBB malloc is only supported on for windows currently
 if(WIN32)
@@ -770,6 +765,7 @@ endif()
 
 set_and_warn_dependency(WITH_PYTHON WITH_CYCLES        OFF)
 set_and_warn_dependency(WITH_PYTHON WITH_DRACO         OFF)
+set_and_warn_dependency(WITH_PYTHON WITH_MOD_FLUID     OFF)
 
 if(WITH_DRACO AND NOT WITH_PYTHON_INSTALL)
   message(STATUS "WITH_DRACO requires WITH_PYTHON_INSTALL to be ON, disabling WITH_DRACO for now")
@@ -786,7 +782,9 @@ set_and_warn_dependency(WITH_BOOST WITH_OPENCOLORIO    OFF)
 set_and_warn_dependency(WITH_BOOST WITH_QUADRIFLOW     OFF)
 set_and_warn_dependency(WITH_BOOST WITH_USD            OFF)
 set_and_warn_dependency(WITH_BOOST WITH_ALEMBIC        OFF)
-set_and_warn_dependency(WITH_PUGIXML WITH_CYCLES_OSL   OFF)
+if(WITH_CYCLES)
+  set_and_warn_dependency(WITH_PUGIXML WITH_CYCLES_OSL   OFF)
+endif()
 set_and_warn_dependency(WITH_PUGIXML WITH_OPENIMAGEIO  OFF)
 
 if(WITH_BOOST AND NOT (WITH_CYCLES OR WITH_OPENIMAGEIO OR WITH_INTERNATIONAL OR
@@ -810,6 +808,9 @@ set_and_warn_dependency(WITH_IMAGE_OPENEXR WITH_OPENCOLORIO  OFF)
 
 # Haru needs `TIFFFaxBlackCodes` & `TIFFFaxWhiteCodes` symbols from TIFF.
 set_and_warn_dependency(WITH_IMAGE_TIFF WITH_HARU       OFF)
+
+# USD needs OpenSubDiv, since that is used by the Cycles Hydra render delegate.
+set_and_warn_dependency(WITH_OPENSUBDIV WITH_USD        OFF)
 
 # auto enable openimageio for cycles
 if(WITH_CYCLES)
@@ -937,7 +938,10 @@ set(PLATFORM_CFLAGS)
 set(C_WARNINGS)
 set(CXX_WARNINGS)
 
-# for gcc -Wno-blah-blah
+# NOTE: These flags are intended for situations where where it's impractical to
+# suppress warnings by modifying the code or for code which is maintained externally.
+# For GCC this typically means adding `-Wno-*` arguments to negate warnings
+# that are useful in the general case.
 set(C_REMOVE_STRICT_FLAGS)
 set(CXX_REMOVE_STRICT_FLAGS)
 
@@ -1458,14 +1462,6 @@ if(WITH_LIBMV OR WITH_GTESTS OR (WITH_CYCLES AND WITH_CYCLES_LOGGING))
 endif()
 
 #-----------------------------------------------------------------------------
-# Configure Ceres
-
-if(WITH_LIBMV)
-  # We always have C++11 which includes unordered_map.
-  set(CERES_DEFINES "-DCERES_STD_UNORDERED_MAP;-DCERES_USE_CXX_THREADS")
-endif()
-
-#-----------------------------------------------------------------------------
 # Extra limits to number of jobs running in parallel for some kind os tasks.
 # Only supported by Ninja build system currently.
 if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND WITH_NINJA_POOL_JOBS)
@@ -1541,7 +1537,6 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCC)
 
   ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_ALL -Wall)
-  ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_CAST_ALIGN -Wcast-align)
   ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_ERROR_IMPLICIT_FUNCTION_DECLARATION -Werror=implicit-function-declaration)
   ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_ERROR_RETURN_TYPE  -Werror=return-type)
   ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_ERROR_VLA -Werror=vla)
@@ -1626,6 +1621,18 @@ if(CMAKE_COMPILER_IS_GNUCC)
     ADD_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_IMPLICIT_FALLTHROUGH -Wimplicit-fallthrough=5)
   endif()
 
+
+  #----------------------
+  # Suppress Strict Flags
+  #
+  # Exclude the following warnings from this list:
+  # - `-Wno-address`:
+  #   This can give useful hints that point to bugs/misleading logic.
+  # - `-Wno-strict-prototypes`:
+  #   No need to support older C-style prototypes.
+  #
+  # If code in `./extern/` needs to suppress these flags that can be done on a case-by-case basis.
+
   # flags to undo strict flags
   ADD_CHECK_C_COMPILER_FLAG(C_REMOVE_STRICT_FLAGS C_WARN_NO_DEPRECATED_DECLARATIONS -Wno-deprecated-declarations)
   ADD_CHECK_C_COMPILER_FLAG(C_REMOVE_STRICT_FLAGS C_WARN_NO_UNUSED_PARAMETER        -Wno-unused-parameter)
@@ -1680,6 +1687,9 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
   # gives too many unfixable warnings
   # ADD_CHECK_C_COMPILER_FLAG(C_WARNINGS C_WARN_UNUSED_MACROS      -Wunused-macros)
   # ADD_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_UNUSED_MACROS          -Wunused-macros)
+
+  #----------------------
+  # Suppress Strict Flags
 
   # flags to undo strict flags
   ADD_CHECK_C_COMPILER_FLAG(C_REMOVE_STRICT_FLAGS C_WARN_NO_UNUSED_PARAMETER -Wno-unused-parameter)
@@ -1746,6 +1756,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
     "/wd4828"  # The file contains a character that is illegal
     "/wd4996"  # identifier was declared deprecated
     "/wd4661"  # no suitable definition provided for explicit template instantiation request
+    "/wd4848"  # 'no_unique_address' is a vendor extension in C++17
     # errors:
     "/we4013"  # 'function' undefined; assuming extern returning int
     "/we4133"  # incompatible pointer types

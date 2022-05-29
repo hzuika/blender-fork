@@ -97,9 +97,7 @@ static void requiredDataMask(Object *UNUSED(ob),
   /* No need to ask for CD_PREVIEW_MLOOPCOL... */
 }
 
-static bool dependsOnTime(struct Scene *UNUSED(scene),
-                          ModifierData *md,
-                          const int UNUSED(dag_eval_mode))
+static bool dependsOnTime(struct Scene *UNUSED(scene), ModifierData *md)
 {
   WeightVGEditModifierData *wmd = (WeightVGEditModifierData *)md;
 
@@ -377,9 +375,11 @@ static void panelRegister(ARegionType *region_type)
       region_type, "influence", "Influence", NULL, influence_panel_draw, panel_type);
 }
 
-static void blendWrite(BlendWriter *writer, const ModifierData *md)
+static void blendWrite(BlendWriter *writer, const ID *UNUSED(id_owner), const ModifierData *md)
 {
   const WeightVGEditModifierData *wmd = (const WeightVGEditModifierData *)md;
+
+  BLO_write_struct(writer, WeightVGEditModifierData, wmd);
 
   if (wmd->cmap_curve) {
     BKE_curvemapping_blend_write(writer, wmd->cmap_curve);

@@ -149,7 +149,7 @@ static void *add_customdata_cb(Mesh *mesh, const char *name, const int data_type
   int numloops;
 
   /* unsupported custom data type -- don't do anything. */
-  if (!ELEM(cd_data_type, CD_MLOOPUV, CD_MLOOPCOL)) {
+  if (!ELEM(cd_data_type, CD_MLOOPUV, CD_PROP_BYTE_COLOR)) {
     return nullptr;
   }
 
@@ -200,7 +200,7 @@ void USDMeshReader::read_object_data(Main *bmain, const double motionSampleTime)
   if (read_mesh != mesh) {
     /* FIXME: after 2.80; `mesh->flag` isn't copied by #BKE_mesh_nomain_to_mesh() */
     /* read_mesh can be freed by BKE_mesh_nomain_to_mesh(), so get the flag before that happens. */
-    short autosmooth = (read_mesh->flag & ME_AUTOSMOOTH);
+    uint16_t autosmooth = (read_mesh->flag & ME_AUTOSMOOTH);
     BKE_mesh_nomain_to_mesh(read_mesh, mesh, object_, &CD_MASK_MESH, true);
     mesh->flag |= autosmooth;
   }
@@ -457,7 +457,7 @@ void USDMeshReader::read_colors(Mesh *mesh, const double motionSampleTime)
     return;
   }
 
-  void *cd_ptr = add_customdata_cb(mesh, "displayColors", CD_MLOOPCOL);
+  void *cd_ptr = add_customdata_cb(mesh, "displayColors", CD_PROP_BYTE_COLOR);
 
   if (!cd_ptr) {
     std::cerr << "WARNING: Couldn't add displayColors custom data.\n";

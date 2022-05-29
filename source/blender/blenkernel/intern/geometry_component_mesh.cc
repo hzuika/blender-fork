@@ -10,6 +10,7 @@
 #include "BKE_attribute_access.hh"
 #include "BKE_attribute_math.hh"
 #include "BKE_deform.h"
+#include "BKE_geometry_fields.hh"
 #include "BKE_geometry_set.hh"
 #include "BKE_lib_id.h"
 #include "BKE_mesh.h"
@@ -168,7 +169,7 @@ VArray<float3> mesh_normals_varray(const MeshComponent &mesh_component,
 /** \name Attribute Access
  * \{ */
 
-int MeshComponent::attribute_domain_size(const AttributeDomain domain) const
+int MeshComponent::attribute_domain_num(const AttributeDomain domain) const
 {
   if (mesh_ == nullptr) {
     return 0;
@@ -838,20 +839,20 @@ static const Mesh *get_mesh_from_component_for_read(const GeometryComponent &com
 namespace blender::bke {
 
 template<typename StructT, typename ElemT, ElemT (*GetFunc)(const StructT &)>
-static GVArray make_derived_read_attribute(const void *data, const int domain_size)
+static GVArray make_derived_read_attribute(const void *data, const int domain_num)
 {
   return VArray<ElemT>::template ForDerivedSpan<StructT, GetFunc>(
-      Span<StructT>((const StructT *)data, domain_size));
+      Span<StructT>((const StructT *)data, domain_num));
 }
 
 template<typename StructT,
          typename ElemT,
          ElemT (*GetFunc)(const StructT &),
          void (*SetFunc)(StructT &, ElemT)>
-static GVMutableArray make_derived_write_attribute(void *data, const int domain_size)
+static GVMutableArray make_derived_write_attribute(void *data, const int domain_num)
 {
   return VMutableArray<ElemT>::template ForDerivedSpan<StructT, GetFunc, SetFunc>(
-      MutableSpan<StructT>((StructT *)data, domain_size));
+      MutableSpan<StructT>((StructT *)data, domain_num));
 }
 
 static float3 get_vertex_position(const MVert &vert)
@@ -900,22 +901,6 @@ static float2 get_loop_uv(const MLoopUV &uv)
 static void set_loop_uv(MLoopUV &uv, float2 co)
 {
   copy_v2_v2(uv.uv, co);
-}
-
-static ColorGeometry4f get_loop_color(const MLoopCol &col)
-{
-  ColorGeometry4b encoded_color = ColorGeometry4b(col.r, col.g, col.b, col.a);
-  ColorGeometry4f linear_color = encoded_color.decode();
-  return linear_color;
-}
-
-static void set_loop_color(MLoopCol &col, ColorGeometry4f linear_color)
-{
-  ColorGeometry4b encoded_color = linear_color.encode();
-  col.r = encoded_color.r;
-  col.g = encoded_color.g;
-  col.b = encoded_color.b;
-  col.a = encoded_color.a;
 }
 
 static float get_crease(const MEdge &edge)
@@ -1175,7 +1160,7 @@ class NormalAttributeProvider final : public BuiltinAttributeProvider {
 
   bool exists(const GeometryComponent &component) const final
   {
-    return component.attribute_domain_size(ATTR_DOMAIN_FACE) != 0;
+    return component.attribute_domain_num(ATTR_DOMAIN_FACE) != 0;
   }
 };
 
@@ -1186,8 +1171,7 @@ class NormalAttributeProvider final : public BuiltinAttributeProvider {
 static ComponentAttributeProviders create_attribute_providers_for_mesh()
 {
   static auto update_custom_data_pointers = [](GeometryComponent &component) {
-    Mesh *mesh = get_mesh_from_component_for_write(component);
-    if (mesh != nullptr) {
+    if (Mesh *mesh = get_mesh_from_component_for_write(component)) {
       BKE_mesh_update_customdata_pointers(mesh, false);
     }
   };
@@ -1293,14 +1277,6 @@ static ComponentAttributeProviders create_attribute_providers_for_mesh()
       make_derived_read_attribute<MLoopUV, float2, get_loop_uv>,
       make_derived_write_attribute<MLoopUV, float2, get_loop_uv, set_loop_uv>);
 
-  static NamedLegacyCustomDataProvider vertex_colors(
-      ATTR_DOMAIN_CORNER,
-      CD_PROP_COLOR,
-      CD_MLOOPCOL,
-      corner_access,
-      make_derived_read_attribute<MLoopCol, ColorGeometry4f, get_loop_color>,
-      make_derived_write_attribute<MLoopCol, ColorGeometry4f, get_loop_color, set_loop_color>);
-
   static VertexGroupsAttributeProvider vertex_groups;
   static CustomDataAttributeProvider corner_custom_data(ATTR_DOMAIN_CORNER, corner_access);
   static CustomDataAttributeProvider point_custom_data(ATTR_DOMAIN_POINT, point_access);
@@ -1310,7 +1286,6 @@ static ComponentAttributeProviders create_attribute_providers_for_mesh()
   return ComponentAttributeProviders(
       {&position, &id, &material_index, &shade_smooth, &normal, &crease},
       {&uvs,
-       &vertex_colors,
        &corner_custom_data,
        &vertex_groups,
        &point_custom_data,

@@ -80,9 +80,7 @@ static void freeData(ModifierData *md)
   }
 }
 
-static bool dependsOnTime(struct Scene *UNUSED(scene),
-                          ModifierData *UNUSED(md),
-                          const int UNUSED(dag_eval_mode))
+static bool dependsOnTime(struct Scene *UNUSED(scene), ModifierData *UNUSED(md))
 {
   return true;
 }
@@ -122,7 +120,6 @@ static void deformVerts(ModifierData *md,
     uint mvert_num = 0;
 
     BKE_mesh_vert_coords_apply(mesh_src, vertexCos);
-    BKE_mesh_calc_normals(mesh_src);
 
     current_time = DEG_get_ctime(ctx->depsgraph);
 
