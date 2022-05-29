@@ -1,0 +1,144 @@
+# Upstreamブランチからコンフリクトマーカーをつけたままマージしてプルリクエストを作成
+
+name: Merge upstream, Create pull request
+
+on:
+  # Actions タブから手動でこのワークフローを実行することを許可する．
+  workflow_dispatch:
+  
+env:
+  BRANCH_PREFIX: auto_merge_
+  UPSTREAM_URL: https://github.com/blender/blender.git
+  USER_EMAIL: 39191601+hzuika@users.noreply.github.com
+  USER_NAME: hzuika
+  
+jobs:
+  auto_merge:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      # checkoutしないと，ワークフロー時の環境にこのリポジトリが存在しないことになる．      
+      - uses: actions/checkout@v3
+      
+      - run: ls
+      
+      - run: git status
+      
+      # (マージ)コミットするときに必要なgit configを設定する．      
+      - name: Set git config for merge commit
+        run: |
+          git config --global user.email "$USER_EMAIL"
+          git config --global user.name "$USER_NAME"
+      
+      # 現在時刻を環境変数に格納する．
+      # フォーマットは %Y%m%d%H%M%S (例: 20220529032610)
+      # 使うときは部分文字列にして使う．
+      - name: Get current time as env var
+        env:
+          TZ: 'Asia/Tokyo'
+        run: |
+          T=$(date +'%Y%m%d%H%M%S')
+          echo "CURRENT_TIME=${T}" >> $GITHUB_ENV
+          echo "YEAR=${T:0:4}" >> $GITHUB_ENV
+          echo "MONTH=${T:4:2}" >> $GITHUB_ENV
+          echo "DAY=${T:6:2}" >> $GITHUB_ENV
+          echo "HOUR=${T:8:2}" >> $GITHUB_ENV
+          echo "MIN=${T:10:2}" >> $GITHUB_ENV
+          echo "SEC=${T:12:2}" >> $GITHUB_ENV
+          
+      - name: Show current time
+        run: echo "${YEAR}/${MONTH}/${DAY} ${HOUR}:${MIN}:${SEC}"
+          
+      # ブランチ名は別のrunでも使用するので環境変数に入れる．
+      - name: Create branch name as env var
+        run: |
+          BRANCH_SUFFIX="${YEAR}_${MONTH}_${DAY}_${HOUR}_${MIN}_${SEC}"
+          BRANCH_NAME="${BRANCH_PREFIX}${BRANCH_SUFFIX}"
+          echo "BRANCH=${BRANCH_NAME}" >> $GITHUB_ENV
+          
+      # 先ほどの環境変数を使用してブランチを作成してチェックアウトする．
+      - name: Create and Checkout new branch
+        run: git checkout -b ${{ env.BRANCH }}
+        
+      - run: git status
+       
+      # エイリアス upstream にupstreamリポジトリのURLを設定する．
+      - name: Set upstream repo
+        run: git remote add upstream ${UPSTREAM_URL}
+        
+      - run: git remote -v
+          
+      # デフォルトでfetch-depthが1(shallow clone)らしく，マージするときに，
+      # fatal: refusing to merge unrelated historiesが出るのを避けるために
+      # --unshallow オプションをつけてフェッチする．      
+      - name: Fetch upstream repo
+        run: git fetch upstream --unshallow
+      
+      # upstreamをマージする．
+      # github-scriptsを使って，終了コード，標準出力，標準エラー出力を変数に格納する．
+      - name: Merge upstream
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const command = 'git merge upstream/main'
+            const result = await exec.getExecOutput(command, [], {
+              ignoreReturnCode: true,
+            })
+            console.log(result)
+            core.setOutput('EXIT_CODE', result.exitCode)
+            core.setOutput('STDOUT', result.stdout)
+            core.setOutput('STDERR', result.stderr)
+        id: merge
+      
+      - name: Show merge output
+        run: |
+          echo "Exit code: ${{ steps.merge.outputs.EXIT_CODE }}"
+          echo "stdout:"
+          echo "${{ steps.merge.outputs.STDOUT }}"
+          echo "stderr:"
+          echo "${{ steps.merge.outputs.STDERR }}"
+      # 終了コードによって，標準出力か，標準エラー出力のどちらかを環境変数に格納する．
+      # 一度テキストファイルに格納してから，環境変数に格納する．
+      # テキストファイルはGitの対象にならないように親ディテクトリに保存する．
+      # echo 'MERGE_OUTPUT=${{ steps.merge.outputs.STDOUT }}' >> $GITHUB_ENV だとエラーになる．
+      # シングルクォーテーションをダブルクォーテーションに変えてもエラー
+      - name: Set merge output as env var
+        run: |
+          echo "${{ steps.merge.outputs.STDOUT }}" > ../merge_output.txt
+          echo "${{ steps.merge.outputs.STDERR }}" >> ../merge_output.txt
+          echo 'MERGE_OUTPUT=$(cat ../merge_output.txt)' >> $GITHUB_ENV
+      
+      # マージ出力結果を表示する．
+      - name: Show merge output
+        run: echo ${{ env.MERGE_OUTPUT }}
+      
+      - name: Git status
+        run: git status
+        
+      - run: git show
+      
+      # コンフリクトマーカーごとコミットする．          
+      - name: Commit merge with conflict marker
+        if: ${{ steps.merge.outputs.EXIT_CODE != 0 }}
+        run: git commit -am "Merge upstream with conflict marker"
+      
+      # リモートリポジトリにプッシュして，プルリクエストを作成する．
+      
+      # マージ出力が Already up to date. であれば実行しない．
+
+      # upstream を設定すると，プルリクエストのマージ先がデフォルトでupstreamになるため，
+      # --repo オプションで明示的にリポジトリを指定する．
+      # gh コマンドでプルリクエストを作成するためには，GH_TOKENが必要になる．
+      # 環境変数に格納したマージ出力結果をプルリクエストの本文に使う．      
+      - name: Push and Create pull request
+        if: startsWith(steps.merge.outputs.STDOUT, 'Already up to date.') == false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |          
+          git push origin "$BRANCH"
+          PR_BODY="${{ env.MERGE_OUTPUT }}"
+          TIME="${YEAR}/${MONTH}/${DAY} ${HOUR}:${MIN}:${SEC}"
+          PR_TITLE="Auto merge upstream (${TIME})"
+          gh pr create --head ${{ env.BRANCH }} --base "source_code_reading" --repo "$GITHUB_REPOSITORY" --title "${PR_TITLE}" --body "${PR_BODY}"
