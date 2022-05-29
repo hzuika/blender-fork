@@ -82,7 +82,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const command = 'git merge upstream/main'
+            const command = 'git merge upstream/master'
             const result = await exec.getExecOutput(command, [], {
               ignoreReturnCode: true,
             })
