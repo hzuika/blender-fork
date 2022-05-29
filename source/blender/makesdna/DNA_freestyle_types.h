@@ -108,6 +108,7 @@ typedef struct FreestyleLineSet {
   /** Group of target objects. */
   struct Collection *group;
 
+  // コメント: ラインセットの中にラインスタイルのポインタを1つ格納している．
   struct FreestyleLineStyle *linestyle;
 } FreestyleLineSet;
 
