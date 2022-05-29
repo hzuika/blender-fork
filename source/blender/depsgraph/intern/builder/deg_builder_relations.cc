@@ -586,10 +586,11 @@ void DepsgraphRelationBuilder::build_id(ID *id)
 
 void DepsgraphRelationBuilder::build_generic_id(ID *id)
 {
-
   if (built_map_.checkIsBuiltAndTag(id)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(*id);
 
   build_idproperties(id->properties);
   build_animdata(id);
@@ -621,6 +622,9 @@ void DepsgraphRelationBuilder::build_collection(LayerCollection *from_layer_coll
      * recurses into all the nested objects and collections. */
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(collection->id);
+
   const bool group_done = built_map_.checkIsBuiltAndTag(collection);
   OperationKey object_transform_final_key(object != nullptr ? &object->id : nullptr,
                                           NodeType::TRANSFORM,
@@ -684,6 +688,9 @@ void DepsgraphRelationBuilder::build_object(Object *object)
   if (built_map_.checkIsBuiltAndTag(object)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(object->id);
+
   /* Object Transforms */
   OperationCode base_op = (object->parent) ? OperationCode::TRANSFORM_PARENT :
                                              OperationCode::TRANSFORM_LOCAL;
@@ -699,7 +706,7 @@ void DepsgraphRelationBuilder::build_object(Object *object)
   OperationKey ob_eval_key(&object->id, NodeType::TRANSFORM, OperationCode::TRANSFORM_EVAL);
   add_relation(init_transform_key, local_transform_key, "Transform Init");
   /* Various flags, flushing from bases/collections. */
-  build_object_from_layer_relations(object);
+  build_object_layer_component_relations(object);
   /* Parenting. */
   if (object->parent != nullptr) {
     /* Make sure parent object's relations are built. */
@@ -787,7 +794,37 @@ void DepsgraphRelationBuilder::build_object(Object *object)
   build_parameters(&object->id);
 }
 
-void DepsgraphRelationBuilder::build_object_from_layer_relations(Object *object)
+/* NOTE: Implies that the object has base in the current view layer. */
+void DepsgraphRelationBuilder::build_object_from_view_layer_base(Object *object)
+{
+  /* It is possible to have situation when an object is pulled into the dependency graph in a
+   * few different ways:
+   *
+   *  - Indirect driver dependency, which doesn't have a Base (or, Base is unknown).
+   *  - Via a base from a view layer (view layer of the graph, or view layer of a set scene).
+   *  - Possibly other ways, which are not important for decision making here.
+   *
+   * There needs to be a relation from view layer which has a base with the object so that the
+   * order of flags evaluation is correct (object-level base flags evaluation requires view layer
+   * to be evaluated first).
+   *
+   * This build call handles situation when object comes from a view layer, hence has a base, and
+   * needs a relation from the view layer. Do the relation prior to check of whether the object
+   * relations are built so that the relation is created from every view layer which has a base
+   * with this object. */
+
+  OperationKey view_layer_done_key(
+      &scene_->id, NodeType::LAYER_COLLECTIONS, OperationCode::VIEW_LAYER_EVAL);
+  OperationKey object_from_layer_entry_key(
+      &object->id, NodeType::OBJECT_FROM_LAYER, OperationCode::OBJECT_FROM_LAYER_ENTRY);
+
+  add_relation(view_layer_done_key, object_from_layer_entry_key, "View Layer flags to Object");
+
+  /* Regular object building. */
+  build_object(object);
+}
+
+void DepsgraphRelationBuilder::build_object_layer_component_relations(Object *object)
 {
   OperationKey object_from_layer_entry_key(
       &object->id, NodeType::OBJECT_FROM_LAYER, OperationCode::OBJECT_FROM_LAYER_ENTRY);
@@ -810,10 +847,6 @@ void DepsgraphRelationBuilder::build_object_from_layer_relations(Object *object)
   OperationKey synchronize_key(
       &object->id, NodeType::SYNCHRONIZATION, OperationCode::SYNCHRONIZE_TO_ORIGINAL);
   add_relation(object_from_layer_exit_key, synchronize_key, "Synchronize to Original");
-
-  OperationKey view_layer_done_key(
-      &scene_->id, NodeType::LAYER_COLLECTIONS, OperationCode::VIEW_LAYER_EVAL);
-  add_relation(view_layer_done_key, object_from_layer_entry_key, "View Layer flags to Object");
 }
 
 void DepsgraphRelationBuilder::build_object_data(Object *object)
@@ -1107,6 +1140,9 @@ void DepsgraphRelationBuilder::build_constraints(ID *id,
     if (cti == nullptr) {
       continue;
     }
+
+    const BuilderStack::ScopedEntry stack_entry = stack_.trace(*con);
+
     /* Special case for camera tracking -- it doesn't use targets to
      * define relations. */
     /* TODO: we can now represent dependencies in a much richer manner,
@@ -1420,10 +1456,15 @@ void DepsgraphRelationBuilder::build_animdata_drivers(ID *id)
 void DepsgraphRelationBuilder::build_animation_images(ID *id)
 {
   /* See #DepsgraphNodeBuilder::build_animation_images. */
-  const bool can_have_gpu_material = ELEM(GS(id->name), ID_MA, ID_WO);
+  bool has_image_animation = false;
+  if (ELEM(GS(id->name), ID_MA, ID_WO)) {
+    bNodeTree *ntree = *BKE_ntree_ptr_from_id(id);
+    if (ntree != nullptr && ntree->runtime_flag & NTREE_RUNTIME_FLAG_HAS_IMAGE_ANIMATION) {
+      has_image_animation = true;
+    }
+  }
 
-  /* TODO: can we check for existence of node for performance? */
-  if (BKE_image_user_id_has_animation(id) || can_have_gpu_material) {
+  if (has_image_animation || BKE_image_user_id_has_animation(id)) {
     OperationKey image_animation_key(
         id, NodeType::IMAGE_ANIMATION, OperationCode::IMAGE_ANIMATION);
     TimeSourceKey time_src_key;
@@ -1469,6 +1510,9 @@ void DepsgraphRelationBuilder::build_action(bAction *action)
   if (built_map_.checkIsBuiltAndTag(action)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(action->id);
+
   build_idproperties(action->id.properties);
   if (!BLI_listbase_is_empty(&action->curves)) {
     TimeSourceKey time_src_key;
@@ -1667,6 +1711,22 @@ void DepsgraphRelationBuilder::build_driver_variables(ID *id, FCurve *fcu)
           continue;
         }
         add_relation(variable_exit_key, driver_key, "RNA Target -> Driver");
+
+        /* The RNA getter for `object.data` can write to the mesh datablock due
+         * to the call to `BKE_mesh_wrapper_ensure_subdivision()`. This relation
+         * ensures it is safe to call when the driver is evaluated.
+         *
+         * For the sake of making the code more generic/defensive, the relation
+         * is added for any geometry type.
+         *
+         * See T96289 for more info. */
+        if (object != nullptr && OB_TYPE_IS_GEOMETRY(object->type)) {
+          StringRef rna_path(dtar->rna_path);
+          if (rna_path == "data" || rna_path.startswith("data.")) {
+            ComponentKey ob_key(target_id, NodeType::GEOMETRY);
+            add_relation(ob_key, driver_key, "ID -> Driver");
+          }
+        }
       }
       else {
         /* If rna_path is nullptr, and DTAR_FLAG_STRUCT_REF isn't set, this
@@ -1740,6 +1800,9 @@ void DepsgraphRelationBuilder::build_world(World *world)
   if (built_map_.checkIsBuiltAndTag(world)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(world->id);
+
   build_idproperties(world->id.properties);
   /* animation */
   build_animdata(&world->id);
@@ -1965,6 +2028,9 @@ void DepsgraphRelationBuilder::build_particle_settings(ParticleSettings *part)
   if (built_map_.checkIsBuiltAndTag(part)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(part->id);
+
   /* Animation data relations. */
   build_animdata(&part->id);
   build_parameters(&part->id);
@@ -2023,6 +2089,9 @@ void DepsgraphRelationBuilder::build_shapekeys(Key *key)
   if (built_map_.checkIsBuiltAndTag(key)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(key->id);
+
   build_idproperties(key->id.properties);
   /* Attach animdata to geometry. */
   build_animdata(&key->id);
@@ -2084,11 +2153,13 @@ void DepsgraphRelationBuilder::build_object_data_geometry(Object *object)
     LISTBASE_FOREACH (ModifierData *, md, &object->modifiers) {
       const ModifierTypeInfo *mti = BKE_modifier_get_info((ModifierType)md->type);
       if (mti->updateDepsgraph) {
+        const BuilderStack::ScopedEntry stack_entry = stack_.trace(*md);
+
         DepsNodeHandle handle = create_node_handle(obdata_ubereval_key);
         ctx.node = reinterpret_cast<::DepsNodeHandle *>(&handle);
         mti->updateDepsgraph(md, &ctx);
       }
-      if (BKE_object_modifier_use_time(scene_, object, md, graph_->mode)) {
+      if (BKE_object_modifier_use_time(scene_, object, md)) {
         TimeSourceKey time_src_key;
         add_relation(time_src_key, obdata_ubereval_key, "Time Source");
       }
@@ -2204,6 +2275,9 @@ void DepsgraphRelationBuilder::build_object_data_geometry_datablock(ID *obdata)
   if (built_map_.checkIsBuiltAndTag(obdata)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(*obdata);
+
   build_idproperties(obdata->properties);
   /* Animation. */
   build_animdata(obdata);
@@ -2322,6 +2396,9 @@ void DepsgraphRelationBuilder::build_armature(bArmature *armature)
   if (built_map_.checkIsBuiltAndTag(armature)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(armature->id);
+
   build_idproperties(armature->id.properties);
   build_animdata(&armature->id);
   build_parameters(&armature->id);
@@ -2341,6 +2418,9 @@ void DepsgraphRelationBuilder::build_camera(Camera *camera)
   if (built_map_.checkIsBuiltAndTag(camera)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(camera->id);
+
   build_idproperties(camera->id.properties);
   build_animdata(&camera->id);
   build_parameters(&camera->id);
@@ -2358,6 +2438,9 @@ void DepsgraphRelationBuilder::build_light(Light *lamp)
   if (built_map_.checkIsBuiltAndTag(lamp)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(lamp->id);
+
   build_idproperties(lamp->id.properties);
   build_animdata(&lamp->id);
   build_parameters(&lamp->id);
@@ -2422,6 +2505,9 @@ void DepsgraphRelationBuilder::build_nodetree(bNodeTree *ntree)
   if (built_map_.checkIsBuiltAndTag(ntree)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(ntree->id);
+
   build_idproperties(ntree->id.properties);
   build_animdata(&ntree->id);
   build_parameters(&ntree->id);
@@ -2527,6 +2613,9 @@ void DepsgraphRelationBuilder::build_material(Material *material)
   if (built_map_.checkIsBuiltAndTag(material)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(material->id);
+
   build_idproperties(material->id.properties);
   /* animation */
   build_animdata(&material->id);
@@ -2563,6 +2652,9 @@ void DepsgraphRelationBuilder::build_texture(Tex *texture)
   if (built_map_.checkIsBuiltAndTag(texture)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(texture->id);
+
   /* texture itself */
   ComponentKey texture_key(&texture->id, NodeType::GENERIC_DATABLOCK);
   build_idproperties(texture->id.properties);
@@ -2604,6 +2696,9 @@ void DepsgraphRelationBuilder::build_image(Image *image)
   if (built_map_.checkIsBuiltAndTag(image)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(image->id);
+
   build_idproperties(image->id.properties);
   build_parameters(&image->id);
 }
@@ -2613,6 +2708,9 @@ void DepsgraphRelationBuilder::build_cachefile(CacheFile *cache_file)
   if (built_map_.checkIsBuiltAndTag(cache_file)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(cache_file->id);
+
   build_idproperties(cache_file->id.properties);
   /* Animation. */
   build_animdata(&cache_file->id);
@@ -2642,6 +2740,9 @@ void DepsgraphRelationBuilder::build_mask(Mask *mask)
   if (built_map_.checkIsBuiltAndTag(mask)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(mask->id);
+
   ID *mask_id = &mask->id;
   build_idproperties(mask_id->properties);
   /* F-Curve animation. */
@@ -2680,6 +2781,8 @@ void DepsgraphRelationBuilder::build_freestyle_linestyle(FreestyleLineStyle *lin
     return;
   }
 
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(linestyle->id);
+
   ID *linestyle_id = &linestyle->id;
   build_parameters(linestyle_id);
   build_idproperties(linestyle_id->properties);
@@ -2692,6 +2795,9 @@ void DepsgraphRelationBuilder::build_movieclip(MovieClip *clip)
   if (built_map_.checkIsBuiltAndTag(clip)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(clip->id);
+
   /* Animation. */
   build_idproperties(clip->id.properties);
   build_animdata(&clip->id);
@@ -2703,6 +2809,9 @@ void DepsgraphRelationBuilder::build_lightprobe(LightProbe *probe)
   if (built_map_.checkIsBuiltAndTag(probe)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(probe->id);
+
   build_idproperties(probe->id.properties);
   build_animdata(&probe->id);
   build_parameters(&probe->id);
@@ -2713,6 +2822,9 @@ void DepsgraphRelationBuilder::build_speaker(Speaker *speaker)
   if (built_map_.checkIsBuiltAndTag(speaker)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(speaker->id);
+
   build_idproperties(speaker->id.properties);
   build_animdata(&speaker->id);
   build_parameters(&speaker->id);
@@ -2729,6 +2841,9 @@ void DepsgraphRelationBuilder::build_sound(bSound *sound)
   if (built_map_.checkIsBuiltAndTag(sound)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(sound->id);
+
   build_idproperties(sound->id.properties);
   build_animdata(&sound->id);
   build_parameters(&sound->id);
@@ -2739,6 +2854,9 @@ void DepsgraphRelationBuilder::build_simulation(Simulation *simulation)
   if (built_map_.checkIsBuiltAndTag(simulation)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(simulation->id);
+
   build_idproperties(simulation->id.properties);
   build_animdata(&simulation->id);
   build_parameters(&simulation->id);
@@ -2803,6 +2921,9 @@ void DepsgraphRelationBuilder::build_scene_sequencer(Scene *scene)
   if (built_map_.checkIsBuiltAndTag(scene, BuilderMap::TAG_SCENE_SEQUENCER)) {
     return;
   }
+
+  /* TODO(sergey): Trace as a scene sequencer. */
+
   build_scene_audio(scene);
   ComponentKey scene_audio_key(&scene->id, NodeType::AUDIO);
   /* Make sure dependencies from sequences data goes to the sequencer evaluation. */
@@ -2846,6 +2967,9 @@ void DepsgraphRelationBuilder::build_vfont(VFont *vfont)
   if (built_map_.checkIsBuiltAndTag(vfont)) {
     return;
   }
+
+  const BuilderStack::ScopedEntry stack_entry = stack_.trace(vfont->id);
+
   build_parameters(&vfont->id);
   build_idproperties(vfont->id.properties);
 }

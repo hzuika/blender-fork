@@ -131,8 +131,6 @@ static Mesh *hull_from_bullet(const Mesh *mesh, Span<float3> coords)
   }
 
   plConvexHullDelete(hull);
-
-  BKE_mesh_normals_tag_dirty(result);
   return result;
 }
 
@@ -140,14 +138,14 @@ static Mesh *compute_hull(const GeometrySet &geometry_set)
 {
   int span_count = 0;
   int count = 0;
-  int total_size = 0;
+  int total_num = 0;
 
   Span<float3> positions_span;
 
   if (geometry_set.has_mesh()) {
     count++;
     const MeshComponent *component = geometry_set.get_component_for_read<MeshComponent>();
-    total_size += component->attribute_domain_size(ATTR_DOMAIN_POINT);
+    total_num += component->attribute_domain_num(ATTR_DOMAIN_POINT);
   }
 
   if (geometry_set.has_pointcloud()) {
@@ -157,7 +155,7 @@ static Mesh *compute_hull(const GeometrySet &geometry_set)
         geometry_set.get_component_for_read<PointCloudComponent>();
     VArray<float3> varray = component->attribute_get_for_read<float3>(
         "position", ATTR_DOMAIN_POINT, {0, 0, 0});
-    total_size += varray.size();
+    total_num += varray.size();
     positions_span = varray.get_internal_span();
   }
 
@@ -167,7 +165,7 @@ static Mesh *compute_hull(const GeometrySet &geometry_set)
     const Curves &curves_id = *geometry_set.get_curves_for_read();
     const bke::CurvesGeometry &curves = bke::CurvesGeometry::wrap(curves_id.geometry);
     positions_span = curves.evaluated_positions();
-    total_size += positions_span.size();
+    total_num += positions_span.size();
   }
 
   if (count == 0) {
@@ -180,7 +178,7 @@ static Mesh *compute_hull(const GeometrySet &geometry_set)
     return hull_from_bullet(nullptr, positions_span);
   }
 
-  Array<float3> positions(total_size);
+  Array<float3> positions(total_num);
   int offset = 0;
 
   if (geometry_set.has_mesh()) {
@@ -210,69 +208,6 @@ static Mesh *compute_hull(const GeometrySet &geometry_set)
 
   return hull_from_bullet(geometry_set.get_mesh_for_read(), positions);
 }
-
-/* Since only positions are read from the instances, this can be used as an internal optimization
- * to avoid the cost of realizing instances before the node. But disable this for now, since
- * re-enabling that optimization will be a separate step. */
-#  if 0
-static void read_positions(const GeometryComponent &component,
-                                           Span<float4x4> transforms,
-                                           Vector<float3> *r_coords)
-{
-  VArray<float3> positions = component.attribute_get_for_read<float3>(
-      "position", ATTR_DOMAIN_POINT, {0, 0, 0});
-
-  /* NOTE: could use convex hull operation here to
-   * cut out some vertices, before accumulating,
-   * but can also be done by the user beforehand. */
-
-  r_coords->reserve(r_coords->size() + positions->size() * transforms.size());
-  for (const float4x4 &transform : transforms) {
-    for (const int i : positions->index_range()) {
-      const float3 position = positions[i];
-      const float3 transformed_position = transform * position;
-      r_coords->append(transformed_position);
-    }
-  }
-}
-
-static void read_curve_positions(const Curves &curves_id,
-                                 Span<float4x4> transforms,
-                                 Vector<float3> *r_coords)
-{
-  const bke::CurvesGeometry &curves = bke::CurvesGeometry::wrap(curves_id.geometry);
-  const int total_size = curves.evaluated_points_num();
-  r_coords->reserve(r_coords->size() + total_size * transforms.size());
-  r_coords->as_mutable_span().take_back(total_size).copy_from(curves.evaluated_positions());
-  for (const float3 &position : curves.evaluated_positions()) {
-    r_coords->append(transform * postition);
-  }
-}
-
-static Mesh *convex_hull_from_instances(const GeometrySet &geometry_set)
-{
-  Vector<GeometryInstanceGroup> set_groups;
-  bke::geometry_set_gather_instances(geometry_set, set_groups);
-
-  Vector<float3> coords;
-
-  for (const GeometryInstanceGroup &set_group : set_groups) {
-    const GeometrySet &set = set_group.geometry_set;
-    Span<float4x4> transforms = set_group.transforms;
-
-    if (set.has_pointcloud()) {
-      read_positions(*set.get_component_for_read<PointCloudComponent>(), transforms, &coords);
-    }
-    if (set.has_mesh()) {
-      read_positions(*set.get_component_for_read<MeshComponent>(), transforms, &coords);
-    }
-    if (set.has_curves()) {
-      read_curve_positions(*set.get_curves_for_read(), transforms, &coords);
-    }
-  }
-  return hull_from_bullet(nullptr, coords);
-}
-#  endif
 
 #endif /* WITH_BULLET */
 

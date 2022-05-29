@@ -1557,7 +1557,11 @@ void BKE_brush_init_curves_sculpt_settings(Brush *brush)
   if (brush->curves_sculpt_settings == NULL) {
     brush->curves_sculpt_settings = MEM_callocN(sizeof(BrushCurvesSculptSettings), __func__);
   }
-  brush->curves_sculpt_settings->add_amount = 1;
+  BrushCurvesSculptSettings *settings = brush->curves_sculpt_settings;
+  settings->add_amount = 1;
+  settings->points_per_curve = 8;
+  settings->minimum_length = 0.01f;
+  settings->curve_length = 0.3f;
 }
 
 struct Brush *BKE_brush_first_search(struct Main *bmain, const eObjectMode ob_mode)
@@ -1833,7 +1837,8 @@ void BKE_brush_sculpt_reset(Brush *br)
       br->tip_roundness = 1.0f;
       br->density = 1.0f;
       br->flag &= ~BRUSH_SPACE_ATTEN;
-      zero_v3(br->rgb);
+      copy_v3_fl(br->rgb, 1.0f);
+      zero_v3(br->secondary_rgb);
       break;
     case SCULPT_TOOL_SMEAR:
       br->alpha = 1.0f;
@@ -2025,7 +2030,7 @@ float BKE_brush_sample_tex_3d(const Scene *scene,
       /* leave the coordinates relative to the screen */
 
       /* use unadjusted size for tiled mode */
-      invradius = 1.0f / BKE_brush_size_get(scene, br);
+      invradius = 1.0f / ups->start_pixel_radius;
 
       x = point_2d[0];
       y = point_2d[1];
@@ -2138,7 +2143,7 @@ float BKE_brush_sample_masktex(
       /* leave the coordinates relative to the screen */
 
       /* use unadjusted size for tiled mode */
-      invradius = 1.0f / BKE_brush_size_get(scene, br);
+      invradius = 1.0f / ups->start_pixel_radius;
 
       x = point_2d[0];
       y = point_2d[1];

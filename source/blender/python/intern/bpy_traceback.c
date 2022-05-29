@@ -165,6 +165,10 @@ finally:
 bool python_script_error_jump(
     const char *filepath, int *r_lineno, int *r_offset, int *r_lineno_end, int *r_offset_end)
 {
+  /* WARNING(@campbellbarton): The normalized exception is restored (loosing line number info).
+   * Ideally this would leave the exception state as it found it, but that needs to be done
+   * carefully with regards to reference counting, see: T97731. */
+
   bool success = false;
   PyObject *exception, *value;
   PyTracebackObject *tb;
@@ -205,12 +209,9 @@ bool python_script_error_jump(
         }
       }
     }
-    PyErr_Restore(exception, value, (PyObject *)tb); /* takes away reference! */
   }
   else {
     PyErr_NormalizeException(&exception, &value, (PyObject **)&tb);
-    PyErr_Restore(exception, value, (PyObject *)tb); /* takes away reference! */
-    PyErr_Print();
 
     for (tb = (PyTracebackObject *)PySys_GetObject("last_traceback");
          tb && (PyObject *)tb != Py_None;
@@ -229,6 +230,8 @@ bool python_script_error_jump(
       }
     }
   }
+
+  PyErr_Restore(exception, value, (PyObject *)tb); /* takes away reference! */
 
   return success;
 }

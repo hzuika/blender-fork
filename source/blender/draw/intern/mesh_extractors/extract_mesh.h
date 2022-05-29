@@ -67,7 +67,7 @@ typedef struct MeshRenderData {
   const float (*bm_poly_normals)[3];
   const float (*bm_poly_centers)[3];
 
-  int *v_origindex, *e_origindex, *p_origindex;
+  const int *v_origindex, *e_origindex, *p_origindex;
   int edge_crease_ofs;
   int vert_crease_ofs;
   int bweight_ofs;
@@ -290,6 +290,7 @@ void mesh_render_data_update_looptris(MeshRenderData *mr,
                                       eMRDataType data_flag);
 
 /* draw_cache_extract_mesh_extractors.c */
+
 typedef struct EditLoopData {
   uchar v_flag;
   uchar e_flag;

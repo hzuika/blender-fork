@@ -46,9 +46,7 @@ static void initData(ModifierData *md)
   MEMCPY_STRUCT_AFTER(bmd, DNA_struct_default_get(BuildModifierData), modifier);
 }
 
-static bool dependsOnTime(struct Scene *UNUSED(scene),
-                          ModifierData *UNUSED(md),
-                          const int UNUSED(dag_eval_mode))
+static bool dependsOnTime(struct Scene *UNUSED(scene), ModifierData *UNUSED(md))
 {
   return true;
 }
@@ -264,8 +262,6 @@ static Mesh *modifyMesh(ModifierData *md, const ModifierEvalContext *ctx, struct
   MEM_freeN(vertMap);
   MEM_freeN(edgeMap);
   MEM_freeN(faceMap);
-
-  BKE_mesh_normals_tag_dirty(result);
 
   /* TODO(sybren): also copy flags & tags? */
   return result;

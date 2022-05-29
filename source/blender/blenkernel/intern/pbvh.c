@@ -17,8 +17,10 @@
 #include "DNA_mesh_types.h"
 #include "DNA_meshdata_types.h"
 
+#include "BKE_attribute.h"
 #include "BKE_ccg.h"
 #include "BKE_mesh.h"
+#include "BKE_mesh_mapping.h"
 #include "BKE_paint.h"
 #include "BKE_pbvh.h"
 #include "BKE_subdiv_ccg.h"
@@ -242,8 +244,8 @@ static int map_insert_vert(
   key = POINTER_FROM_INT(vertex);
   if (!BLI_ghash_ensure_p(map, key, &value_p)) {
     int value_i;
-    if (BLI_BITMAP_TEST(pbvh->vert_bitmap, vertex) == 0) {
-      BLI_BITMAP_ENABLE(pbvh->vert_bitmap, vertex);
+    if (!pbvh->vert_bitmap[vertex]) {
+      pbvh->vert_bitmap[vertex] = true;
       value_i = *uniq_verts;
       (*uniq_verts)++;
     }
@@ -560,7 +562,7 @@ void BKE_pbvh_build_mesh(PBVH *pbvh,
   pbvh->verts = verts;
   BKE_mesh_vertex_normals_ensure(mesh);
   pbvh->vert_normals = BKE_mesh_vertex_normals_for_write(mesh);
-  pbvh->vert_bitmap = BLI_BITMAP_NEW(totvert, "bvh->vert_bitmap");
+  pbvh->vert_bitmap = MEM_calloc_arrayN(totvert, sizeof(bool), "bvh->vert_bitmap");
   pbvh->totvert = totvert;
   pbvh->leaf_limit = LEAF_LIMIT;
   pbvh->vdata = vdata;
@@ -598,7 +600,9 @@ void BKE_pbvh_build_mesh(PBVH *pbvh,
   MEM_freeN(prim_bbc);
 
   /* Clear the bitmap so it can be used as an update tag later on. */
-  BLI_bitmap_set_all(pbvh->vert_bitmap, false, totvert);
+  memset(pbvh->vert_bitmap, 0, sizeof(bool) * totvert);
+
+  BKE_pbvh_update_active_vcol(pbvh, mesh);
 }
 
 void BKE_pbvh_build_grids(PBVH *pbvh,
@@ -652,6 +656,7 @@ PBVH *BKE_pbvh_new(void)
 {
   PBVH *pbvh = MEM_callocN(sizeof(PBVH), "pbvh");
   pbvh->respect_hide = true;
+  pbvh->draw_cache_invalid = true;
   return pbvh;
 }
 
@@ -667,6 +672,9 @@ void BKE_pbvh_free(PBVH *pbvh)
       if (node->vert_indices) {
         MEM_freeN((void *)node->vert_indices);
       }
+      if (node->loop_indices) {
+        MEM_freeN(node->loop_indices);
+      }
       if (node->face_vert_indices) {
         MEM_freeN((void *)node->face_vert_indices);
       }
@@ -679,6 +687,8 @@ void BKE_pbvh_free(PBVH *pbvh)
       if (node->bm_other_verts) {
         BLI_gset_free(node->bm_other_verts, NULL);
       }
+
+      pbvh_pixels_free(node);
     }
   }
 
@@ -1011,7 +1021,7 @@ static void pbvh_update_normals_clear_task_cb(void *__restrict userdata,
     const int totvert = node->uniq_verts;
     for (int i = 0; i < totvert; i++) {
       const int v = verts[i];
-      if (BLI_BITMAP_TEST(pbvh->vert_bitmap, v)) {
+      if (pbvh->vert_bitmap[v]) {
         zero_v3(vnors[v]);
       }
     }
@@ -1054,7 +1064,7 @@ static void pbvh_update_normals_accum_task_cb(void *__restrict userdata,
       for (int j = sides; j--;) {
         const int v = vtri[j];
 
-        if (BLI_BITMAP_TEST(pbvh->vert_bitmap, v)) {
+        if (pbvh->vert_bitmap[v]) {
           /* NOTE: This avoids `lock, add_v3_v3, unlock`
            * and is five to ten times quicker than a spin-lock.
            * Not exact equivalent though, since atomicity is only ensured for one component
@@ -1086,9 +1096,9 @@ static void pbvh_update_normals_store_task_cb(void *__restrict userdata,
 
       /* No atomics necessary because we are iterating over uniq_verts only,
        * so we know only this thread will handle this vertex. */
-      if (BLI_BITMAP_TEST(pbvh->vert_bitmap, v)) {
+      if (pbvh->vert_bitmap[v]) {
         normalize_v3(vnors[v]);
-        BLI_BITMAP_DISABLE(pbvh->vert_bitmap, v);
+        pbvh->vert_bitmap[v] = false;
       }
     }
 
@@ -1254,6 +1264,30 @@ static int pbvh_get_buffers_update_flags(PBVH *UNUSED(pbvh))
   return update_flags;
 }
 
+bool BKE_pbvh_get_color_layer(const Mesh *me, CustomDataLayer **r_layer, AttributeDomain *r_attr)
+{
+  CustomDataLayer *layer = BKE_id_attributes_active_color_get((ID *)me);
+
+  if (!layer || !ELEM(layer->type, CD_PROP_COLOR, CD_PROP_BYTE_COLOR)) {
+    *r_layer = NULL;
+    *r_attr = ATTR_DOMAIN_NUM;
+    return false;
+  }
+
+  AttributeDomain domain = BKE_id_attribute_domain((ID *)me, layer);
+
+  if (!ELEM(domain, ATTR_DOMAIN_POINT, ATTR_DOMAIN_CORNER)) {
+    *r_layer = NULL;
+    *r_attr = ATTR_DOMAIN_NUM;
+    return false;
+  }
+
+  *r_layer = layer;
+  *r_attr = domain;
+
+  return true;
+}
+
 static void pbvh_update_draw_buffer_cb(void *__restrict userdata,
                                        const int n,
                                        const TaskParallelTLS *__restrict UNUSED(tls))
@@ -1304,18 +1338,25 @@ static void pbvh_update_draw_buffer_cb(void *__restrict userdata,
                                      &pbvh->gridkey,
                                      update_flags);
         break;
-      case PBVH_FACES:
+      case PBVH_FACES: {
+        CustomDataLayer *layer = NULL;
+        AttributeDomain domain;
+
+        BKE_pbvh_get_color_layer(pbvh->mesh, &layer, &domain);
+
         GPU_pbvh_mesh_buffers_update(node->draw_buffers,
                                      pbvh->verts,
                                      pbvh->vert_normals,
                                      CustomData_get_layer(pbvh->vdata, CD_PAINT_MASK),
-                                     CustomData_get_layer(pbvh->ldata, CD_MLOOPCOL),
+                                     layer ? layer->data : NULL,
+                                     layer ? layer->type : -1,
+                                     layer ? domain : ATTR_DOMAIN_AUTO,
                                      CustomData_get_layer(pbvh->pdata, CD_SCULPT_FACE_SETS),
                                      pbvh->face_sets_color_seed,
                                      pbvh->face_sets_color_default,
-                                     CustomData_get_layer(pbvh->vdata, CD_PROP_COLOR),
                                      update_flags);
         break;
+      }
       case PBVH_BMESH:
         GPU_pbvh_bmesh_buffers_update(node->draw_buffers,
                                       pbvh->bm,
@@ -1328,6 +1369,16 @@ static void pbvh_update_draw_buffer_cb(void *__restrict userdata,
   }
 }
 
+void pbvh_free_draw_buffers(PBVH *pbvh, PBVHNode *node)
+{
+  if (node->draw_buffers) {
+    pbvh->draw_cache_invalid = true;
+
+    GPU_pbvh_buffers_free(node->draw_buffers);
+    node->draw_buffers = NULL;
+  }
+}
+
 static void pbvh_update_draw_buffers(PBVH *pbvh, PBVHNode **nodes, int totnode, int update_flag)
 {
   if ((update_flag & PBVH_RebuildDrawBuffers) || ELEM(pbvh->type, PBVH_GRIDS, PBVH_BMESH)) {
@@ -1335,8 +1386,7 @@ static void pbvh_update_draw_buffers(PBVH *pbvh, PBVHNode **nodes, int totnode, 
     for (int n = 0; n < totnode; n++) {
       PBVHNode *node = nodes[n];
       if (node->flag & PBVH_RebuildDrawBuffers) {
-        GPU_pbvh_buffers_free(node->draw_buffers);
-        node->draw_buffers = NULL;
+        pbvh_free_draw_buffers(pbvh, node);
       }
       else if ((node->flag & PBVH_UpdateDrawBuffers) && node->draw_buffers) {
         if (pbvh->type == PBVH_GRIDS) {
@@ -1442,7 +1492,9 @@ void BKE_pbvh_update_vertex_data(PBVH *pbvh, int flag)
   }
 
   if (flag & (PBVH_UpdateColor)) {
-    /* Do nothing */
+    for (int i = 0; i < totnode; i++) {
+      nodes[i]->flag |= PBVH_UpdateRedraw | PBVH_UpdateDrawBuffers | PBVH_UpdateColor;
+    }
   }
 
   if (flag & (PBVH_UpdateVisibility)) {
@@ -1729,7 +1781,7 @@ BMesh *BKE_pbvh_get_bmesh(PBVH *pbvh)
 void BKE_pbvh_node_mark_update(PBVHNode *node)
 {
   node->flag |= PBVH_UpdateNormals | PBVH_UpdateBB | PBVH_UpdateOriginalBB |
-                PBVH_UpdateDrawBuffers | PBVH_UpdateRedraw;
+                PBVH_UpdateDrawBuffers | PBVH_UpdateRedraw | PBVH_RebuildPixels;
 }
 
 void BKE_pbvh_node_mark_update_mask(PBVHNode *node)
@@ -1740,6 +1792,16 @@ void BKE_pbvh_node_mark_update_mask(PBVHNode *node)
 void BKE_pbvh_node_mark_update_color(PBVHNode *node)
 {
   node->flag |= PBVH_UpdateColor | PBVH_UpdateDrawBuffers | PBVH_UpdateRedraw;
+}
+
+void BKE_pbvh_mark_rebuild_pixels(PBVH *pbvh)
+{
+  for (int n = 0; n < pbvh->totnode; n++) {
+    PBVHNode *node = &pbvh->nodes[n];
+    if (node->flag & PBVH_Leaf) {
+      node->flag |= PBVH_RebuildPixels;
+    }
+  }
 }
 
 void BKE_pbvh_node_mark_update_visibility(PBVHNode *node)
@@ -1817,7 +1879,23 @@ bool BKE_pbvh_node_fully_unmasked_get(PBVHNode *node)
 void BKE_pbvh_vert_mark_update(PBVH *pbvh, int index)
 {
   BLI_assert(pbvh->type == PBVH_FACES);
-  BLI_BITMAP_ENABLE(pbvh->vert_bitmap, index);
+  pbvh->vert_bitmap[index] = true;
+}
+
+void BKE_pbvh_node_get_loops(PBVH *pbvh,
+                             PBVHNode *node,
+                             const int **r_loop_indices,
+                             const MLoop **r_loops)
+{
+  BLI_assert(BKE_pbvh_type(pbvh) == PBVH_FACES);
+
+  if (r_loop_indices) {
+    *r_loop_indices = node->loop_indices;
+  }
+
+  if (r_loops) {
+    *r_loops = pbvh->mloop;
+  }
 }
 
 void BKE_pbvh_node_get_verts(PBVH *pbvh,
@@ -1966,7 +2044,7 @@ bool BKE_pbvh_node_vert_update_check_any(PBVH *pbvh, PBVHNode *node)
   for (int i = 0; i < totvert; i++) {
     const int v = verts[i];
 
-    if (BLI_BITMAP_TEST(pbvh->vert_bitmap, v)) {
+    if (pbvh->vert_bitmap[v]) {
       return true;
     }
   }
@@ -2711,6 +2789,8 @@ void BKE_pbvh_draw_cb(PBVH *pbvh,
   int totnode;
   int update_flag = 0;
 
+  pbvh->draw_cache_invalid = false;
+
   /* Search for nodes that need updates. */
   if (update_only_visible) {
     /* Get visible nodes with draw updates. */
@@ -2980,7 +3060,6 @@ void pbvh_vertex_iter_init(PBVH *pbvh, PBVHNode *node, PBVHVertexIter *vi, int m
     vi->vert_normals = pbvh->vert_normals;
 
     vi->vmask = CustomData_get_layer(pbvh->vdata, CD_PAINT_MASK);
-    vi->vcol = CustomData_get_layer(pbvh->vdata, CD_PROP_COLOR);
   }
 }
 
@@ -3071,4 +3150,87 @@ void BKE_pbvh_face_sets_set(PBVH *pbvh, int *face_sets)
 void BKE_pbvh_respect_hide_set(PBVH *pbvh, bool respect_hide)
 {
   pbvh->respect_hide = respect_hide;
+}
+bool BKE_pbvh_is_drawing(const PBVH *pbvh)
+{
+  return pbvh->is_drawing;
+}
+
+void BKE_pbvh_is_drawing_set(PBVH *pbvh, bool val)
+{
+  pbvh->is_drawing = val;
+}
+
+void BKE_pbvh_node_num_loops(PBVH *pbvh, PBVHNode *node, int *r_totloop)
+{
+  UNUSED_VARS(pbvh);
+  BLI_assert(BKE_pbvh_type(pbvh) == PBVH_FACES);
+
+  if (r_totloop) {
+    *r_totloop = node->loop_indices_num;
+  }
+}
+
+void BKE_pbvh_update_active_vcol(PBVH *pbvh, const Mesh *mesh)
+{
+  BKE_pbvh_get_color_layer(mesh, &pbvh->color_layer, &pbvh->color_domain);
+}
+
+void BKE_pbvh_pmap_set(PBVH *pbvh, const MeshElemMap *pmap)
+{
+  pbvh->pmap = pmap;
+}
+
+void BKE_pbvh_ensure_node_loops(PBVH *pbvh)
+{
+  BLI_assert(BKE_pbvh_type(pbvh) == PBVH_FACES);
+
+  int totloop = 0;
+
+  /* Check if nodes already have loop indices. */
+  for (int i = 0; i < pbvh->totnode; i++) {
+    PBVHNode *node = pbvh->nodes + i;
+
+    if (!(node->flag & PBVH_Leaf)) {
+      continue;
+    }
+
+    if (node->loop_indices) {
+      return;
+    }
+
+    totloop += node->totprim * 3;
+  }
+
+  BLI_bitmap *visit = BLI_BITMAP_NEW(totloop, __func__);
+
+  /* Create loop indices from node loop triangles. */
+  for (int i = 0; i < pbvh->totnode; i++) {
+    PBVHNode *node = pbvh->nodes + i;
+
+    if (!(node->flag & PBVH_Leaf)) {
+      continue;
+    }
+
+    node->loop_indices = MEM_malloc_arrayN(node->totprim * 3, sizeof(int), __func__);
+    node->loop_indices_num = 0;
+
+    for (int j = 0; j < node->totprim; j++) {
+      const MLoopTri *mlt = pbvh->looptri + node->prim_indices[j];
+
+      for (int k = 0; k < 3; k++) {
+        if (!BLI_BITMAP_TEST(visit, mlt->tri[k])) {
+          node->loop_indices[node->loop_indices_num++] = mlt->tri[k];
+          BLI_BITMAP_ENABLE(visit, mlt->tri[k]);
+        }
+      }
+    }
+  }
+
+  MEM_SAFE_FREE(visit);
+}
+
+bool BKE_pbvh_draw_cache_invalid(const PBVH *pbvh)
+{
+  return pbvh->draw_cache_invalid;
 }

@@ -896,8 +896,10 @@ static void rna_wmKeyMapItem_map_type_set(PointerRNA *ptr, int value)
   }
 }
 
-/* assumes value to be an enum from rna_enum_event_type_items */
-/* function makes sure keymodifiers are only valid keys, ESC keeps it unaltered */
+/**
+ * Assumes value to be an enum from rna_enum_event_type_items.
+ * Function makes sure keymodifiers are only valid keys, ESC keeps it unaltered.
+ */
 static void rna_wmKeyMapItem_keymodifier_set(PointerRNA *ptr, int value)
 {
   wmKeyMapItem *kmi = ptr->data;
@@ -1155,9 +1157,7 @@ static int rna_wmKeyMapItem_idname_length(PointerRNA *ptr)
 {
   wmKeyMapItem *kmi = ptr->data;
   char pyname[OP_MAX_TYPENAME];
-
-  WM_operator_py_idname(pyname, kmi->idname);
-  return strlen(pyname);
+  return WM_operator_py_idname(pyname, kmi->idname);
 }
 
 static void rna_wmKeyMapItem_idname_set(PointerRNA *ptr, const char *value)
@@ -1412,6 +1412,7 @@ static char *rna_operator_description_cb(bContext *C, wmOperatorType *ot, Pointe
 static void rna_Operator_unregister(struct Main *bmain, StructRNA *type);
 
 /* bpy_operator_wrap.c */
+
 extern void BPY_RNA_operator_wrapper(wmOperatorType *ot, void *userdata);
 extern void BPY_RNA_operator_macro_wrapper(wmOperatorType *ot, void *userdata);
 
@@ -2598,6 +2599,9 @@ static void rna_def_keyconfig(BlenderRNA *brna)
                                 "rna_wmKeyMapItem_idname_get",
                                 "rna_wmKeyMapItem_idname_length",
                                 "rna_wmKeyMapItem_idname_set");
+  RNA_def_property_string_search_func(prop,
+                                      "WM_operatortype_idname_visit_for_search",
+                                      PROP_STRING_SEARCH_SORT | PROP_STRING_SEARCH_SUGGESTION);
   RNA_def_struct_name_property(srna, prop);
   RNA_def_property_update(prop, 0, "rna_KeyMapItem_update");
 

@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 
-typedef void ParamHandle;  /* handle to a set of charts */
-typedef intptr_t ParamKey; /* (hash) key for identifying verts and faces */
+typedef struct ParamHandle ParamHandle; /* Handle to an array of charts. */
+typedef intptr_t ParamKey;              /* Key (hash) for identifying verts and faces. */
 typedef enum ParamBool {
   PARAM_TRUE = 1,
   PARAM_FALSE = 0,
@@ -119,6 +119,8 @@ void GEO_uv_parametrizer_average(ParamHandle *handle, bool ignore_pinned);
  * \{ */
 
 void GEO_uv_parametrizer_scale(ParamHandle *handle, float x, float y);
+
+/** \} */
 
 /* -------------------------------------------------------------------- */
 /** \name Flushing

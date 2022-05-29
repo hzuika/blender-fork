@@ -443,9 +443,9 @@ const EnumPropertyItem rna_enum_node_clamp_items[] = {
 
 static const EnumPropertyItem rna_enum_node_tex_dimensions_items[] = {
     {1, "1D", 0, "1D", "Use the scalar value W as input"},
-    {2, "2D", 0, "2D", "Use the 2D vector (x, y) as input. The z component is ignored"},
-    {3, "3D", 0, "3D", "Use the 3D vector (x, y, z) as input"},
-    {4, "4D", 0, "4D", "Use the 4D vector (x, y, z, w) as input"},
+    {2, "2D", 0, "2D", "Use the 2D vector (X, Y) as input. The Z component is ignored"},
+    {3, "3D", 0, "3D", "Use the 3D vector (X, Y, Z) as input"},
+    {4, "4D", 0, "4D", "Use the 4D vector (X, Y, Z, W) as input"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -488,6 +488,13 @@ static const EnumPropertyItem rna_node_geometry_curve_handle_side_items[] = {
     {GEO_NODE_CURVE_HANDLE_LEFT, "LEFT", ICON_NONE, "Left", "Use the left handles"},
     {GEO_NODE_CURVE_HANDLE_RIGHT, "RIGHT", ICON_NONE, "Right", "Use the right handles"},
     {0, NULL, 0, NULL, NULL}};
+
+static const EnumPropertyItem rna_node_combsep_color_items[] = {
+    {NODE_COMBSEP_COLOR_RGB, "RGB", ICON_NONE, "RGB", "Use RGB color processing"},
+    {NODE_COMBSEP_COLOR_HSV, "HSV", ICON_NONE, "HSV", "Use HSV color processing"},
+    {NODE_COMBSEP_COLOR_HSL, "HSL", ICON_NONE, "HSL", "Use HSL color processing"},
+    {0, NULL, 0, NULL, NULL},
+};
 
 #ifndef RNA_RUNTIME
 static const EnumPropertyItem node_sampler_type_items[] = {
@@ -1420,8 +1427,13 @@ static bNodeSocket *rna_NodeTree_inputs_new(
 
   bNodeSocket *sock = ntreeAddSocketInterface(ntree, SOCK_IN, type, name);
 
-  ED_node_tree_propagate_change(NULL, bmain, ntree);
-  WM_main_add_notifier(NC_NODE | NA_EDITED, ntree);
+  if (sock == NULL) {
+    BKE_report(reports, RPT_ERROR, "Unable to create socket");
+  }
+  else {
+    ED_node_tree_propagate_change(NULL, bmain, ntree);
+    WM_main_add_notifier(NC_NODE | NA_EDITED, ntree);
+  }
 
   return sock;
 }
@@ -1435,8 +1447,13 @@ static bNodeSocket *rna_NodeTree_outputs_new(
 
   bNodeSocket *sock = ntreeAddSocketInterface(ntree, SOCK_OUT, type, name);
 
-  ED_node_tree_propagate_change(NULL, bmain, ntree);
-  WM_main_add_notifier(NC_NODE | NA_EDITED, ntree);
+  if (sock == NULL) {
+    BKE_report(reports, RPT_ERROR, "Unable to create socket");
+  }
+  else {
+    ED_node_tree_propagate_change(NULL, bmain, ntree);
+    WM_main_add_notifier(NC_NODE | NA_EDITED, ntree);
+  }
 
   return sock;
 }
@@ -1581,16 +1598,16 @@ static StructRNA *rna_Node_refine(struct PointerRNA *ptr)
   }
 }
 
-static char *rna_Node_path(PointerRNA *ptr)
+static char *rna_Node_path(const PointerRNA *ptr)
 {
-  bNode *node = (bNode *)ptr->data;
+  const bNode *node = (bNode *)ptr->data;
   char name_esc[sizeof(node->name) * 2];
 
   BLI_str_escape(name_esc, node->name, sizeof(name_esc));
   return BLI_sprintfN("nodes[\"%s\"]", name_esc);
 }
 
-char *rna_Node_ImageUser_path(PointerRNA *ptr)
+char *rna_Node_ImageUser_path(const PointerRNA *ptr)
 {
   bNodeTree *ntree = (bNodeTree *)ptr->owner_id;
   bNode *node;
@@ -2134,8 +2151,13 @@ static void rna_GeometryNodeCompare_data_type_update(Main *bmain, Scene *scene, 
 
 static bool generic_attribute_type_supported(const EnumPropertyItem *item)
 {
-  return ELEM(
-      item->value, CD_PROP_FLOAT, CD_PROP_FLOAT3, CD_PROP_COLOR, CD_PROP_BOOL, CD_PROP_INT32);
+  return ELEM(item->value,
+              CD_PROP_FLOAT,
+              CD_PROP_FLOAT3,
+              CD_PROP_COLOR,
+              CD_PROP_BOOL,
+              CD_PROP_INT32,
+              CD_PROP_BYTE_COLOR);
 }
 static const EnumPropertyItem *rna_GeometryNodeAttributeType_type_itemf(bContext *UNUSED(C),
                                                                         PointerRNA *UNUSED(ptr),
@@ -2144,6 +2166,18 @@ static const EnumPropertyItem *rna_GeometryNodeAttributeType_type_itemf(bContext
 {
   *r_free = true;
   return itemf_function_check(rna_enum_attribute_type_items, generic_attribute_type_supported);
+}
+
+static bool generic_attribute_type_supported_with_socket(const EnumPropertyItem *item)
+{
+  return generic_attribute_type_supported(item) && !ELEM(item->value, CD_PROP_BYTE_COLOR);
+}
+static const EnumPropertyItem *rna_GeometryNodeAttributeType_type_with_socket_itemf(
+    bContext *UNUSED(C), PointerRNA *UNUSED(ptr), PropertyRNA *UNUSED(prop), bool *r_free)
+{
+  *r_free = true;
+  return itemf_function_check(rna_enum_attribute_type_items,
+                              generic_attribute_type_supported_with_socket);
 }
 
 static bool transfer_attribute_type_supported(const EnumPropertyItem *item)
@@ -2722,7 +2756,7 @@ static StructRNA *rna_NodeSocket_refine(PointerRNA *ptr)
   }
 }
 
-static char *rna_NodeSocket_path(PointerRNA *ptr)
+static char *rna_NodeSocket_path(const PointerRNA *ptr)
 {
   bNodeTree *ntree = (bNodeTree *)ptr->owner_id;
   bNodeSocket *sock = (bNodeSocket *)ptr->data;
@@ -3036,10 +3070,10 @@ static StructRNA *rna_NodeSocketInterface_refine(PointerRNA *ptr)
   }
 }
 
-static char *rna_NodeSocketInterface_path(PointerRNA *ptr)
+static char *rna_NodeSocketInterface_path(const PointerRNA *ptr)
 {
-  bNodeTree *ntree = (bNodeTree *)ptr->owner_id;
-  bNodeSocket *sock = (bNodeSocket *)ptr->data;
+  const bNodeTree *ntree = (bNodeTree *)ptr->owner_id;
+  const bNodeSocket *sock = (bNodeSocket *)ptr->data;
   int socketindex;
 
   socketindex = BLI_findindex(&ntree->inputs, sock);
@@ -4489,9 +4523,9 @@ static const EnumPropertyItem prop_view_layer_items[] = {
 };
 
 static const EnumPropertyItem prop_tri_channel_items[] = {
-    {1, "R", 0, "R", ""},
-    {2, "G", 0, "G", ""},
-    {3, "B", 0, "B", ""},
+    {1, "R", 0, "R", "Red"},
+    {2, "G", 0, "G", "Green"},
+    {3, "B", 0, "B", "Blue"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -4510,46 +4544,81 @@ static const EnumPropertyItem node_ycc_items[] = {
 };
 
 static const EnumPropertyItem node_glossy_items[] = {
-    {SHD_GLOSSY_SHARP, "SHARP", 0, "Sharp", ""},
+    {SHD_GLOSSY_SHARP,
+     "SHARP",
+     0,
+     "Sharp",
+     "Results in perfectly sharp reflections like a mirror. The Roughness value is not used"},
     {SHD_GLOSSY_BECKMANN, "BECKMANN", 0, "Beckmann", ""},
     {SHD_GLOSSY_GGX, "GGX", 0, "GGX", ""},
     {SHD_GLOSSY_ASHIKHMIN_SHIRLEY, "ASHIKHMIN_SHIRLEY", 0, "Ashikhmin-Shirley", ""},
-    {SHD_GLOSSY_MULTI_GGX, "MULTI_GGX", 0, "Multiscatter GGX", ""},
+    {SHD_GLOSSY_MULTI_GGX,
+     "MULTI_GGX",
+     0,
+     "Multiscatter GGX",
+     "Slower than GGX but gives a more energy conserving results, which would otherwise be "
+     "visible as excessive darkening"},
     {0, NULL, 0, NULL, NULL},
 };
 
 static const EnumPropertyItem node_anisotropic_items[] = {
     {SHD_GLOSSY_BECKMANN, "BECKMANN", 0, "Beckmann", ""},
     {SHD_GLOSSY_GGX, "GGX", 0, "GGX", ""},
-    {SHD_GLOSSY_MULTI_GGX, "MULTI_GGX", 0, "Multiscatter GGX", ""},
+    {SHD_GLOSSY_MULTI_GGX,
+     "MULTI_GGX",
+     0,
+     "Multiscatter GGX",
+     "Slower than GGX but gives a more energy conserving results, which would otherwise be "
+     "visible as excessive darkening"},
     {SHD_GLOSSY_ASHIKHMIN_SHIRLEY, "ASHIKHMIN_SHIRLEY", 0, "Ashikhmin-Shirley", ""},
     {0, NULL, 0, NULL, NULL},
 };
 
 static const EnumPropertyItem node_glass_items[] = {
-    {SHD_GLOSSY_SHARP, "SHARP", 0, "Sharp", ""},
+    {SHD_GLOSSY_SHARP,
+     "SHARP",
+     0,
+     "Sharp",
+     "Results in perfectly sharp reflections like a mirror. The Roughness value is not used"},
     {SHD_GLOSSY_BECKMANN, "BECKMANN", 0, "Beckmann", ""},
     {SHD_GLOSSY_GGX, "GGX", 0, "GGX", ""},
-    {SHD_GLOSSY_MULTI_GGX, "MULTI_GGX", 0, "Multiscatter GGX", ""},
+    {SHD_GLOSSY_MULTI_GGX,
+     "MULTI_GGX",
+     0,
+     "Multiscatter GGX",
+     "Slower than GGX but gives a more energy conserving results, which would otherwise be "
+     "visible as excessive darkening"},
     {0, NULL, 0, NULL, NULL},
 };
 
 static const EnumPropertyItem node_refraction_items[] = {
-    {SHD_GLOSSY_SHARP, "SHARP", 0, "Sharp", ""},
+    {SHD_GLOSSY_SHARP,
+     "SHARP",
+     0,
+     "Sharp",
+     "Results in perfectly sharp reflections like a mirror. The Roughness value is not used"},
     {SHD_GLOSSY_BECKMANN, "BECKMANN", 0, "Beckmann", ""},
     {SHD_GLOSSY_GGX, "GGX", 0, "GGX", ""},
     {0, NULL, 0, NULL, NULL},
 };
 
 static const EnumPropertyItem node_toon_items[] = {
-    {SHD_TOON_DIFFUSE, "DIFFUSE", 0, "Diffuse", ""},
-    {SHD_TOON_GLOSSY, "GLOSSY", 0, "Glossy", ""},
+    {SHD_TOON_DIFFUSE, "DIFFUSE", 0, "Diffuse", "Use diffuse BSDF"},
+    {SHD_TOON_GLOSSY, "GLOSSY", 0, "Glossy", "Use glossy BSDF"},
     {0, NULL, 0, NULL, NULL},
 };
 
 static const EnumPropertyItem node_hair_items[] = {
-    {SHD_HAIR_REFLECTION, "Reflection", 0, "Reflection", ""},
-    {SHD_HAIR_TRANSMISSION, "Transmission", 0, "Transmission", ""},
+    {SHD_HAIR_REFLECTION,
+     "Reflection",
+     0,
+     "Reflection",
+     "The light that bounces off the surface of the hair"},
+    {SHD_HAIR_TRANSMISSION,
+     "Transmission",
+     0,
+     "Transmission",
+     "The light that passes through the hair and exits on the other side"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -4589,7 +4658,12 @@ static EnumPropertyItem node_ies_mode_items[] = {
 
 static const EnumPropertyItem node_principled_distribution_items[] = {
     {SHD_GLOSSY_GGX, "GGX", 0, "GGX", ""},
-    {SHD_GLOSSY_MULTI_GGX, "MULTI_GGX", 0, "Multiscatter GGX", ""},
+    {SHD_GLOSSY_MULTI_GGX,
+     "MULTI_GGX",
+     0,
+     "Multiscatter GGX",
+     "Slower than GGX but gives a more energy conserving results, which would otherwise be "
+     "visible as excessive darkening"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -5023,6 +5097,18 @@ static void def_fn_input_string(StructRNA *srna)
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
+static void def_fn_combsep_color(StructRNA *srna)
+{
+  PropertyRNA *prop;
+
+  RNA_def_struct_sdna_from(srna, "NodeCombSepColor", "storage");
+
+  prop = RNA_def_property(srna, "mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, rna_node_combsep_color_items);
+  RNA_def_property_ui_text(prop, "Mode", "Mode of color processing");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
+}
+
 /* -- Shader Nodes ---------------------------------------------------------- */
 
 static void def_sh_output(StructRNA *srna)
@@ -5374,6 +5460,17 @@ static void def_sh_tex_image(StructRNA *srna)
   RNA_def_property_update(prop, 0, "rna_Node_update");
 }
 
+static void def_tex_combsep_color(StructRNA *srna)
+{
+  PropertyRNA *prop;
+
+  prop = RNA_def_property(srna, "mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_sdna(prop, NULL, "custom1");
+  RNA_def_property_enum_items(prop, rna_node_combsep_color_items);
+  RNA_def_property_ui_text(prop, "Mode", "Mode of color processing");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
+}
+
 static void def_geo_image_texture(StructRNA *srna)
 {
   static const EnumPropertyItem fn_tex_prop_interpolation_items[] = {
@@ -5460,8 +5557,7 @@ static void def_sh_tex_noise(StructRNA *srna)
   prop = RNA_def_property(srna, "noise_dimensions", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "dimensions");
   RNA_def_property_enum_items(prop, rna_enum_node_tex_dimensions_items);
-  RNA_def_property_ui_text(
-      prop, "Dimensions", "The dimensions of the space to evaluate the noise in");
+  RNA_def_property_ui_text(prop, "Dimensions", "Number of dimensions to output noise for");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 }
 
@@ -5524,11 +5620,28 @@ static void def_sh_tex_magic(StructRNA *srna)
 static void def_sh_tex_musgrave(StructRNA *srna)
 {
   static const EnumPropertyItem prop_musgrave_type[] = {
-      {SHD_MUSGRAVE_MULTIFRACTAL, "MULTIFRACTAL", 0, "Multifractal", ""},
-      {SHD_MUSGRAVE_RIDGED_MULTIFRACTAL, "RIDGED_MULTIFRACTAL", 0, "Ridged Multifractal", ""},
-      {SHD_MUSGRAVE_HYBRID_MULTIFRACTAL, "HYBRID_MULTIFRACTAL", 0, "Hybrid Multifractal", ""},
-      {SHD_MUSGRAVE_FBM, "FBM", 0, "fBM", ""},
-      {SHD_MUSGRAVE_HETERO_TERRAIN, "HETERO_TERRAIN", 0, "Hetero Terrain", ""},
+      {SHD_MUSGRAVE_MULTIFRACTAL,
+       "MULTIFRACTAL",
+       0,
+       "Multifractal",
+       "More uneven result (varies with location), more similar to a real terrain"},
+      {SHD_MUSGRAVE_RIDGED_MULTIFRACTAL,
+       "RIDGED_MULTIFRACTAL",
+       0,
+       "Ridged Multifractal",
+       "Create sharp peaks"},
+      {SHD_MUSGRAVE_HYBRID_MULTIFRACTAL,
+       "HYBRID_MULTIFRACTAL",
+       0,
+       "Hybrid Multifractal",
+       "Create peaks and valleys with different roughness values"},
+      {SHD_MUSGRAVE_FBM, "FBM", 0, "fBM", "Produce an unnatural homogeneous and isotropic result"},
+      {SHD_MUSGRAVE_HETERO_TERRAIN,
+       "HETERO_TERRAIN",
+       0,
+       "Hetero Terrain",
+       "Similar to Hybrid Multifractal creates a heterogeneous terrain, but with the likeness of "
+       "river channels"},
       {0, NULL, 0, NULL, NULL},
   };
 
@@ -5540,13 +5653,13 @@ static void def_sh_tex_musgrave(StructRNA *srna)
   prop = RNA_def_property(srna, "musgrave_dimensions", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "dimensions");
   RNA_def_property_enum_items(prop, rna_enum_node_tex_dimensions_items);
-  RNA_def_property_ui_text(prop, "Dimensions", "");
+  RNA_def_property_ui_text(prop, "Dimensions", "Number of dimensions to output noise for");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 
   prop = RNA_def_property(srna, "musgrave_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "musgrave_type");
   RNA_def_property_enum_items(prop, prop_musgrave_type);
-  RNA_def_property_ui_text(prop, "Type", "");
+  RNA_def_property_ui_text(prop, "Type", "Type of the Musgrave texture");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 }
 
@@ -5595,19 +5708,21 @@ static void def_sh_tex_voronoi(StructRNA *srna)
   prop = RNA_def_property(srna, "voronoi_dimensions", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "dimensions");
   RNA_def_property_enum_items(prop, rna_enum_node_tex_dimensions_items);
-  RNA_def_property_ui_text(prop, "Dimensions", "");
+  RNA_def_property_ui_text(prop, "Dimensions", "Number of dimensions to output noise for");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 
   prop = RNA_def_property(srna, "distance", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "distance");
   RNA_def_property_enum_items(prop, prop_distance_items);
-  RNA_def_property_ui_text(prop, "Distance Metric", "");
+  RNA_def_property_ui_text(
+      prop, "Distance Metric", "The distance metric used to compute the texture");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 
   prop = RNA_def_property(srna, "feature", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "feature");
   RNA_def_property_enum_items(prop, prop_feature_items);
-  RNA_def_property_ui_text(prop, "Feature Output", "");
+  RNA_def_property_ui_text(
+      prop, "Feature Output", "The Voronoi feature that the node will compute");
   RNA_def_property_update(prop, 0, "rna_ShaderNode_socket_update");
 }
 
@@ -5683,8 +5798,7 @@ static void def_sh_tex_white_noise(StructRNA *srna)
   prop = RNA_def_property(srna, "noise_dimensions", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, rna_enum_node_tex_dimensions_items);
-  RNA_def_property_ui_text(
-      prop, "Dimensions", "The dimensions of the space to evaluate the noise in");
+  RNA_def_property_ui_text(prop, "Dimensions", "Number of dimensions to output noise for");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_ShaderNode_socket_update");
 }
 
@@ -5926,7 +6040,7 @@ static void def_glossy(StructRNA *srna)
   prop = RNA_def_property(srna, "distribution", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_glossy_items);
-  RNA_def_property_ui_text(prop, "Distribution", "");
+  RNA_def_property_ui_text(prop, "Distribution", "Light scattering distribution on rough surface");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -5937,7 +6051,7 @@ static void def_glass(StructRNA *srna)
   prop = RNA_def_property(srna, "distribution", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_glass_items);
-  RNA_def_property_ui_text(prop, "Distribution", "");
+  RNA_def_property_ui_text(prop, "Distribution", "Light scattering distribution on rough surface");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -5948,7 +6062,7 @@ static void def_principled(StructRNA *srna)
   prop = RNA_def_property(srna, "distribution", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_principled_distribution_items);
-  RNA_def_property_ui_text(prop, "Distribution", "");
+  RNA_def_property_ui_text(prop, "Distribution", "Light scattering distribution on rough surface");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_ShaderNode_socket_update");
 
   prop = RNA_def_property(srna, "subsurface_method", PROP_ENUM, PROP_NONE);
@@ -5966,7 +6080,7 @@ static void def_refraction(StructRNA *srna)
   prop = RNA_def_property(srna, "distribution", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_refraction_items);
-  RNA_def_property_ui_text(prop, "Distribution", "");
+  RNA_def_property_ui_text(prop, "Distribution", "Light scattering distribution on rough surface");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -5977,7 +6091,7 @@ static void def_anisotropic(StructRNA *srna)
   prop = RNA_def_property(srna, "distribution", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_anisotropic_items);
-  RNA_def_property_ui_text(prop, "Distribution", "");
+  RNA_def_property_ui_text(prop, "Distribution", "Light scattering distribution on rough surface");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -5988,7 +6102,7 @@ static void def_toon(StructRNA *srna)
   prop = RNA_def_property(srna, "component", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_toon_items);
-  RNA_def_property_ui_text(prop, "Component", "");
+  RNA_def_property_ui_text(prop, "Component", "Toon BSDF component to use");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -6010,7 +6124,7 @@ static void def_hair(StructRNA *srna)
   prop = RNA_def_property(srna, "component", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_hair_items);
-  RNA_def_property_ui_text(prop, "Component", "");
+  RNA_def_property_ui_text(prop, "Component", "Hair BSDF component to use");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -6056,7 +6170,7 @@ static void def_sh_vertex_color(StructRNA *srna)
   RNA_def_struct_sdna_from(srna, "NodeShaderVertexColor", "storage");
 
   prop = RNA_def_property(srna, "layer_name", PROP_STRING, PROP_NONE);
-  RNA_def_property_ui_text(prop, "Vertex Color", "Vertex Color");
+  RNA_def_property_ui_text(prop, "Color Attribute", "Color Attribute");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 
   RNA_def_struct_sdna_from(srna, "bNode", NULL);
@@ -6279,6 +6393,25 @@ static void def_sh_output_aov(StructRNA *srna)
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 
   RNA_def_struct_sdna_from(srna, "bNode", NULL);
+}
+
+static void def_sh_combsep_color(StructRNA *srna)
+{
+  static const EnumPropertyItem type_items[] = {
+      {NODE_COMBSEP_COLOR_RGB, "RGB", ICON_NONE, "RGB", "Use RGB color processing"},
+      {NODE_COMBSEP_COLOR_HSV, "HSV", ICON_NONE, "HSV", "Use HSV color processing"},
+      {NODE_COMBSEP_COLOR_HSL, "HSL", ICON_NONE, "HSL", "Use HSL color processing"},
+      {0, NULL, 0, NULL, NULL},
+  };
+
+  PropertyRNA *prop;
+
+  RNA_def_struct_sdna_from(srna, "NodeCombSepColor", "storage");
+
+  prop = RNA_def_property(srna, "mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, type_items);
+  RNA_def_property_ui_text(prop, "Mode", "Mode of color processing");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
 }
 
 static void def_sh_script(StructRNA *srna)
@@ -8041,6 +8174,32 @@ static void def_cmp_ycc(StructRNA *srna)
   RNA_def_property_enum_sdna(prop, NULL, "custom1");
   RNA_def_property_enum_items(prop, node_ycc_items);
   RNA_def_property_ui_text(prop, "Mode", "");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
+}
+
+static void def_cmp_combsep_color(StructRNA *srna)
+{
+  static const EnumPropertyItem mode_items[] = {
+      {CMP_NODE_COMBSEP_COLOR_RGB, "RGB", ICON_NONE, "RGB", "Use RGB color processing"},
+      {CMP_NODE_COMBSEP_COLOR_HSV, "HSV", ICON_NONE, "HSV", "Use HSV color processing"},
+      {CMP_NODE_COMBSEP_COLOR_HSL, "HSL", ICON_NONE, "HSL", "Use HSL color processing"},
+      {CMP_NODE_COMBSEP_COLOR_YCC, "YCC", ICON_NONE, "YCbCr", "Use YCbCr color processing"},
+      {CMP_NODE_COMBSEP_COLOR_YUV, "YUV", ICON_NONE, "YUV", "Use YUV color processing"},
+      {0, NULL, 0, NULL, NULL},
+  };
+
+  PropertyRNA *prop;
+
+  RNA_def_struct_sdna_from(srna, "NodeCMPCombSepColor", "storage");
+
+  prop = RNA_def_property(srna, "mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, mode_items);
+  RNA_def_property_ui_text(prop, "Mode", "Mode of color processing");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
+
+  prop = RNA_def_property(srna, "ycc_mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, node_ycc_items);
+  RNA_def_property_ui_text(prop, "Color Space", "Color space used for YCbCrA processing");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
@@ -9846,6 +10005,32 @@ static void def_geo_mesh_cone(StructRNA *srna)
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
 }
 
+static void def_geo_merge_by_distance(StructRNA *srna)
+{
+  PropertyRNA *prop;
+
+  static EnumPropertyItem mode_items[] = {
+      {GEO_NODE_MERGE_BY_DISTANCE_MODE_ALL,
+       "ALL",
+       0,
+       "All",
+       "Merge all close selected points, whether or not they are connected"},
+      {GEO_NODE_MERGE_BY_DISTANCE_MODE_CONNECTED,
+       "CONNECTED",
+       0,
+       "Connected",
+       "Only merge mesh vertices along existing edges. This method can be much faster"},
+      {0, NULL, 0, NULL, NULL},
+  };
+
+  RNA_def_struct_sdna_from(srna, "NodeGeometryMergeByDistance", "storage");
+
+  prop = RNA_def_property(srna, "mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, mode_items);
+  RNA_def_property_ui_text(prop, "Mode", "");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
+}
+
 static void def_geo_mesh_line(StructRNA *srna)
 {
   PropertyRNA *prop;
@@ -10183,7 +10368,8 @@ static void def_geo_raycast(StructRNA *srna)
 
   prop = RNA_def_property(srna, "data_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_attribute_type_items);
-  RNA_def_property_enum_funcs(prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_itemf");
+  RNA_def_property_enum_funcs(
+      prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_with_socket_itemf");
   RNA_def_property_enum_default(prop, CD_PROP_FLOAT);
   RNA_def_property_ui_text(prop, "Data Type", "Type of data stored in attribute");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_GeometryNode_socket_update");
@@ -10235,7 +10421,8 @@ static void def_geo_input_named_attribute(StructRNA *srna)
 
   prop = RNA_def_property(srna, "data_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_attribute_type_items);
-  RNA_def_property_enum_funcs(prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_itemf");
+  RNA_def_property_enum_funcs(
+      prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_with_socket_itemf");
   RNA_def_property_enum_default(prop, CD_PROP_FLOAT);
   RNA_def_property_ui_text(prop, "Data Type", "The data type used to read the attribute values");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_GeometryNode_socket_update");
@@ -10249,7 +10436,8 @@ static void def_geo_attribute_capture(StructRNA *srna)
 
   prop = RNA_def_property(srna, "data_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_attribute_type_items);
-  RNA_def_property_enum_funcs(prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_itemf");
+  RNA_def_property_enum_funcs(
+      prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_with_socket_itemf");
   RNA_def_property_enum_default(prop, CD_PROP_FLOAT);
   RNA_def_property_ui_text(prop, "Data Type", "Type of data stored in attribute");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_GeometryNode_socket_update");
@@ -10476,7 +10664,8 @@ static void def_geo_viewer(StructRNA *srna)
 
   prop = RNA_def_property(srna, "data_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_attribute_type_items);
-  RNA_def_property_enum_funcs(prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_itemf");
+  RNA_def_property_enum_funcs(
+      prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_with_socket_itemf");
   RNA_def_property_enum_default(prop, CD_PROP_FLOAT);
   RNA_def_property_ui_text(prop, "Data Type", "");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_GeometryNode_socket_update");
@@ -10506,7 +10695,8 @@ static void def_geo_field_at_index(StructRNA *srna)
   prop = RNA_def_property(srna, "data_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "custom2");
   RNA_def_property_enum_items(prop, rna_enum_attribute_type_items);
-  RNA_def_property_enum_funcs(prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_itemf");
+  RNA_def_property_enum_funcs(
+      prop, NULL, NULL, "rna_GeometryNodeAttributeType_type_with_socket_itemf");
   RNA_def_property_ui_text(prop, "Data Type", "");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_GeometryNode_socket_update");
 }
@@ -10830,6 +11020,14 @@ static void rna_def_node_socket_interface(BlenderRNA *brna)
       prop,
       "Attribute Domain",
       "Attribute domain used by the geometry nodes modifier to create an attribute output");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_NodeSocketInterface_update");
+
+  prop = RNA_def_property(srna, "default_attribute_name", PROP_STRING, PROP_NONE);
+  RNA_def_property_string_sdna(prop, NULL, "default_attribute_name");
+  RNA_def_property_ui_text(prop,
+                           "Default Attribute",
+                           "The attribute name used by default when the node group is used by a "
+                           "geometry nodes modifier");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_NodeSocketInterface_update");
 
   /* registration */
@@ -12228,7 +12426,7 @@ static void rna_def_nodetree(BlenderRNA *brna)
       {NTREE_SHADER, "SHADER", ICON_MATERIAL, "Shader", "Shader nodes"},
       {NTREE_TEXTURE, "TEXTURE", ICON_TEXTURE, "Texture", "Texture nodes"},
       {NTREE_COMPOSIT, "COMPOSITING", ICON_RENDERLAYERS, "Compositing", "Compositing nodes"},
-      {NTREE_GEOMETRY, "GEOMETRY", ICON_NODETREE, "Geometry", "Geometry nodes"},
+      {NTREE_GEOMETRY, "GEOMETRY", ICON_GEOMETRY_NODES, "Geometry", "Geometry nodes"},
       {0, NULL, 0, NULL, NULL},
   };
 
@@ -12375,7 +12573,7 @@ static void rna_def_nodetree(BlenderRNA *brna)
   RNA_def_function_flag(func, FUNC_NO_SELF | FUNC_REGISTER_OPTIONAL);
   parm = RNA_def_string(
       func, "idname", "NodeSocket", MAX_NAME, "Socket Type", "Identifier of the socket type");
-  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL | PROP_THICK_WRAP, PARM_REQUIRED);
   RNA_def_function_return(func, RNA_def_boolean(func, "valid", false, "", ""));
 }
 

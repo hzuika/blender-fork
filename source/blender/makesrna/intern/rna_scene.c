@@ -447,8 +447,8 @@ const EnumPropertyItem rna_enum_bake_target_items[] = {
     {R_BAKE_TARGET_VERTEX_COLORS,
      "VERTEX_COLORS",
      0,
-     "Vertex Colors",
-     "Bake to active vertex color layer on meshes"},
+     "Color Attributes",
+     "Bake to active color attribute layer on meshes"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -1100,12 +1100,12 @@ static void rna_Scene_all_keyingsets_next(CollectionPropertyIterator *iter)
   iter->valid = (internal->link != NULL);
 }
 
-static char *rna_SceneEEVEE_path(PointerRNA *UNUSED(ptr))
+static char *rna_SceneEEVEE_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("eevee");
 }
 
-static char *rna_SceneGpencil_path(PointerRNA *UNUSED(ptr))
+static char *rna_SceneGpencil_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("grease_pencil_settings");
 }
@@ -1129,17 +1129,17 @@ static void rna_RenderSettings_stereoViews_begin(CollectionPropertyIterator *ite
   rna_iterator_listbase_begin(iter, &rd->views, rna_RenderSettings_stereoViews_skip);
 }
 
-static char *rna_RenderSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_RenderSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("render");
 }
 
-static char *rna_BakeSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_BakeSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("render.bake");
 }
 
-static char *rna_ImageFormatSettings_path(PointerRNA *ptr)
+static char *rna_ImageFormatSettings_path(const PointerRNA *ptr)
 {
   ImageFormatData *imf = (ImageFormatData *)ptr->data;
   ID *id = ptr->owner_id;
@@ -1767,6 +1767,10 @@ void rna_ViewLayer_pass_update(Main *bmain, Scene *activescene, PointerRNA *ptr)
     ViewLayerAOV *aov = (ViewLayerAOV *)ptr->data;
     view_layer = BKE_view_layer_find_with_aov(scene, aov);
   }
+  else if (ptr->type == &RNA_Lightgroup) {
+    ViewLayerLightgroup *lightgroup = (ViewLayerLightgroup *)ptr->data;
+    view_layer = BKE_view_layer_find_with_lightgroup(scene, lightgroup);
+  }
 
   if (view_layer) {
     RenderEngineType *engine_type = RE_engines_find(scene->r.engine);
@@ -1783,10 +1787,11 @@ void rna_ViewLayer_pass_update(Main *bmain, Scene *activescene, PointerRNA *ptr)
   rna_Scene_glsl_update(bmain, activescene, ptr);
 }
 
-static char *rna_ViewLayerEEVEE_path(PointerRNA *ptr)
+static char *rna_ViewLayerEEVEE_path(const PointerRNA *ptr)
 {
-  ViewLayerEEVEE *view_layer_eevee = (ViewLayerEEVEE *)ptr->data;
-  ViewLayer *view_layer = (ViewLayer *)((uint8_t *)view_layer_eevee - offsetof(ViewLayer, eevee));
+  const ViewLayerEEVEE *view_layer_eevee = (ViewLayerEEVEE *)ptr->data;
+  const ViewLayer *view_layer = (ViewLayer *)((uint8_t *)view_layer_eevee -
+                                              offsetof(ViewLayer, eevee));
   char rna_path[sizeof(view_layer->name) * 3];
 
   const size_t view_layer_path_len = rna_ViewLayer_path_buffer_get(
@@ -1797,9 +1802,9 @@ static char *rna_ViewLayerEEVEE_path(PointerRNA *ptr)
   return BLI_strdup(rna_path);
 }
 
-static char *rna_SceneRenderView_path(PointerRNA *ptr)
+static char *rna_SceneRenderView_path(const PointerRNA *ptr)
 {
-  SceneRenderView *srv = (SceneRenderView *)ptr->data;
+  const SceneRenderView *srv = (SceneRenderView *)ptr->data;
   char srv_name_esc[sizeof(srv->name) * 2];
   BLI_str_escape(srv_name_esc, srv->name, sizeof(srv_name_esc));
   return BLI_sprintfN("render.views[\"%s\"]", srv_name_esc);
@@ -1878,7 +1883,7 @@ static void rna_Scene_editmesh_select_mode_update(bContext *C, PointerRNA *UNUSE
 static void rna_Scene_uv_select_mode_update(bContext *C, PointerRNA *UNUSED(ptr))
 {
   /* Makes sure that the UV selection states are consistent with the current UV select mode and
-   * sticky mode.*/
+   * sticky mode. */
   ED_uvedit_selectmode_clean_multi(C);
 }
 
@@ -2067,10 +2072,10 @@ static void rna_View3DCursor_matrix_set(PointerRNA *ptr, const float *values)
   BKE_scene_cursor_from_mat4(cursor, unit_mat, false);
 }
 
-static char *rna_TransformOrientationSlot_path(PointerRNA *ptr)
+static char *rna_TransformOrientationSlot_path(const PointerRNA *ptr)
 {
-  Scene *scene = (Scene *)ptr->owner_id;
-  TransformOrientationSlot *orientation_slot = ptr->data;
+  const Scene *scene = (Scene *)ptr->owner_id;
+  const TransformOrientationSlot *orientation_slot = ptr->data;
 
   if (!ELEM(NULL, scene, orientation_slot)) {
     for (int i = 0; i < ARRAY_SIZE(scene->orientation_slots); i++) {
@@ -2081,11 +2086,11 @@ static char *rna_TransformOrientationSlot_path(PointerRNA *ptr)
   }
 
   /* Should not happen, but in case, just return default path. */
-  BLI_assert(0);
+  BLI_assert_unreachable();
   return BLI_strdup("transform_orientation_slots[0]");
 }
 
-static char *rna_View3DCursor_path(PointerRNA *UNUSED(ptr))
+static char *rna_View3DCursor_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("cursor");
 }
@@ -2184,17 +2189,17 @@ static void rna_UnifiedPaintSettings_radius_update(bContext *C, PointerRNA *ptr)
   rna_UnifiedPaintSettings_update(C, ptr);
 }
 
-static char *rna_UnifiedPaintSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_UnifiedPaintSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("tool_settings.unified_paint_settings");
 }
 
-static char *rna_CurvePaintSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_CurvePaintSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("tool_settings.curve_paint_settings");
 }
 
-static char *rna_SequencerToolSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_SequencerToolSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("tool_settings.sequencer_tool_settings");
 }
@@ -2218,7 +2223,7 @@ static void rna_EditMesh_update(bContext *C, PointerRNA *UNUSED(ptr))
   }
 }
 
-static char *rna_MeshStatVis_path(PointerRNA *UNUSED(ptr))
+static char *rna_MeshStatVis_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("tool_settings.statvis");
 }
@@ -2256,7 +2261,7 @@ static void rna_SceneSequencer_update(Main *UNUSED(bmain), Scene *UNUSED(scene),
   SEQ_cache_cleanup((Scene *)ptr->owner_id);
 }
 
-static char *rna_ToolSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_ToolSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("tool_settings");
 }
@@ -2447,6 +2452,49 @@ void rna_ViewLayer_active_aov_index_set(PointerRNA *ptr, int value)
   view_layer->active_aov = aov;
 }
 
+void rna_ViewLayer_active_lightgroup_index_range(
+    PointerRNA *ptr, int *min, int *max, int *UNUSED(softmin), int *UNUSED(softmax))
+{
+  ViewLayer *view_layer = (ViewLayer *)ptr->data;
+
+  *min = 0;
+  *max = max_ii(0, BLI_listbase_count(&view_layer->lightgroups) - 1);
+}
+
+int rna_ViewLayer_active_lightgroup_index_get(PointerRNA *ptr)
+{
+  ViewLayer *view_layer = (ViewLayer *)ptr->data;
+  return BLI_findindex(&view_layer->lightgroups, view_layer->active_lightgroup);
+}
+
+void rna_ViewLayer_active_lightgroup_index_set(PointerRNA *ptr, int value)
+{
+  ViewLayer *view_layer = (ViewLayer *)ptr->data;
+  ViewLayerLightgroup *lightgroup = BLI_findlink(&view_layer->lightgroups, value);
+  view_layer->active_lightgroup = lightgroup;
+}
+
+static void rna_ViewLayerLightgroup_name_get(PointerRNA *ptr, char *value)
+{
+  ViewLayerLightgroup *lightgroup = (ViewLayerLightgroup *)ptr->data;
+  BLI_strncpy(value, lightgroup->name, sizeof(lightgroup->name));
+}
+
+static int rna_ViewLayerLightgroup_name_length(PointerRNA *ptr)
+{
+  ViewLayerLightgroup *lightgroup = (ViewLayerLightgroup *)ptr->data;
+  return strlen(lightgroup->name);
+}
+
+static void rna_ViewLayerLightgroup_name_set(PointerRNA *ptr, const char *value)
+{
+  ViewLayerLightgroup *lightgroup = (ViewLayerLightgroup *)ptr->data;
+  Scene *scene = (Scene *)ptr->owner_id;
+  ViewLayer *view_layer = BKE_view_layer_find_with_lightgroup(scene, lightgroup);
+
+  BKE_view_layer_rename_lightgroup(view_layer, lightgroup, value);
+}
+
 /* Fake value, used internally (not saved to DNA). */
 #  define V3D_ORIENT_DEFAULT -1
 
@@ -2583,7 +2631,7 @@ static const EnumPropertyItem *rna_UnitSettings_itemf_wrapper(const int system,
 
   EnumPropertyItem adaptive = {0};
   adaptive.identifier = "ADAPTIVE";
-  adaptive.name = "Adaptive";
+  adaptive.name = N_("Adaptive");
   adaptive.value = USER_UNIT_ADAPTIVE;
   RNA_enum_item_add(&items, &totitem, &adaptive);
 
@@ -2654,12 +2702,12 @@ static void rna_UnitSettings_system_update(Main *UNUSED(bmain),
   }
 }
 
-static char *rna_UnitSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_UnitSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("unit_settings");
 }
 
-static char *rna_FFmpegSettings_path(PointerRNA *UNUSED(ptr))
+static char *rna_FFmpegSettings_path(const PointerRNA *UNUSED(ptr))
 {
   return BLI_strdup("render.ffmpeg");
 }
@@ -3002,6 +3050,10 @@ static void rna_def_tool_settings(BlenderRNA *brna)
   RNA_def_property_pointer_sdna(prop, NULL, "imapaint");
   RNA_def_property_ui_text(prop, "Image Paint", "");
 
+  prop = RNA_def_property(srna, "paint_mode", PROP_POINTER, PROP_NONE);
+  RNA_def_property_pointer_sdna(prop, NULL, "paint_mode");
+  RNA_def_property_ui_text(prop, "Paint Mode", "");
+
   prop = RNA_def_property(srna, "uv_sculpt", PROP_POINTER, PROP_NONE);
   RNA_def_property_pointer_sdna(prop, NULL, "uvsculpt");
   RNA_def_property_ui_text(prop, "UV Sculpt", "");
@@ -3041,7 +3093,10 @@ static void rna_def_tool_settings(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "lock_object_mode", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "object_flag", SCE_OBJECT_MODE_LOCK);
-  RNA_def_property_ui_text(prop, "Lock Object Modes", "Restrict select to the current mode");
+  RNA_def_property_ui_text(prop,
+                           "Lock Object Modes",
+                           "Restrict selection to objects using the same mode as the active "
+                           "object, to prevent accidental mode switch when selecting");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
 
   static const EnumPropertyItem workspace_tool_items[] = {
@@ -3157,7 +3212,7 @@ static void rna_def_tool_settings(BlenderRNA *brna)
   RNA_def_property_boolean_sdna(prop, NULL, "uvcalc_flag", UVCALC_TRANSFORM_CORRECT);
   RNA_def_property_ui_text(prop,
                            "Correct Face Attributes",
-                           "Correct data such as UV's and vertex colors when transforming");
+                           "Correct data such as UV's and color attributes when transforming");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
 
   prop = RNA_def_property(srna, "use_transform_correct_keep_connected", PROP_BOOLEAN, PROP_NONE);
@@ -4156,6 +4211,44 @@ static void rna_def_view_layer_aov(BlenderRNA *brna)
   RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_ViewLayer_pass_update");
 }
 
+static void rna_def_view_layer_lightgroups(BlenderRNA *brna, PropertyRNA *cprop)
+{
+  StructRNA *srna;
+  /*  PropertyRNA *prop; */
+
+  FunctionRNA *func;
+  PropertyRNA *parm;
+
+  RNA_def_property_srna(cprop, "Lightgroups");
+  srna = RNA_def_struct(brna, "Lightgroups", NULL);
+  RNA_def_struct_sdna(srna, "ViewLayer");
+  RNA_def_struct_ui_text(srna, "List of Lightgroups", "Collection of Lightgroups");
+
+  func = RNA_def_function(srna, "add", "BKE_view_layer_add_lightgroup");
+  parm = RNA_def_pointer(func, "lightgroup", "Lightgroup", "", "Newly created Lightgroup");
+  RNA_def_function_return(func, parm);
+  parm = RNA_def_string(func, "name", NULL, 0, "Name", "Name of newly created lightgroup");
+}
+
+static void rna_def_view_layer_lightgroup(BlenderRNA *brna)
+{
+  StructRNA *srna;
+  PropertyRNA *prop;
+  srna = RNA_def_struct(brna, "Lightgroup", NULL);
+  RNA_def_struct_sdna(srna, "ViewLayerLightgroup");
+  RNA_def_struct_ui_text(srna, "Light Group", "");
+
+  prop = RNA_def_property(srna, "name", PROP_STRING, PROP_NONE);
+  RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
+  RNA_def_property_string_funcs(prop,
+                                "rna_ViewLayerLightgroup_name_get",
+                                "rna_ViewLayerLightgroup_name_length",
+                                "rna_ViewLayerLightgroup_name_set");
+  RNA_def_property_ui_text(prop, "Name", "Name of the Lightgroup");
+  RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_ViewLayer_pass_update");
+  RNA_def_struct_name_property(srna, prop);
+}
+
 void rna_def_view_layer_common(BlenderRNA *brna, StructRNA *srna, const bool scene)
 {
   PropertyRNA *prop;
@@ -4224,6 +4317,25 @@ void rna_def_view_layer_common(BlenderRNA *brna, StructRNA *srna, const bool sce
                                "rna_ViewLayer_active_aov_index_set",
                                "rna_ViewLayer_active_aov_index_range");
     RNA_def_property_ui_text(prop, "Active AOV Index", "Index of active aov");
+    RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, NULL);
+
+    prop = RNA_def_property(srna, "lightgroups", PROP_COLLECTION, PROP_NONE);
+    RNA_def_property_collection_sdna(prop, NULL, "lightgroups", NULL);
+    RNA_def_property_struct_type(prop, "Lightgroup");
+    RNA_def_property_ui_text(prop, "Light Groups", "");
+    rna_def_view_layer_lightgroups(brna, prop);
+
+    prop = RNA_def_property(srna, "active_lightgroup", PROP_POINTER, PROP_NONE);
+    RNA_def_property_struct_type(prop, "Lightgroup");
+    RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+    RNA_def_property_ui_text(prop, "Light Groups", "Active Lightgroup");
+
+    prop = RNA_def_property(srna, "active_lightgroup_index", PROP_INT, PROP_UNSIGNED);
+    RNA_def_property_int_funcs(prop,
+                               "rna_ViewLayer_active_lightgroup_index_get",
+                               "rna_ViewLayer_active_lightgroup_index_set",
+                               "rna_ViewLayer_active_lightgroup_index_range");
+    RNA_def_property_ui_text(prop, "Active Lightgroup Index", "Index of active lightgroup");
     RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, NULL);
 
     prop = RNA_def_property(srna, "use_pass_cryptomatte_object", PROP_BOOLEAN, PROP_NONE);
@@ -6215,13 +6327,13 @@ static void rna_def_scene_render_data(BlenderRNA *brna)
   /* Hairs */
   prop = RNA_def_property(srna, "hair_type", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, hair_shape_type_items);
-  RNA_def_property_ui_text(prop, "Hair Shape Type", "Hair shape type");
+  RNA_def_property_ui_text(prop, "Curves Shape Type", "Curves shape type");
   RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_Scene_glsl_update");
 
   prop = RNA_def_property(srna, "hair_subdiv", PROP_INT, PROP_NONE);
   RNA_def_property_range(prop, 0, 3);
   RNA_def_property_ui_text(
-      prop, "Additional Subdivision", "Additional subdivision along the hair");
+      prop, "Additional Subdivision", "Additional subdivision along the curves");
   RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_Scene_glsl_update");
 
   /* Performance */
@@ -8088,6 +8200,7 @@ void RNA_def_scene(BlenderRNA *brna)
   rna_def_scene_display(brna);
   rna_def_scene_eevee(brna);
   rna_def_view_layer_aov(brna);
+  rna_def_view_layer_lightgroup(brna);
   rna_def_view_layer_eevee(brna);
   rna_def_scene_gpencil(brna);
   RNA_define_animate_sdna(true);

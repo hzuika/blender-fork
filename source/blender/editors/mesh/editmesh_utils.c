@@ -9,6 +9,7 @@
 
 #include "DNA_key_types.h"
 #include "DNA_mesh_types.h"
+#include "DNA_meshdata_types.h"
 #include "DNA_object_types.h"
 
 #include "BLI_alloca.h"
@@ -19,6 +20,7 @@
 
 #include "BKE_DerivedMesh.h"
 #include "BKE_context.h"
+#include "BKE_customdata.h"
 #include "BKE_editmesh.h"
 #include "BKE_editmesh_bvh.h"
 #include "BKE_global.h"
@@ -937,7 +939,7 @@ bool EDBM_uv_check(BMEditMesh *em)
 bool EDBM_vert_color_check(BMEditMesh *em)
 {
   /* some of these checks could be a touch overkill */
-  return em && em->bm->totface && CustomData_has_layer(&em->bm->ldata, CD_MLOOPCOL);
+  return em && em->bm->totface && CustomData_has_layer(&em->bm->ldata, CD_PROP_BYTE_COLOR);
 }
 
 /** \} */
