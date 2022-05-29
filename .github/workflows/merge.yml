@@ -11,6 +11,7 @@ env:
   UPSTREAM_URL: https://github.com/blender/blender.git
   USER_EMAIL: 39191601+hzuika@users.noreply.github.com
   USER_NAME: hzuika
+  MERGE_COMMAND: git merge upstream/master
   
 jobs:
   auto_merge:
@@ -22,10 +23,13 @@ jobs:
       # checkoutしないと，ワークフロー時の環境にこのリポジトリが存在しないことになる．      
       - uses: actions/checkout@v3
       
-      - run: ls
-      
-      - run: git status
-      
+      - name: "[DEBUG] Check Repo"
+        run: |
+          echo "Repo"
+          ls -al
+          echo "Git Status"
+          git status
+            
       # (マージ)コミットするときに必要なgit configを設定する．      
       - name: Set git config for merge commit
         run: |
@@ -48,7 +52,7 @@ jobs:
           echo "MIN=${T:10:2}" >> $GITHUB_ENV
           echo "SEC=${T:12:2}" >> $GITHUB_ENV
           
-      - name: Show current time
+      - name: "[DEBUG] Show current time"
         run: echo "${YEAR}/${MONTH}/${DAY} ${HOUR}:${MIN}:${SEC}"
           
       # ブランチ名は別のrunでも使用するので環境変数に入れる．
@@ -60,15 +64,15 @@ jobs:
           
       # 先ほどの環境変数を使用してブランチを作成してチェックアウトする．
       - name: Create and Checkout new branch
-        run: git checkout -b ${{ env.BRANCH }}
-        
-      - run: git status
+        run: |
+          git checkout -b ${{ env.BRANCH }}
+          git status
        
       # エイリアス upstream にupstreamリポジトリのURLを設定する．
       - name: Set upstream repo
-        run: git remote add upstream ${UPSTREAM_URL}
-        
-      - run: git remote -v
+        run: |
+          git remote add upstream ${UPSTREAM_URL}
+          git remote -v
           
       # デフォルトでfetch-depthが1(shallow clone)らしく，マージするときに，
       # fatal: refusing to merge unrelated historiesが出るのを避けるために
@@ -80,10 +84,12 @@ jobs:
       # github-scriptsを使って，終了コード，標準出力，標準エラー出力を変数に格納する．
       - name: Merge upstream
         uses: actions/github-script@v6
+        env:
+          COMMAND: ${{ env.MERGE_COMMAND }}
         with:
           script: |
-            const command = 'git merge upstream/master'
-            const result = await exec.getExecOutput(command, [], {
+            const { COMMAND } = process.env
+            const result = await exec.getExecOutput(COMMAND, [], {
               ignoreReturnCode: true,
             })
             console.log(result)
@@ -92,37 +98,123 @@ jobs:
             core.setOutput('STDERR', result.stderr)
         id: merge
       
-      - name: Show merge output
+      - name: "[DEBUG] Show merge output"
         run: |
           echo "Exit code: ${{ steps.merge.outputs.EXIT_CODE }}"
+          
           echo "stdout:"
+          
           echo "${{ steps.merge.outputs.STDOUT }}"
+          
           echo "stderr:"
+          
           echo "${{ steps.merge.outputs.STDERR }}"
-      # 終了コードによって，標準出力か，標準エラー出力のどちらかを環境変数に格納する．
+      - name: "[DEBUG] Check git ls-files"
+        run: 
+          echo "Unmerged files"
+          echo "$(git ls-files -u)"
+          
+          echo "Cut 1"
+          echo "$(git ls-files -u  | cut -f 1)"
+          
+          echo "Cut 2"
+          echo "$(git ls-files -u  | cut -f 2)"
+         
+          echo "Sort"
+          echo "$(git ls-files -u  | cut -f 2 | sort)"
+          
+          echo "Sort unique"
+          echo "$(git ls-files -u  | cut -f 2 | sort -u)"
+          
+          echo "Word Count"  
+          echo "$(git ls-files --unmerged | cut --fields=2 | sort --unique | wc --chars)"
+      
+      # マージしたときにコンフリクトのあるファイルはコミットされない．
+      # git ls-files -u でマージされていないコミットとファイルが表示される．
+      # コミットされていないファイル一覧から，ファイル名だけ抽出して，重複を削除して並び替え．
+      
+      # コンフリクトファイル一覧をテキストファイルに格納する．
       # 一度テキストファイルに格納してから，環境変数に格納する．
       # テキストファイルはGitの対象にならないように親ディテクトリに保存する．
+      
       # echo 'MERGE_OUTPUT=${{ steps.merge.outputs.STDOUT }}' >> $GITHUB_ENV だとエラーになる．
-      # シングルクォーテーションをダブルクォーテーションに変えてもエラー
-      - name: Set merge output as env var
+      # シングルクォーテーションをダブルクォーテーションに変えてもエラー．
+      
+      - name: Save conflict files list in text file.
+        run: |          
+          git ls-files --unmerged | cut --fields=2 | sort --unique > ../merge_output.txt
+          cat ../merge_output.txt
+      
+      - name: "[DEBUG] Check word line count in text file"
         run: |
-          echo "${{ steps.merge.outputs.STDOUT }}" > ../merge_output.txt
-          echo "${{ steps.merge.outputs.STDERR }}" >> ../merge_output.txt
+          echo "Byte count"
+      
+          echo "$(cat ../merge_output.txt | wc --bytes)"
+          
+          echo "Line count"
+          
+          echo "$(cat ../merge_output.txt | wc --lines)"
+          
+      # コンフリクト数を環境変数に格納する．
+      - name: Count conflicts as env var
+        run: |       
+          echo "CONFLICTS_NUM=$(cat ../merge_output.txt | wc --lines)" >> $GITHUB_ENV
+      
+      - name: "[DEBUG] Show conflicts num"
+        run: |    
+          echo "${{ env.CONFLICTS_NUM }}"
+          echo "$CONFLICTS_NUM Conflicts"
+          echo "${{ format('{0} Conflicts', env.CONFLICTS_NUM) }}"
+          echo "${{ toJSON(env.CONFLICTS_NUM) }}"
+          echo "${{ env.CONFLICTS_NUM == 0 }}"
+          
+      - name: "[DEBUG] Check sed command"
+        if: ${{ env.CONFLICTS_NUM != 0 }}
+        run: |     
+            sed "s@^@- $URL_PREFIX@g" ../merge_output.txt
+            sed -r "s/(.*)/- [\1](\1)/g" ../merge_output.txt
+            sed -r "s@(.*)@- [\1](\1)@g" ../merge_output.txt
+            sed "s@\(.*\)@- [\1]($URL_PREFIX\1)@g" ../merge_output.txt
+          
+      # コンフリクトファイル一覧にURLを付けたり，タイトルを付けたりして，プルリクエストの本文を作る．
+      # コンフリクトがない場合とある場合で条件分けを行う．
+      # コンフリクトがある場合は，コミットが必要なので，環境変数に必要かどうか記録しておく．
+      # sed だと標準出力するだけになる．
+      # sed -i がないと上書き保存されない．
+      
+      # コンフリクトがある場合，
+      # - [ファイル名](URL/ファイル名) に変換
+      # 先頭行に # Conflict files を挿入
+      - name: Create pull request body
+        run: |
+          if [[ $CONFLICTS_NUM == 0 ]]; then
+            echo "# Successfully merged" > ../merge_output.txt
+          else
+            URL_PREFIX=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}/
+            sed --in-place "s@\(.*\)@- [\1]($URL_PREFIX\1)@g" ../merge_output.txt
+            sed --in-place '1i# Conflict files' ../merge_output.txt            
+          fi
+          
           echo 'MERGE_OUTPUT=$(cat ../merge_output.txt)' >> $GITHUB_ENV
       
       # マージ出力結果を表示する．
-      - name: Show merge output
-        run: echo ${{ env.MERGE_OUTPUT }}
+      - name: "[DEBUG] Show merge output"
+        run: echo "${{ env.MERGE_OUTPUT }}"
       
-      - name: Git status
-        run: git status
-        
-      - run: git show
+      - name: "[DEBUG] Git status"
+        run: |
+          git status
       
       # コンフリクトマーカーごとコミットする．          
       - name: Commit merge with conflict marker
-        if: ${{ steps.merge.outputs.EXIT_CODE != 0 }}
+        if: ${{ env.CONFLICTS_NUM != 0 }}
         run: git commit -am "Merge upstream with conflict marker"
+        
+      - name: "[DEBUG] Check repo branch name"
+        run: |
+         echo $GITHUB_BASE_REF
+         echo $GITHUB_HEAD_REF
+         echo $GITHUB_REF_NAME
       
       # リモートリポジトリにプッシュして，プルリクエストを作成する．
       
@@ -141,4 +233,4 @@ jobs:
           PR_BODY="${{ env.MERGE_OUTPUT }}"
           TIME="${YEAR}/${MONTH}/${DAY} ${HOUR}:${MIN}:${SEC}"
           PR_TITLE="Auto merge upstream (${TIME})"
-          gh pr create --head ${{ env.BRANCH }} --base "source_code_reading" --repo "$GITHUB_REPOSITORY" --title "${PR_TITLE}" --body "${PR_BODY}"
+          gh pr create --head ${{ env.BRANCH }} --base $GITHUB_REF_NAME --repo "$GITHUB_REPOSITORY" --title "${PR_TITLE}" --body "${PR_BODY}"
