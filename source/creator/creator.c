@@ -234,6 +234,7 @@ void gmp_blender_init_allocator()
 /** \name Main Function
  * \{ */
 
+// コメント: blenderのエントリーポイントであるmain関数の定義が書かれている．
 /**
  * Blender's main function responsibilities are:
  * - setup subsystems.
@@ -281,6 +282,7 @@ int main(int argc,
   _putenv_s("OMP_WAIT_POLICY", "PASSIVE");
 #  endif
 
+  // コメント: Windows環境の引数をwchar_t型(UTF-16)で取得して，char型(UTF-8)に変換している．
   /* Win32 Unicode Arguments. */
   /* NOTE: cannot use `guardedalloc` allocation here, as it's not yet initialized
    *       (it depends on the arguments passed in, which is what we're getting here!)
@@ -533,6 +535,7 @@ int main(int argc,
   (void)argv;
 #endif
 
+// コメント: Pythonモジュールとして使わないときはGUIの操作を行う．
 #ifndef WITH_PYTHON_MODULE
   if (G.background) {
     /* Using window-manager API in background-mode is a bit odd, but works fine. */
@@ -544,6 +547,7 @@ int main(int argc,
     if (blendfile_path[0] == '\0') {
       WM_init_splash(C);
     }
+    // コメント: ウィンドウマネージャーのメインループに入る．
     WM_main(C);
   }
 #endif /* WITH_PYTHON_MODULE */
