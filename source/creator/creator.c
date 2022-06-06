@@ -250,6 +250,7 @@ int main(int argc,
 #endif
 )
 {
+  // コメント: 現在の状態を表す構造体 bContext のポインタ
   bContext *C;
 
 #ifndef WITH_PYTHON_MODULE
