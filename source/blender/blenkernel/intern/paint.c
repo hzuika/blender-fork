@@ -1485,8 +1485,6 @@ void BKE_sculptsession_free(Object *ob)
       BM_log_free(ss->bm_log);
     }
 
-    MEM_SAFE_FREE(ss->texcache);
-
     if (ss->tex_pool) {
       BKE_image_pool_free(ss->tex_pool);
     }
@@ -1800,22 +1798,39 @@ static void sculpt_update_object(Depsgraph *depsgraph,
   }
 }
 
-void BKE_sculpt_update_object_before_eval(Object *ob)
+static void sculpt_face_sets_ensure(Mesh *mesh)
+{
+  if (CustomData_has_layer(&mesh->pdata, CD_SCULPT_FACE_SETS)) {
+    return;
+  }
+
+  int *new_face_sets = CustomData_add_layer(
+      &mesh->pdata, CD_SCULPT_FACE_SETS, CD_CALLOC, NULL, mesh->totpoly);
+
+  /* Initialize the new Face Set data-layer with a default valid visible ID and set the default
+   * color to render it white. */
+  for (int i = 0; i < mesh->totpoly; i++) {
+    new_face_sets[i] = 1;
+  }
+  mesh->face_sets_color_default = 1;
+}
+
+void BKE_sculpt_update_object_before_eval(const Scene *scene, Object *ob_eval)
 {
   /* Update before mesh evaluation in the dependency graph. */
-  SculptSession *ss = ob->sculpt;
+  SculptSession *ss = ob_eval->sculpt;
 
   if (ss && ss->building_vp_handle == false) {
     if (!ss->cache && !ss->filter_cache && !ss->expand_cache) {
       /* We free pbvh on changes, except in the middle of drawing a stroke
        * since it can't deal with changing PVBH node organization, we hope
        * topology does not change in the meantime .. weak. */
-      sculptsession_free_pbvh(ob);
+      sculptsession_free_pbvh(ob_eval);
 
-      BKE_sculptsession_free_deformMats(ob->sculpt);
+      BKE_sculptsession_free_deformMats(ob_eval->sculpt);
 
       /* In vertex/weight paint, force maps to be rebuilt. */
-      BKE_sculptsession_free_vwpaint_data(ob->sculpt);
+      BKE_sculptsession_free_vwpaint_data(ob_eval->sculpt);
     }
     else {
       PBVHNode **nodes;
@@ -1829,6 +1844,16 @@ void BKE_sculpt_update_object_before_eval(Object *ob)
 
       MEM_freeN(nodes);
     }
+  }
+
+  if (ss) {
+    Object *ob_orig = DEG_get_original_object(ob_eval);
+    Mesh *mesh = BKE_object_get_original_mesh(ob_orig);
+    MultiresModifierData *mmd = BKE_sculpt_multires_active(scene, ob_orig);
+
+    /* Ensure attribute layout is still correct. */
+    sculpt_face_sets_ensure(mesh);
+    BKE_sculpt_mask_layers_ensure(ob_orig, mmd);
   }
 }
 
@@ -2117,7 +2142,7 @@ void BKE_sculpt_ensure_orig_mesh_data(Scene *scene, Object *object)
   /* Copy the current mesh visibility to the Face Sets. */
   BKE_sculpt_face_sets_ensure_from_base_mesh_visibility(mesh);
   if (object->sculpt != NULL) {
-    /* If a sculpt session is active, ensure we have its faceset data porperly up-to-date. */
+    /* If a sculpt session is active, ensure we have its face-set data properly up-to-date. */
     object->sculpt->face_sets = CustomData_get_layer(&mesh->pdata, CD_SCULPT_FACE_SETS);
 
     /* NOTE: In theory we could add that on the fly when required by sculpt code.
@@ -2284,7 +2309,7 @@ void BKE_sculpt_bvh_update_from_ccg(PBVH *pbvh, SubdivCCG *subdiv_ccg)
                         subdiv_ccg->grid_hidden);
 }
 
-bool BKE_sculptsession_use_pbvh_draw(const Object *ob, const View3D *v3d)
+bool BKE_sculptsession_use_pbvh_draw(const Object *ob, const View3D *UNUSED(v3d))
 {
   SculptSession *ss = ob->sculpt;
   if (ss == NULL || ss->pbvh == NULL || ss->mode_type != OB_MODE_SCULPT) {
@@ -2293,8 +2318,8 @@ bool BKE_sculptsession_use_pbvh_draw(const Object *ob, const View3D *v3d)
 
   if (BKE_pbvh_type(ss->pbvh) == PBVH_FACES) {
     /* Regular mesh only draws from PBVH without modifiers and shape keys. */
-    const bool full_shading = (v3d && (v3d->shading.type > OB_SOLID));
-    return !(ss->shapekey_active || ss->deform_modifiers_active || full_shading);
+
+    return !(ss->shapekey_active || ss->deform_modifiers_active);
   }
 
   /* Multires and dyntopo always draw directly from the PBVH. */
