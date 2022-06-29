@@ -2980,6 +2980,15 @@ int BKE_ptcache_object_reset(Scene *scene, Object *ob, int mode)
         }
       }
     }
+    if (md->type == eModifierType_Fluid) {
+      FluidModifierData *fmd = (FluidModifierData *)md;
+      FluidDomainSettings *fds = fmd->domain;
+      if ((fmd->type & MOD_FLUID_TYPE_DOMAIN) && fds &&
+          fds->cache_type == FLUID_DOMAIN_CACHE_REPLAY) {
+        BKE_ptcache_id_from_smoke(&pid, ob, fmd);
+        reset |= BKE_ptcache_id_reset(scene, &pid, mode);
+      }
+    }
   }
 
   if (scene->rigidbody_world && (ob->rigidbody_object || ob->rigidbody_constraint)) {
@@ -3232,7 +3241,7 @@ void BKE_ptcache_bake(PTCacheBaker *baker)
                 scene, pid->calldata, &cache->startframe, &cache->endframe);
           }
 
-          /* XXX workaround for regression inroduced in ee3fadd, needs looking into */
+          /* XXX: workaround for regression introduced in ee3fadd, needs looking into. */
           if (pid->type == PTCACHE_TYPE_RIGIDBODY) {
             if ((cache->flag & PTCACHE_REDO_NEEDED ||
                  (cache->flag & PTCACHE_SIMULATION_VALID) == 0) &&
